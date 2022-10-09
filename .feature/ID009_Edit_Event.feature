@@ -30,10 +30,10 @@ Feature: Edit Event
     Then there are "<numberOfEvents>" in the system.
 
   Examples: 
-      | id          | name                 | description         | capacity   | cost   | address            | email            | phoneNumber  | error
-      | 4           | nonExistingEvent1    | newDescription1     | 100        |  100   |  456 rue Stanley   |  aly1@gmail.com  | 514-777-7777 | The event does not exist
-      | 5           | nonExistingEvent2    | newDescription2     | 450        |  200   |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The event does not exist
-      | 6           | nonExistingEvent3    | newDescription3     | 130        |  800   |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The event does not exist
+      | id          | name                 | description         | capacity   | cost   | address            | email            | phoneNumber  | error                    |
+      | 4           | nonExistingEvent1    | newDescription1     | 100        |  100   |  456 rue Stanley   |  aly1@gmail.com  | 514-777-7777 | The event does not exist |
+      | 5           | nonExistingEvent2    | newDescription2     | 450        |  200   |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The event does not exist |
+      | 6           | nonExistingEvent3    | newDescription3     | 130        |  800   |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The event does not exist |
 
   Scenario: Edit an Event unsuccessfully
     When the user "<User>" attempts to update an event with "<Id>" with "<newName>", "<newDescription>", "<newCapacity>", "<newCost>", "<newAddress>", "<newEmail>" and "<newPhoneNumber>"
@@ -42,14 +42,14 @@ Feature: Edit Event
     Then there are "<numberOfEvents>" in the system.
 
   Examples: 
-      | id          | name          | description         | capacity   | cost   | address            | email            | phoneNumber  | error
-      | 1           |               | newDescription1     | 100        |  100   |  456 rue Stanley   |  aly1@gmail.com  | 514-777-7777 | The name cannot be empty
-      | 2           | event2        |                     | 450        |  200   |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The description cannot be empty
-      | 3           | event3        | newDescription3     |            |  800   |  456 rue Stanley   |  aly1@gmail.com  | 514-777-7777 | The capacity cannot be empty
-      | 4           | event4        | newDescription4     | 100        |        |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The cost cannot be empty
-      | 5           | event5        | newDescription5     | 450        |  200   |                    |  aly1@gmail.com  | 514-777-7777 | The address cannot be empty
-      | 6           | event6        | newDescription6     | 130        |  800   |  456 rue Stanley   |                  | 514-777-7777 | The email cannot be empty
-      | 7           | event7        | newDescription7     | 130        |  800   |  456 rue Stanley   |  aly2@gmail.com  |              | The phone number cannot be empty
+      | id          | name          | description         | capacity   | cost   | address            | email            | phoneNumber  | error                            |
+      | 1           |               | newDescription1     | 100        |  100   |  456 rue Stanley   |  aly1@gmail.com  | 514-777-7777 | The name cannot be empty         |
+      | 2           | event2        |                     | 450        |  200   |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The description cannot be empty  |
+      | 3           | event3        | newDescription3     |            |  800   |  456 rue Stanley   |  aly1@gmail.com  | 514-777-7777 | The capacity cannot be empty     |
+      | 4           | event4        | newDescription4     | 100        |        |  456 rue Stanley   |  aly2@gmail.com  | 514-777-7777 | The cost cannot be empty         |
+      | 5           | event5        | newDescription5     | 450        |  200   |                    |  aly1@gmail.com  | 514-777-7777 | The address cannot be empty      |
+      | 6           | event6        | newDescription6     | 130        |  800   |  456 rue Stanley   |                  | 514-777-7777 | The email cannot be empty        |
+      | 7           | event7        | newDescription7     | 130        |  800   |  456 rue Stanley   |  aly2@gmail.com  |              | The phone number cannot be empty |
 
 
 
