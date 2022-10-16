@@ -1,7 +1,7 @@
-package model;
-import org.springframework.data.annotation.Id;
+package tickticket.model;
+// import org.springframework.data.annotation.Id;
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +16,7 @@ public class Event {
     private String email;
     private String phoneNumber;
     private User organizer;
-    private ArrayList<EventType> eventTypes;
+    private List<EventType> eventTypes;
     private EventSchedule eventSchedule;
 
     public Event() {}
@@ -97,11 +97,11 @@ public class Event {
     }
 
     @ManyToMany
-    public ArrayList<EventType> getEventTypes() {
+    public List<EventType> getEventTypes() {
         return eventTypes;
     }
 
-    public void setEventTypes(ArrayList<EventType> eventTypes) {
+    public void setEventTypes(List<EventType> eventTypes) {
         this.eventTypes = eventTypes;
     }
 

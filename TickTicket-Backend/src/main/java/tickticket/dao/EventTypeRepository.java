@@ -1,8 +1,12 @@
-package dao;
+package tickticket.dao;
 
-import model.EventType;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import tickticket.model.EventType;
+
 import java.util.UUID;
 
+@Repository
 public interface EventTypeRepository extends CrudRepository<EventType, UUID> {
 }

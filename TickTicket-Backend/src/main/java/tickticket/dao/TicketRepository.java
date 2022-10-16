@@ -1,8 +1,12 @@
-package dao;
+package tickticket.dao;
 
-import model.Ticket;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import tickticket.model.Ticket;
+
 import java.util.UUID;
 
+@Repository
 public interface TicketRepository extends CrudRepository<Ticket, UUID> {
 }

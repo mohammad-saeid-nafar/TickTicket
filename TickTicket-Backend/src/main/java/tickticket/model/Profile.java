@@ -1,11 +1,13 @@
-package model;
-import org.springframework.data.annotation.Id;
+package tickticket.model;
+// import org.springframework.data.annotation.Id
+import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,7 +21,7 @@ public class Profile {
     private String phoneNumber;
     private String profilePicture;
     private LocalDate dateOfBirth;
-    private ArrayList<EventType> interests;
+    private List<EventType> interests;
 
     public Profile() { }
 
@@ -90,11 +92,11 @@ public class Profile {
     }
 
     @OneToMany
-    public ArrayList<EventType> getInterests() {
+    public List<EventType> getInterests() {
         return interests;
     }
 
-    public void setInterests(ArrayList<EventType> interests) {
+    public void setInterests(List<EventType> interests) {
         this.interests = interests;
     }
 }
