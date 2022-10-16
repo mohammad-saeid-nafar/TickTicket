@@ -86,7 +86,7 @@ public class Profile {
         this.dateOfBirth = dateOfBirth;
     }
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     public List<EventType> getInterests() {
         return interests;
     }

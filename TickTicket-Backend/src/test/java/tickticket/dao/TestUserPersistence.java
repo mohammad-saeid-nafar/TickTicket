@@ -38,8 +38,8 @@ public class TestUserPersistence {
     @AfterEach
 	public void clearDatabase() {
 		userRepository.deleteAll();
-        eventTypeRepository.deleteAll();
 		profileRepository.deleteAll();
+        eventTypeRepository.deleteAll();
 	}
 
     @Test
@@ -92,8 +92,7 @@ public class TestUserPersistence {
 		assertEquals(testProfile.getPhoneNumber(),testUser.getProfile().getPhoneNumber());
         assertEquals(testProfile.getProfilePicture(),testUser.getProfile().getProfilePicture());
         assertEquals(testProfile.getDateOfBirth(),testUser.getProfile().getDateOfBirth());
-        assertEquals(testProfile.getInterests().get(0), testUser.getProfile().getInterests().get(0));
-        
+        assertEquals(testProfile.getInterests().get(0).getId(), testUser.getProfile().getInterests().get(0).getId());
     }
 
 }
