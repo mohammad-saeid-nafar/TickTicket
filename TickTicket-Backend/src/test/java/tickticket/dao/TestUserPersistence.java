@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class TestUserPersistence {
     @Autowired
     private UserRepository userRepository;
 
-    @AfterEach
+    @BeforeEach
 	public void clearDatabase() {
 		userRepository.deleteAll();
 		profileRepository.deleteAll();
