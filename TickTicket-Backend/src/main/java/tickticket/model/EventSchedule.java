@@ -1,11 +1,9 @@
 package tickticket.model;
-// import org.springframework.data.annotation.Id;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -13,8 +11,8 @@ public class EventSchedule {
 
     public enum DayOfWeek { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
     private UUID id;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private boolean isRecurrent;
     // private List<DayOfWeek> recurrences;
 
@@ -30,20 +28,20 @@ public class EventSchedule {
         this.id = id;
     }
 
-    public LocalDateTime getStart() {
-        return start;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setStart(LocalDateTime start) {
-        this.start = start;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public LocalDateTime getEnd() {
-        return end;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     public boolean isRecurrent() {

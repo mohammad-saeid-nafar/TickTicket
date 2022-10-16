@@ -1,5 +1,4 @@
 package tickticket.model;
-// import org.springframework.data.annotation.Id;
 import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
