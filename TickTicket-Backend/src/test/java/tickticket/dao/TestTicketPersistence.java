@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +28,7 @@ import tickticket.model.User;
 @SpringBootTest
 public class TestTicketPersistence {
 
+    @Autowired
     EntityManager entityManager;
 
     @Autowired
@@ -48,7 +49,7 @@ public class TestTicketPersistence {
     @Autowired
     private TicketRepository ticketRepository;
 
-    @BeforeEach
+    @AfterEach
 	public void clearDatabase() {
         ticketRepository.deleteAll();
         eventRepository.deleteAll();
@@ -143,10 +144,5 @@ public class TestTicketPersistence {
         assertEquals(testEvent.getPhoneNumber(),testTicket.getEvent().getPhoneNumber());
 
         assertEquals(testEventSchedule.getStartDateTime(),testTicket.getEvent().getEventSchedule().getStartDateTime());
-        
-
-
-    
-    
     }
 }
