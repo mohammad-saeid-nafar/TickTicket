@@ -37,7 +37,6 @@ public class TestProfilePersistence {
         profileRepository.deleteAll();
     }
 
-	 
 	 @Test
 	 public void testPersistAndLoadProfile() {
 
