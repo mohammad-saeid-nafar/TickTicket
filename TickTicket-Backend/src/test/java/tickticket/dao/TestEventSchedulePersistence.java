@@ -27,7 +27,7 @@ public class TestEventSchedulePersistence {
     @Autowired
     private EventScheduleRepository eventScheduleRepository;
 
-        @BeforeEach
+    @AfterEach
     public void clearDatabase() {
         eventScheduleRepository.deleteAll();
     }
