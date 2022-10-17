@@ -26,10 +26,10 @@ public class TestReviewPersistence {
     EntityManager entityManager;
 
     @Autowired
-    private EventTypeRepository eventTypeRepository;
+    private ReviewRepository reviewRepository;
 
     @Autowired
-    private ReviewRepository reviewRepository;
+    private EventTypeRepository eventTypeRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -49,11 +49,12 @@ public class TestReviewPersistence {
     @AfterEach
     public void clearDatabase() {
         reviewRepository.deleteAll();
+        ticketRepository.deleteAll();
         eventRepository.deleteAll();
         userRepository.deleteAll();
         profileRepository.deleteAll();
-        eventScheduleRepository.deleteAll();
         eventTypeRepository.deleteAll();
+        eventScheduleRepository.deleteAll();
     }
 
     @Test

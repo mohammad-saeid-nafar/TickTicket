@@ -6,7 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Hibernate;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,34 @@ public class TestEventSchedulePersistence {
     EntityManager entityManager;
 
     @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private EventTypeRepository eventTypeRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
     private EventScheduleRepository eventScheduleRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     @AfterEach
     public void clearDatabase() {
+        reviewRepository.deleteAll();
+        ticketRepository.deleteAll();
+        eventRepository.deleteAll();
+        userRepository.deleteAll();
+        profileRepository.deleteAll();
+        eventTypeRepository.deleteAll();
         eventScheduleRepository.deleteAll();
     }
 

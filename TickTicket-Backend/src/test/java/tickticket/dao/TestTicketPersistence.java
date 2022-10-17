@@ -32,8 +32,11 @@ public class TestTicketPersistence {
     EntityManager entityManager;
 
     @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
     private EventTypeRepository eventTypeRepository;
-    
+
     @Autowired
     private ProfileRepository profileRepository;
 
@@ -50,14 +53,15 @@ public class TestTicketPersistence {
     private TicketRepository ticketRepository;
 
     @AfterEach
-	public void clearDatabase() {
+    public void clearDatabase() {
+        reviewRepository.deleteAll();
         ticketRepository.deleteAll();
         eventRepository.deleteAll();
-		userRepository.deleteAll();
-		profileRepository.deleteAll();
+        userRepository.deleteAll();
+        profileRepository.deleteAll();
         eventTypeRepository.deleteAll();
         eventScheduleRepository.deleteAll();
-	}
+    }
 
     @Test
     public void testPersistAndLoadTicket(){

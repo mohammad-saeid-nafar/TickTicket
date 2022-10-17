@@ -28,21 +28,36 @@ public class TestUserPersistence {
     EntityManager entityManager;
 
     @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
     private EventTypeRepository eventTypeRepository;
-    
+
     @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
     private UserRepository userRepository;
 
-    @AfterEach
-	public void clearDatabase() {
-		userRepository.deleteAll();
-		profileRepository.deleteAll();
-        eventTypeRepository.deleteAll();
-	}
+    @Autowired
+    private EventRepository eventRepository;
 
+    @Autowired
+    private EventScheduleRepository eventScheduleRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    @AfterEach
+    public void clearDatabase() {
+        reviewRepository.deleteAll();
+        ticketRepository.deleteAll();
+        eventRepository.deleteAll();
+        userRepository.deleteAll();
+        profileRepository.deleteAll();
+        eventTypeRepository.deleteAll();
+        eventScheduleRepository.deleteAll();
+    }
     @Test
     public void testPersistAndLoadUser(){
         EventType testEventType = new EventType();

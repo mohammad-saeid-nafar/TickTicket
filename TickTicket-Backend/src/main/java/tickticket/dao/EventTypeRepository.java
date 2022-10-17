@@ -9,4 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface EventTypeRepository extends CrudRepository<EventType, UUID> {
+    boolean existsEventTypeByName(String name);
+    EventType findEventTypeByName(String name);
 }
