@@ -24,9 +24,7 @@ import java.util.UUID;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class TestProfilePersistence {
-	
-	
-	@Autowired
+
 	EntityManager entityManager;
 		
 	@Autowired
