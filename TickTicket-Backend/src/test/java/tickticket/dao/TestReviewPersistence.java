@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class TestReviewPersistence {
 
+    @Autowired
     EntityManager entityManager;
 
     @Autowired
-    private EventTypeRepository eventTypeRepository;
+    private ReviewRepository reviewRepository;
 
     @Autowired
-    private ReviewRepository reviewRepository;
+    private EventTypeRepository eventTypeRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -45,14 +46,15 @@ public class TestReviewPersistence {
     @Autowired
     private TicketRepository ticketRepository;
 
-    @BeforeEach
+    @AfterEach
     public void clearDatabase() {
         reviewRepository.deleteAll();
+        ticketRepository.deleteAll();
         eventRepository.deleteAll();
         userRepository.deleteAll();
         profileRepository.deleteAll();
-        eventScheduleRepository.deleteAll();
         eventTypeRepository.deleteAll();
+        eventScheduleRepository.deleteAll();
     }
 
     @Test

@@ -1,9 +1,7 @@
 package tickticket.model;
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +12,7 @@ public class EventSchedule {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private boolean isRecurrent;
-    // private List<DayOfWeek> recurrences;
+    private List<DayOfWeek> recurrences;
 
     public EventSchedule() {}
 
@@ -52,12 +50,16 @@ public class EventSchedule {
         isRecurrent = recurrent;
     }
 
-    // public List<DayOfWeek> getRecurrences() {
-    //     return recurrences;
-    // }
+    @ElementCollection(targetClass=DayOfWeek.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name="schedule_recurrences")
+    @Column(name="recurrences")
+     public List<DayOfWeek> getRecurrences() {
+         return recurrences;
+     }
 
-    // public void setRecurrences(List<DayOfWeek> recurrences) {
-    //     this.recurrences = recurrences;
-    // }
+     public void setRecurrences(List<DayOfWeek> recurrences) {
+         this.recurrences = recurrences;
+     }
 
 }
