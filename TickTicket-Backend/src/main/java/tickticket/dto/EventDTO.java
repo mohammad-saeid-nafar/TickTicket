@@ -1,5 +1,7 @@
 package tickticket.dto;
 
+import java.util.List;
+
 public class EventDTO {
     private String name;
     private String description;
@@ -9,9 +11,11 @@ public class EventDTO {
     private String email;
     private String phoneNumber;
     private UserDTO organizer;
+    private List<EventTypeDTO> eventType;
+
 
     public EventDTO(String name, String description, Integer capacity, 
-        Double cost, String address, String email, String phoneNumber, UserDTO organizer ) {
+        Double cost, String address, String email, String phoneNumber, UserDTO organizer, List<EventTypeDTO> eventType ) {
             
         this.name = name;
         this.description = description;
@@ -21,6 +25,7 @@ public class EventDTO {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.organizer = organizer;
+        this.eventType = eventType;
     }
 
     public String getName() {
@@ -54,5 +59,9 @@ public class EventDTO {
 
     public UserDTO getOrganizer(){
         return organizer;
+    }
+
+    public List<EventTypeDTO> getEventType(){
+        return eventType;
     }
 }
