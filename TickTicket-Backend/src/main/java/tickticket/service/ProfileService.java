@@ -11,6 +11,7 @@ import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
 import tickticket.model.EventType;
 import tickticket.model.Profile;
+import tickticket.model.User;
 
 public class ProfileService {
     @Autowired
@@ -71,6 +72,61 @@ public class ProfileService {
 			return true;
 		}
 		return false;
+	}
+
+	@Transactional
+	public Profile getProfileByEmail(String email) {
+		return profileRepository.findProfileByEmail(email);
+	}
+
+	@Transactional
+	public Profile updateProfile(String firstName, String lastName, String address, String email, String phoneNumber, String profilePicture, LocalDate dateOfBirth, List<EventType> interests) {
+		if(email == null || email.equals("") || ! emailIsValid(email)) {
+			throw new IllegalArgumentException("Invalid email");
+		}
+
+		Profile profile = profileRepository.findProfileByEmail(email);
+		if(profile == null) {
+			throw new IllegalArgumentException("Could not find a profile with the given email");
+		}
+
+		if(firstName != null && ! firstName.equals("")) {
+			profile.setFirstName(firstName);
+		} else {
+			throw new IllegalArgumentException("First name cannot be blank.");
+		}
+
+		if(lastName != null && ! lastName.equals("")) {
+			profile.setLastName(lastName);
+		} else {
+			throw new IllegalArgumentException("Last name cannot be blank.");
+		}
+
+		if(address != null && ! address.equals("")) {
+			profile.setAddress(address);
+		} else {
+			throw new IllegalArgumentException("Address cannot be blank.");
+		}
+
+		if(phoneNumber != null && ! phoneNumber.equals("")) {
+			profile.setPhoneNumber(phoneNumber);
+		} else {
+			throw new IllegalArgumentException("Phone number cannot be blank.");
+		}
+
+		if(dateOfBirth != null) {
+			profile.setDateOfBirth(dateOfBirth);
+		} else {
+			throw new IllegalArgumentException("Date of birth cannot be blank");
+		}
+
+		profileRepository.save(profile);
+		return profile;
+	}
+
+	@Transactional
+	public List<Profile> getAllProfiles(){
+		return UserService.toList(profileRepository.findAll());
 	}
 
     private boolean emailIsValid(String email) {
