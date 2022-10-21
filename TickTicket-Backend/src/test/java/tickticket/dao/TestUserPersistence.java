@@ -93,7 +93,7 @@ public class TestUserPersistence {
 
         testUser = null;
 
-        boolean exists = userRepository.existsUserByUsername(username);
+        boolean exists = userRepository.existsByUsername(username);
         testUser = userRepository.findUserByUsername(username);
 
         assertNotNull(testUser);
