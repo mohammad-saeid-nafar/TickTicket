@@ -1,5 +1,6 @@
 package tickticket.dao;
 
+import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,6 @@ import java.util.UUID;
 public interface TicketRepository extends CrudRepository<Ticket, UUID> {
     boolean existsByEventAndUser(Event event, User user);
     List<Ticket> findTicketsByUser(User user);
+    List<Ticket> findTicketsByEvent(Event event);
+    Optional<Ticket> findTicketByEventAndUser(Event event, User user);
 }

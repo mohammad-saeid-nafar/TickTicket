@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +85,12 @@ public class UserService {
 	public User getUser(String username) {
 		return userRepository.findUserByUsername(username);
 
+	}
+
+	@Transactional
+	public User getUser(UUID id) {
+		return userRepository.findById(id).orElseThrow(()
+				-> new IllegalArgumentException("User " + id + " not found."));
 	}
 
 	@Transactional
