@@ -7,12 +7,9 @@ import java.util.UUID;
 @Entity
 public class EventSchedule {
 
-    public enum DayOfWeek { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
     private UUID id;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private boolean isRecurrent;
-    private List<DayOfWeek> recurrences;
 
     public EventSchedule() {}
 
@@ -41,25 +38,5 @@ public class EventSchedule {
     public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
-
-    public boolean isRecurrent() {
-        return isRecurrent;
-    }
-
-    public void setRecurrent(boolean recurrent) {
-        isRecurrent = recurrent;
-    }
-
-    @ElementCollection(targetClass=DayOfWeek.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name="schedule_recurrences")
-    @Column(name="recurrences")
-     public List<DayOfWeek> getRecurrences() {
-         return recurrences;
-     }
-
-     public void setRecurrences(List<DayOfWeek> recurrences) {
-         this.recurrences = recurrences;
-     }
 
 }

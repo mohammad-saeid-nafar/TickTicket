@@ -12,6 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface TicketRepository extends CrudRepository<Ticket, UUID> {
-    boolean existsByEventAndUser(Event event,User user);
+    boolean existsByEventAndUser(Event event, User user);
     List<Ticket> findTicketsByUser(User user);
 }
