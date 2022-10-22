@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.AfterEach;
@@ -30,9 +31,6 @@ import tickticket.model.User;
 @SpringBootTest
 @ActiveProfiles("test")
 public class TestTicketPersistence {
-
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -67,7 +65,7 @@ public class TestTicketPersistence {
     }
 
     @Test
-    public void testPersistAndLoadTicket(){
+    public void testPersistAndLoadTicket() {
         EventType testEventType = new EventType();
         testEventType.setName("Test Type");
         testEventType.setDescription("Persistence Test!");
@@ -76,24 +74,24 @@ public class TestTicketPersistence {
         eventTypeList.add(testEventType);
 
         Profile testProfile = new Profile();
-		testProfile.setFirstName("TestName");
-		testProfile.setLastName("TestLastName");
-		testProfile.setAddress("Test Address");
-		testProfile.setEmail("testemail@test.com");
-		testProfile.setPhoneNumber("(123)456-7890");
+        testProfile.setFirstName("TestName");
+        testProfile.setLastName("TestLastName");
+        testProfile.setAddress("Test Address");
+        testProfile.setEmail("testemail@test.com");
+        testProfile.setPhoneNumber("(123)456-7890");
         testProfile.setProfilePicture("img1.jpg");
-        testProfile.setDateOfBirth(LocalDate.of(2000,2,22));
+        testProfile.setDateOfBirth(LocalDate.of(2000, 2, 22));
         testProfile.setInterests(eventTypeList);
 
         User testUser = new User();
         testUser.setUsername("testUser");
         testUser.setPassword("testPassword");
-        testUser.setCreated(LocalDate.of(2022,10,16));
+        testUser.setCreated(LocalDate.of(2022, 10, 16));
         testUser.setProfile(testProfile);
 
         EventSchedule testEventSchedule = new EventSchedule();
-        testEventSchedule.setStartDateTime(LocalDateTime.of(2022,12,5,17,00));
-        testEventSchedule.setEndDateTime(LocalDateTime.of(2022,12,5,22,00));
+        testEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 5, 17, 00));
+        testEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 5, 22, 00));
 
         Event testEvent = new Event();
         testEvent.setName("Test Event");
@@ -108,7 +106,7 @@ public class TestTicketPersistence {
         testEvent.setEventSchedule(testEventSchedule);
 
         Ticket testTicket = new Ticket();
-        LocalDateTime bookingDate = LocalDateTime.of(2022,10,16,15,28);
+        LocalDateTime bookingDate = LocalDateTime.of(2022, 10, 16, 15, 28);
         testTicket.setBookingDate(bookingDate);
         testTicket.setEvent(testEvent);
         testTicket.setUser(testUser);
@@ -122,33 +120,96 @@ public class TestTicketPersistence {
 
         testTicket = null;
 
-        boolean exists = ticketRepository.existsByEventAndUser(testEvent,testUser);
+        boolean exists = ticketRepository.existsByEventAndUser(testEvent, testUser);
         testTicket = ticketRepository.findTicketsByUser(testUser).get(0);
-        
+
+        Optional<Ticket> optionalTicket = ticketRepository.findTicketByEventAndUser(testEvent, testUser);
+        assertTrue(optionalTicket.isPresent());
+
         assertNotNull(testTicket);
         assertTrue(exists);
         assertEquals(bookingDate, testTicket.getBookingDate());
 
-        assertEquals(testUser.getUsername(),testTicket.getUser().getUsername());
-        assertEquals(testUser.getPassword(),testTicket.getUser().getPassword());
+        assertEquals(testUser.getUsername(), testTicket.getUser().getUsername());
+        assertEquals(testUser.getPassword(), testTicket.getUser().getPassword());
 
-        assertEquals(testUser.getProfile().getFirstName(),testTicket.getUser().getProfile().getFirstName());
-        assertEquals(testUser.getProfile().getLastName(),testTicket.getUser().getProfile().getLastName());
-        assertEquals(testUser.getProfile().getEmail(),testTicket.getUser().getProfile().getEmail());
-        assertEquals(testUser.getProfile().getDateOfBirth(),testTicket.getUser().getProfile().getDateOfBirth());
-        assertEquals(testUser.getProfile().getPhoneNumber(),testTicket.getUser().getProfile().getPhoneNumber());
-        assertEquals(testUser.getProfile().getAddress(),testTicket.getUser().getProfile().getAddress());
-        assertEquals(testUser.getProfile().getProfilePicture(),testTicket.getUser().getProfile().getProfilePicture());
-    
+        assertEquals(testUser.getProfile().getFirstName(), testTicket.getUser().getProfile().getFirstName());
+        assertEquals(testUser.getProfile().getLastName(), testTicket.getUser().getProfile().getLastName());
+        assertEquals(testUser.getProfile().getEmail(), testTicket.getUser().getProfile().getEmail());
+        assertEquals(testUser.getProfile().getDateOfBirth(), testTicket.getUser().getProfile().getDateOfBirth());
+        assertEquals(testUser.getProfile().getPhoneNumber(), testTicket.getUser().getProfile().getPhoneNumber());
+        assertEquals(testUser.getProfile().getAddress(), testTicket.getUser().getProfile().getAddress());
+        assertEquals(testUser.getProfile().getProfilePicture(), testTicket.getUser().getProfile().getProfilePicture());
 
-        assertEquals(testEvent.getName(),testTicket.getEvent().getName());
-        assertEquals(testEvent.getCapacity(),testTicket.getEvent().getCapacity());
-        assertEquals(testEvent.getDescription(),testTicket.getEvent().getDescription());
-        assertEquals(testEvent.getCost(),testTicket.getEvent().getCost());
-        assertEquals(testEvent.getAddress(),testTicket.getEvent().getAddress());
-        assertEquals(testEvent.getEmail(),testTicket.getEvent().getEmail());
-        assertEquals(testEvent.getPhoneNumber(),testTicket.getEvent().getPhoneNumber());
 
-        assertEquals(testEventSchedule.getStartDateTime(),testTicket.getEvent().getEventSchedule().getStartDateTime());
+        assertEquals(testEvent.getName(), testTicket.getEvent().getName());
+        assertEquals(testEvent.getCapacity(), testTicket.getEvent().getCapacity());
+        assertEquals(testEvent.getDescription(), testTicket.getEvent().getDescription());
+        assertEquals(testEvent.getCost(), testTicket.getEvent().getCost());
+        assertEquals(testEvent.getAddress(), testTicket.getEvent().getAddress());
+        assertEquals(testEvent.getEmail(), testTicket.getEvent().getEmail());
+        assertEquals(testEvent.getPhoneNumber(), testTicket.getEvent().getPhoneNumber());
+
+        assertEquals(testEventSchedule.getStartDateTime(), testTicket.getEvent().getEventSchedule().getStartDateTime());
+    }
+
+    @Test
+    public void testFindTicketsByEvent() {
+        EventType testEventType = new EventType();
+        testEventType.setName("Test Type");
+        testEventType.setDescription("Persistence Test!");
+        testEventType.setAgeRequirement(13);
+        List<EventType> eventTypeList = List.of(testEventType);
+
+        User testUser = new User();
+        testUser.setUsername("testUser");
+        testUser.setPassword("testPassword");
+        testUser.setCreated(LocalDate.of(2022, 10, 16));
+
+        User testUser2 = new User();
+        testUser2.setUsername("testUser2");
+        testUser2.setPassword("testPassword2");
+        testUser2.setCreated(LocalDate.of(2022, 10, 16));
+
+        EventSchedule testEventSchedule = new EventSchedule();
+        testEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 5, 17, 00));
+        testEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 5, 22, 00));
+
+        Event testEvent = new Event();
+        testEvent.setName("Test Event");
+        testEvent.setDescription("Just a test");
+        testEvent.setCapacity(200);
+        testEvent.setCost(250);
+        testEvent.setAddress("Test Address");
+        testEvent.setEmail("Test email");
+        testEvent.setPhoneNumber("(123)456-7890");
+        testEvent.setEventTypes(eventTypeList);
+        testEvent.setOrganizer(testUser);
+        testEvent.setEventSchedule(testEventSchedule);
+
+        Ticket testTicket1 = new Ticket();
+        testTicket1.setBookingDate(LocalDateTime.now());
+        testTicket1.setEvent(testEvent);
+        testTicket1.setUser(testUser);
+
+        Ticket testTicket2 = new Ticket();
+        testTicket2.setBookingDate(LocalDateTime.now());
+        testTicket2.setEvent(testEvent);
+        testTicket2.setUser(testUser2);
+
+        eventTypeRepository.save(testEventType);
+        userRepository.save(testUser);
+        userRepository.save(testUser2);
+        eventScheduleRepository.save(testEventSchedule);
+        eventRepository.save(testEvent);
+        ticketRepository.save(testTicket1);
+        ticketRepository.save(testTicket2);
+
+        List<Ticket> tickets = ticketRepository.findTicketsByEvent(testEvent);
+
+        assertNotNull(tickets);
+        assertEquals(2, tickets.size());
+        assertEquals(testTicket1.getBookingDate(), tickets.get(0).getBookingDate());
+        assertEquals(testTicket2.getBookingDate(), tickets.get(1).getBookingDate());
     }
 }
