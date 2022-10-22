@@ -2,6 +2,7 @@ package tickticket.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -93,7 +94,6 @@ public class TestTicketPersistence {
         EventSchedule testEventSchedule = new EventSchedule();
         testEventSchedule.setStartDateTime(LocalDateTime.of(2022,12,5,17,00));
         testEventSchedule.setEndDateTime(LocalDateTime.of(2022,12,5,22,00));
-        testEventSchedule.setRecurrent(false);
 
         Event testEvent = new Event();
         testEvent.setName("Test Event");
@@ -126,7 +126,7 @@ public class TestTicketPersistence {
         testTicket = ticketRepository.findTicketsByUser(testUser).get(0);
         
         assertNotNull(testTicket);
-        assertEquals(exists, true);
+        assertTrue(exists);
         assertEquals(bookingDate, testTicket.getBookingDate());
 
         assertEquals(testUser.getUsername(),testTicket.getUser().getUsername());
