@@ -61,5 +61,4 @@ public class EventSchedule {
      public void setRecurrences(List<DayOfWeek> recurrences) {
          this.recurrences = recurrences;
      }
-
 }

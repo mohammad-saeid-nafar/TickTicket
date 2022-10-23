@@ -28,4 +28,12 @@ public class Conversion {
 
         return new EventTypeDTO(eventType.getName(), eventType.getDescription(), eventType.getAgeRequirement());
     }
+
+
+	public static EventScheduleDTO convertToDTO(EventSchedule eventSchedule){
+		if(eventSchedule == null) throw new IllegalArgumentException("Event Schedule not found.");
+
+        return new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime(), eventSchedule.isRecurrent(), eventSchedule.getRecurrences());
+    }
+
 }
