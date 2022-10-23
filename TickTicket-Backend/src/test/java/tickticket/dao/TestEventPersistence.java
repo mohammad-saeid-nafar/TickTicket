@@ -76,7 +76,6 @@ public class TestEventPersistence {
         EventSchedule testEventSchedule = new EventSchedule();
         testEventSchedule.setStartDateTime(start);
         testEventSchedule.setEndDateTime(end);
-        testEventSchedule.setRecurrent(false);
 
         Event testEvent = new Event();
         testEvent.setName("Test Event");
@@ -112,7 +111,6 @@ public class TestEventPersistence {
 
         assertEquals(testEvent.getEventSchedule().getStartDateTime(), start);
         assertEquals(testEvent.getEventSchedule().getEndDateTime(), end);
-        assertEquals(testEvent.getEventSchedule().isRecurrent(), false);
 
         testEvent = null;
 
@@ -131,8 +129,5 @@ public class TestEventPersistence {
 
         assertEquals(testEvent.getEventSchedule().getStartDateTime(), start);
         assertEquals(testEvent.getEventSchedule().getEndDateTime(), end);
-        assertEquals(testEvent.getEventSchedule().isRecurrent(), false);
-
-
     }
 }

@@ -92,7 +92,6 @@ public class TestReviewPersistence {
         EventSchedule testEventSchedule = new EventSchedule();
         testEventSchedule.setStartDateTime(LocalDateTime.of(2022,12,5,17,00));
         testEventSchedule.setEndDateTime(LocalDateTime.of(2022,12,5,22,00));
-        testEventSchedule.setRecurrent(false);
 
         // Event
         Event testEvent = new Event();
