@@ -8,10 +8,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 import tickticket.dao.EventRepository;
@@ -59,6 +56,12 @@ public class ReviewServiceTest {
     private static final int rating2 = 4;
     private static final String reviewDescription2 = "Worst experience";
 
+    // Review2
+    private static final UUID reviewID3 = UUID.randomUUID();
+    private static final String title3 = "Third Review";
+    private static final int rating3 = 5;
+    private static final String reviewDescription3 = "Wow experience";
+
     // User1
     private static final UUID USER_ID = UUID.randomUUID();
     private static final String USER_USERNAME = "User1";
@@ -94,6 +97,14 @@ public class ReviewServiceTest {
                 user.setCreated(USER_CREATED);
 
                 return user;
+            }
+            else if (invocation.getArgument(0).equals(USER_USERNAME2)){
+                User user2 = new User();
+                user2.setId(USER_ID2);
+                user2.setUsername(USER_USERNAME2);
+                user2.setPassword(USER_PASSWORD2);
+                user2.setCreated(USER_CREATED2);
+                return user2;
             }
             else {
                 return null;
@@ -140,7 +151,7 @@ public class ReviewServiceTest {
             }
         });
 
-        
+
         lenient().when(reviewRepository.findReviewsByUser(any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (((User) invocation.getArgument(0)).getId().equals(USER_ID)) {
                 User user = userRepository.findUserByUsername(USER_USERNAME);
@@ -190,7 +201,7 @@ public class ReviewServiceTest {
                 review2.setRating(rating2);
                 review2.setUser(user2);
                 review2.setEvent(event);
-                
+
                 List<Review> reviews = new ArrayList<>();
                 reviews.add(review1);
                 reviews.add(review2);
@@ -226,24 +237,118 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testCreateReview(){
-        User user = userRepository.findUserByUsername(USER_USERNAME);
+    public void testCreateReview1(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2);
         Event event = eventRepository.findEventsByName(EVENT_NAME);
         Review review = null;
-
         try{
-            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, reviewDescription1, rating1);
+            review = reviewService.createReview(EVENT_NAME, USER_USERNAME2, title1, reviewDescription1, rating1);
         }catch(Exception e){
             fail();
         }
 
         assertNotNull(review);
-        assertEquals(review.getEvent(), event);
-        assertEquals(review.getUser(), user);
+        assertEquals(review.getEvent().getName(), EVENT_NAME);
+        assertEquals(review.getEvent().getDescription(), EVENT_DESCRIPTION);
+        assertEquals(review.getEvent().getAddress(), EVENT_ADDRESS);
+        assertEquals(review.getEvent().getEmail(), EVENT_EMAIL);
+        assertEquals(review.getEvent().getPhoneNumber(), EVENT_PHONE_NUMBER);
+        assertEquals(review.getEvent().getCapacity(), EVENT_CAPACITY);
+        assertEquals(review.getEvent().getCost(), EVENT_COST);
+        assertEquals(review.getUser().getUsername(), USER_USERNAME2);
+        assertEquals(review.getUser().getPassword(), USER_PASSWORD2);
+        assertEquals(review.getUser().getCreated(), USER_CREATED2);
         assertEquals(review.getTitle(), title1);
         assertEquals(review.getDescription(), reviewDescription1);
         assertEquals(review.getRating(), rating1);
+    }
 
+    @Test
+    public void testCreateReview2(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(null, USER_USERNAME2, title1, reviewDescription1, rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "Service not found");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview3(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(EVENT_NAME, null, title1, reviewDescription1, rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "User not found");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview4(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, null, reviewDescription1, rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "Rating must have a title");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview5(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, null, rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "No description");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview6(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, reviewDescription1, 6);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "Event rating must be between 0 and 5 (inclusive)");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview7(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, "", rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "Description must contain at least 1 character");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview8(){
+        Review review = null;
+        try{
+            review = reviewService.createReview(EVENT_NAME, "DB", title1, reviewDescription1, rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "No user found");
+        }
+        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReview9(){
+        Review review = null;
+        try{
+            review = reviewService.createReview("TEST", USER_USERNAME, title1, reviewDescription1, rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "No event found");
+        }
+        assertNull(review);
     }
 
     @Test
@@ -251,7 +356,7 @@ public class ReviewServiceTest {
         User user = userRepository.findUserByUsername(USER_USERNAME);
         Event event = eventRepository.findEventsByName(EVENT_NAME);
         Review review = reviewRepository.findReviewByEventAndUser(event, user);
-
+        System.out.println(review.getDescription());
         try{
             review = reviewService.editReview(event, user, newTitle, newDescription, newRating);
         }catch(Exception e){
@@ -259,8 +364,16 @@ public class ReviewServiceTest {
         }
 
         assertNotNull(review);
-        assertEquals(review.getEvent(), event);
-        assertEquals(review.getUser(), user);
+        assertEquals(review.getEvent().getName(), EVENT_NAME);
+        assertEquals(review.getEvent().getDescription(), EVENT_DESCRIPTION);
+        assertEquals(review.getEvent().getAddress(), EVENT_ADDRESS);
+        assertEquals(review.getEvent().getEmail(), EVENT_EMAIL);
+        assertEquals(review.getEvent().getPhoneNumber(), EVENT_PHONE_NUMBER);
+        assertEquals(review.getEvent().getCapacity(), EVENT_CAPACITY);
+        assertEquals(review.getEvent().getCost(), EVENT_COST);
+        assertEquals(review.getUser().getUsername(), USER_USERNAME);
+        assertEquals(review.getUser().getPassword(), USER_PASSWORD);
+        assertEquals(review.getUser().getCreated(), USER_CREATED);
         assertEquals(review.getTitle(), newTitle);
         assertEquals(review.getDescription(), newDescription);
         assertEquals(review.getRating(), newRating);
@@ -271,6 +384,7 @@ public class ReviewServiceTest {
     public void testDeleteReview(){
         User user = userRepository.findUserByUsername(USER_USERNAME);
         Event event = eventRepository.findEventsByName(EVENT_NAME);
+        Review temp = reviewRepository.findReviewByEventAndUser(event, user);
 
         try{
             reviewService.deleteReview(event, user);
@@ -279,7 +393,7 @@ public class ReviewServiceTest {
         }
 
         Review review = reviewRepository.findReviewByEventAndUser(event, user);
-        assertNull(review);
+        assertNotEquals(temp, review);
 
     }
 
@@ -294,14 +408,22 @@ public class ReviewServiceTest {
         }catch(Exception e){
             fail();
         }
+        System.out.println(reviews);
         assertNotNull(reviews);
         assertEquals(reviews.size(), 1);
-        assertEquals(reviews.get(0).getEvent(), event);
-        assertEquals(reviews.get(0).getUser(), user);
+        assertEquals(reviews.get(0).getEvent().getName(), EVENT_NAME);
+        assertEquals(reviews.get(0).getEvent().getDescription(), EVENT_DESCRIPTION);
+        assertEquals(reviews.get(0).getEvent().getAddress(), EVENT_ADDRESS);
+        assertEquals(reviews.get(0).getEvent().getEmail(), EVENT_EMAIL);
+        assertEquals(reviews.get(0).getEvent().getPhoneNumber(), EVENT_PHONE_NUMBER);
+        assertEquals(reviews.get(0).getEvent().getCapacity(), EVENT_CAPACITY);
+        assertEquals(reviews.get(0).getEvent().getCost(), EVENT_COST);
+        assertEquals(reviews.get(0).getUser().getUsername(), USER_USERNAME);
+        assertEquals(reviews.get(0).getUser().getPassword(), USER_PASSWORD);
+        assertEquals(reviews.get(0).getUser().getCreated(), USER_CREATED);
         assertEquals(reviews.get(0).getDescription(), reviewDescription1);
         assertEquals(reviews.get(0).getTitle(), title1);
         assertEquals(reviews.get(0).getRating(), rating1);
-
     }
 
     @Test
@@ -318,15 +440,18 @@ public class ReviewServiceTest {
         }
         assertNotNull(reviews);
         assertEquals(reviews.size(), 2);
-        assertEquals(reviews.get(0).getUser(), user);
+        assertEquals(reviews.get(0).getUser().getUsername(), USER_USERNAME);
+        assertEquals(reviews.get(0).getUser().getPassword(), USER_PASSWORD);
+        assertEquals(reviews.get(0).getUser().getCreated(), USER_CREATED);
         assertEquals(reviews.get(0).getDescription(), reviewDescription1);
         assertEquals(reviews.get(0).getTitle(), title1);
         assertEquals(reviews.get(0).getRating(), rating1);
-        assertEquals(reviews.get(1).getUser(), user2);
+        assertEquals(reviews.get(1).getUser().getUsername(), USER_USERNAME2);
+        assertEquals(reviews.get(1).getUser().getPassword(), USER_PASSWORD2);
+        assertEquals(reviews.get(1).getUser().getCreated(), USER_CREATED2);
         assertEquals(reviews.get(1).getDescription(), reviewDescription2);
         assertEquals(reviews.get(1).getTitle(), title2);
         assertEquals(reviews.get(1).getRating(), rating2);
-
     }
 
     @Test
