@@ -1,35 +1,30 @@
 package tickticket.service;
 
+import org.springframework.stereotype.Service;
 import tickticket.dao.EventRepository;
-import tickticket.dao.UserRepository;
-import tickticket.dao.EventTypeRepository;
+import tickticket.model.EventSchedule;
 import tickticket.model.User;
 import tickticket.model.Event;
 import tickticket.model.EventType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Service
+@Transactional
 public class EventService {
 
-    @Autowired
-	private UserRepository userRepository;
-
-    @Autowired
+	@Autowired
 	private EventRepository eventRepository;
 
-    @Autowired
-	private EventTypeRepository eventTypeRepository;
 
-
-    //Need to add, if the name is already taken 
-    @Transactional
-	public Event createEvent(String name, String description, Integer capacity, 
-        Double cost, String address, String email, String phoneNumber, User organizer, List<EventType> eventTypes) {
+	public Event createEvent(String name, String description, Integer capacity, Double cost, String address,
+							 String email, String phoneNumber, User organizer, List<EventType> eventTypes,
+							 LocalDateTime start, LocalDateTime end) {
         
         //If the name is already taken raise an exception
 		Event event = getEventByName(name);
@@ -48,8 +43,13 @@ public class EventService {
 
         if(cost == null ) throw new IllegalArgumentException("Cost cannot be blank");
 
+		if(start==null) throw new IllegalArgumentException("Start of event schedule cannot be blank");
 
-        //define the services I need to create 
+		if(end==null) throw new IllegalArgumentException("End of event schedule cannot be blank");
+
+		EventSchedule schedule = new EventSchedule();
+		schedule.setStartDateTime(start);
+		schedule.setEndDateTime(end);
 
         Event newEvent = new Event();
         newEvent.setName(name);
@@ -61,16 +61,15 @@ public class EventService {
         newEvent.setPhoneNumber(phoneNumber);
         newEvent.setOrganizer(organizer);
         newEvent.setEventTypes(eventTypes);
-        //need to add everything for schedule 
+		newEvent.setEventSchedule(schedule);
 
 		eventRepository.save(newEvent);
 
 		return newEvent;
 	}
 
-    @Transactional
-	public Event updateEvent(String name, String description, Integer capacity, 
-    Double cost, String address, String email, String phoneNumber, User organizer, List<EventType> eventTypes) {
+	public Event updateEvent(String name, String description, Integer capacity, Double cost, String address,
+							 String email, String phoneNumber, User organizer, List<EventType> eventTypes) {
 
         if (name == null || name.equals("")){
             throw new IllegalArgumentException("Invalid event name");
@@ -120,8 +119,6 @@ public class EventService {
 		return event;
 	}
 
-	//Will need to delete the Event Schedule
-	@Transactional
 	public boolean deleteEvent(String name) {
 		Event event = getEventByName(name);
 		if(event==null) throw new IllegalArgumentException("Event not found");
@@ -129,25 +126,21 @@ public class EventService {
 		return true;
 	}
 
-    @Transactional
     public Event getEventByName(String name){
         if(name == null) throw new IllegalArgumentException("Name cannot be blank");
         return eventRepository.findEventsByName(name);
 
     }
 
-    @Transactional
 	public List<Event> getAllEventsFromType(List<EventType> eventTypes) {
 		return eventRepository.findEventsByEventTypesIn(eventTypes);
     }
 
-    @Transactional
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
 
 	}
-	
-	@Transactional
+
 	public List<Event> getAllEvents(){
 		return toList(eventRepository.findAll());
 	}

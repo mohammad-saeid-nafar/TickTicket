@@ -18,7 +18,6 @@ public class EventScheduleService {
     @Autowired
     EventScheduleRepository eventScheduleRepository;
 
-
     @Transactional
     public EventSchedule createEventSchedule(LocalDateTime start, LocalDateTime end){
 		if(start==null) throw new IllegalArgumentException("Start of event schedule cannot be blank");
