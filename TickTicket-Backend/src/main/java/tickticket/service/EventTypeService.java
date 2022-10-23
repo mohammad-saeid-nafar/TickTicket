@@ -16,6 +16,10 @@ public class EventTypeService {
     @Transactional
     public EventType createEventType(String name, String description, int ageRequirement){
 		if(name==null || name=="") throw new IllegalArgumentException("Name of event type cannot be blank");
+        if(description==null || description=="") throw new IllegalArgumentException("Description of event type cannot be blank");
+        if(ageRequirement<=0) throw new IllegalArgumentException("Age of event type cannot be negative");
+
+
 
         nameIsValid(name);
 
@@ -32,7 +36,7 @@ public class EventTypeService {
 
     @Transactional
     public EventType getEventType(String name){
-		return eventTypeRepository.findEventTypeByName(name);
+        return eventTypeRepository.findEventTypeByName(name);
     }
 
     private boolean nameIsValid(String name) {
