@@ -14,4 +14,5 @@ import java.util.UUID;
 public interface EventRepository extends CrudRepository<Event, UUID> {
     List<Event> findEventsByOrganizer(User organizer);
     List<Event> findEventsByEventTypesIn(List<EventType> eventTypes);
+    Event findEventsByName(String name);
 }
