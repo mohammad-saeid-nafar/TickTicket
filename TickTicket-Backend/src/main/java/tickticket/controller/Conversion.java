@@ -34,4 +34,11 @@ public class Conversion {
 //		return new ReviewDTO(review.getTitle(), review.getRating(), review.getDescription(),
 //				convertToDTO(review.getUser()), convertToDTO(review.getEvent()));
 //	}
+
+	public static EventScheduleDTO convertToDTO(EventSchedule eventSchedule){
+		if(eventSchedule == null) throw new IllegalArgumentException("Event Schedule not found.");
+
+        return new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime());
+    }
+
 }

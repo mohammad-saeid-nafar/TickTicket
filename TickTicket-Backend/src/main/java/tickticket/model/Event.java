@@ -104,7 +104,7 @@ public class Event {
         this.eventTypes = eventTypes;
     }
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     public EventSchedule getEventSchedule() {
         return eventSchedule;
     }
