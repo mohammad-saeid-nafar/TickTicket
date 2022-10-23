@@ -33,7 +33,7 @@ public class Conversion {
 	public static EventScheduleDTO convertToDTO(EventSchedule eventSchedule){
 		if(eventSchedule == null) throw new IllegalArgumentException("Event Schedule not found.");
 
-        return new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime(), eventSchedule.isRecurrent(), eventSchedule.getRecurrences());
+        return new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime());
     }
 
 }
