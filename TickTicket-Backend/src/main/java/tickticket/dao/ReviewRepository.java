@@ -15,4 +15,5 @@ public interface ReviewRepository extends CrudRepository<Review, UUID> {
     boolean existsByEventAndUser(Event event, User user);
     List<Review> findReviewsByUser(User user);
     List<Review> findReviewsByEvent(Event event);
+    Review findReviewByEventAndUser(Event event, User user);
 }
