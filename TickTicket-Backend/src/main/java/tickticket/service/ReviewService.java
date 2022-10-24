@@ -12,6 +12,7 @@ import tickticket.model.Review;
 import tickticket.model.User;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ReviewService {
     EventRepository eventRepository;
 
     @Transactional
-    public Review createReview(String eventName, String username, String title, String description, int rating) {
+    public Review createReview(String eventName, String username, String title, int rating, String description) {
 
         if(eventName == null || eventName.isEmpty()) {
             throw new IllegalArgumentException("Service not found");
@@ -68,6 +69,10 @@ public class ReviewService {
         if(review != null) {
             throw new IllegalArgumentException("Review already exists");
         }
+
+        if(event.getEventSchedule().getStartDateTime().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Cannot create a review for a future event");
+        }
         review = new Review();
         review.setEvent(event);
         review.setUser(user);
@@ -79,7 +84,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review editReview(Event event, User user, String newTitle, String newDescription, int newRating) {
+    public Review editReview(Event event, User user, String newTitle, int newRating, String newDescription) {
 
         if(event == null) {
             throw new IllegalArgumentException("Event not found");
