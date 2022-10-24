@@ -1,5 +1,6 @@
 package tickticket.service;
 
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import tickticket.dao.EventRepository;
 import tickticket.model.EventSchedule;
@@ -131,6 +132,11 @@ public class EventService {
         return eventRepository.findEventsByName(name);
 
     }
+
+	public Event getEventById(UUID id) {
+		return eventRepository.findById(id).orElseThrow(() ->
+				new IllegalArgumentException("Event " + id + " not found"));
+	}
 
 	public List<Event> getAllEventsFromType(List<EventType> eventTypes) {
 		return eventRepository.findEventsByEventTypesIn(eventTypes);

@@ -1,7 +1,11 @@
 package tickticket.dto;
 
 import java.util.List;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@NoArgsConstructor
 public class EventDTO {
     private String name;
     private String description;
@@ -18,7 +22,6 @@ public class EventDTO {
     public EventDTO(String name, String description, Integer capacity, 
         Double cost, String address, String email, String phoneNumber,
                     UserDTO organizer, EventScheduleDTO eventSchedule, List<EventTypeDTO> eventType) {
-            
         this.name = name;
         this.description = description;
         this.capacity = capacity;
@@ -28,6 +31,19 @@ public class EventDTO {
         this.phoneNumber = phoneNumber;
         this.organizer = organizer;
         this.eventSchedule = eventSchedule;
+        this.eventTypes = eventType;
+    }
+
+    public EventDTO(String name, String description, Integer capacity,
+        Double cost, String address, String email, String phoneNumber, UserDTO organizer, List<EventTypeDTO> eventType ) {
+        this.name = name;
+        this.description = description;
+        this.capacity = capacity;
+        this.cost = cost;
+        this.address = address;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.organizer = organizer;
         this.eventTypes = eventType;
     }
 
