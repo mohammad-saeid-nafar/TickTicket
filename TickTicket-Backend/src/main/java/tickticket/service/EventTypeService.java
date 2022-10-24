@@ -43,5 +43,32 @@ public class EventTypeService {
 		if(eventTypeRepository.findEventTypeByName(name) ==null) return true;
 		else throw new IllegalArgumentException("Event type already exists");
 	}
-    
+
+
+    @Transactional
+    public EventType updateEventType(String oldName, String newName, String description, int ageRequirement){
+        if(oldName==null || oldName=="") throw new IllegalArgumentException("Old name of event type cannot be blank");
+        if(newName==null || newName=="") throw new IllegalArgumentException("New name of event type cannot be blank");
+        if(description==null || description=="") throw new IllegalArgumentException("New description of event type cannot be blank");
+        if(ageRequirement<=0) throw new IllegalArgumentException("New age of event type cannot be negative");
+
+        EventType eventType = eventTypeRepository.findEventTypeByName(oldName);
+        if(eventType == null) throw new IllegalArgumentException("Event type does not exist");
+
+        eventType.setName(newName);
+        eventType.setDescription(description);
+        eventType.setAgeRequirement(ageRequirement);
+
+        eventTypeRepository.save(eventType);
+
+        return eventType;
+    }
+
+    @Transactional
+    public boolean deleteEventType(String name){
+        EventType eventType = getEventType(name);
+        if(eventType==null) throw new IllegalArgumentException("EventType not found.");
+        eventTypeRepository.delete(eventType);
+        return true;
+    }
 }
