@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tickticket.dao.EventTypeRepository;
 import tickticket.model.EventType;
+import tickticket.model.Profile;
 
 @Service
 public class EventTypeService {
@@ -65,7 +66,7 @@ public class EventTypeService {
     }
 
     @Transactional
-    public boolean deleteEventType(String name){
+    public boolean deleteByName(String name) {
         EventType eventType = getEventType(name);
         if(eventType==null) throw new IllegalArgumentException("EventType not found.");
         eventTypeRepository.delete(eventType);

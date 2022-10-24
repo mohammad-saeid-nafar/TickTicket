@@ -62,7 +62,7 @@ public class ProfileController {
     }
 
     @GetMapping(value = {"/view_profile/{username}"})
-    public ProfileDTO viewUser(@PathVariable("email") String email) {
+    public ProfileDTO viewProfile(@PathVariable("email") String email) {
         return Conversion.convertToDTO(profileService.getProfileByEmail(email));
     }
 
