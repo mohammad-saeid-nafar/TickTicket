@@ -1,7 +1,11 @@
 package tickticket.dto;
 
 import java.time.LocalDate;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@NoArgsConstructor
 public class UserDTO {
 	private String username;
 	private String password;

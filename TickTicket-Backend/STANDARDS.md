@@ -11,7 +11,6 @@ Services
 - Always have a function to **create**, **find by ID**, **find all** and **delete by ID**
 
 DTOs
-- NEVER store another DTO as a field in a DTO, store the ID instead
 - Use ```@Data``` on the class. This will generate getters, setters, equals, hashcode and toString automatically
 - Put the conversion code to and from DTOs inside the DTO class as static functions. Example [here](src/main/java/tickticket/dto/TicketDTO.java)
 
@@ -29,3 +28,4 @@ Don't wing it. Make tests small and concise and test a single thing at a time.
 - Use [Lombok](https://projectlombok.org/) to generate tons fo code automatically
 - Use the Stream API to make your code more concise and readable, please...
 - Stop null checking from DAOs, use ```Optional``` instead
+- Use GitHub CoPilot to generate code for you

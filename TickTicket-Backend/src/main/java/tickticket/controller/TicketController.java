@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +43,7 @@ public class TicketController {
         return ResponseEntity.ok(TicketDTO.from(ticket));
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}/users")
     public ResponseEntity<List<TicketDTO>> viewTicketsByUser(@PathVariable UUID id) {
         List<Ticket> tickets = ticketService.getTicketsByUser(id);
         List<TicketDTO> ticketDTOS = tickets.stream()
@@ -53,19 +52,13 @@ public class TicketController {
         return ResponseEntity.ok(ticketDTOS);
     }
 
-    @GetMapping("/events/{id}")
+    @GetMapping("/{id}/events")
     public ResponseEntity<List<TicketDTO>> viewTicketsByEvent(@PathVariable UUID id) {
         List<Ticket> tickets = ticketService.getTicketsByEvent(id);
         List<TicketDTO> ticketDTOS = tickets.stream()
                 .map(TicketDTO::from)
                 .toList();
         return ResponseEntity.ok(ticketDTOS);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<TicketDTO> updateTicket(@PathVariable UUID id, @RequestBody TicketDTO ticketDTO) {
-        Ticket ticket = ticketService.updateTicket(ticketDTO);
-        return ResponseEntity.ok(TicketDTO.from(ticket));
     }
 
     @DeleteMapping("/{id}")

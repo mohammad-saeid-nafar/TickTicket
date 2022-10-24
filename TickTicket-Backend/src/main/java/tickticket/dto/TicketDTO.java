@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import tickticket.controller.Conversion;
+import tickticket.model.Event;
 import tickticket.model.Ticket;
 
 @Getter
@@ -17,14 +19,28 @@ import tickticket.model.Ticket;
 public class TicketDTO {
     private UUID id;
     private LocalDateTime bookingDate;
-    private UUID userId;
-    private UUID eventId;
+    private UserDTO user;
+    private EventDTO event;
 
     public static TicketDTO from(Ticket ticket) {
+
+        Event event = ticket.getEvent();
+        EventDTO eventDTO = new EventDTO(
+                event.getName(),
+                event.getDescription(),
+                event.getCapacity(),
+                event.getCost(),
+                event.getAddress(),
+                event.getEmail(),
+                event.getPhoneNumber(),
+                Conversion.convertToDTO(event.getOrganizer()),
+                event.getEventTypes().stream().map(Conversion::convertToDTO).toList()
+        );
+
         return new TicketDTO()
                 .setId(ticket.getId())
                 .setBookingDate(ticket.getBookingDate())
-                .setUserId(ticket.getUser().getId())
-                .setEventId(ticket.getEvent().getId());
+                .setUser(Conversion.convertToDTO(ticket.getUser()))
+                .setEvent(eventDTO);
     }
 }
