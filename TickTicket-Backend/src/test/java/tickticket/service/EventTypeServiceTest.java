@@ -34,6 +34,7 @@ public class EventTypeServiceTest {
     private EventTypeRepository eventTypeRepository;
 
     private static final String EVENT_TYPE1_NAME = "Party";
+    private static final String EVENT_TYPE2_NAME = "Rock";
     private static final String EVENT_TYPE1_DESCRIPTION = "Fun & Dancing";
     private static final int EVENT_TYPE1_AGE = 18;
 
@@ -136,13 +137,99 @@ public class EventTypeServiceTest {
             assertEquals(e.getMessage(), "Age of event type cannot be negative");
         }
     }
+
+    @Test
+    public void testUpdateEventTypeDoesNotExists() {
+        try {
+            EventType eventType = eventTypeService.updateEventType(EVENT_TYPE2_NAME, EVENT_TYPE1_NAME, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Event type does not exist");
+        }
+    }
+
+    @Test
+    public void testUpdateEventTypeNullOldName() {
+        EventType eventType = null;
+        try {
+            eventType = eventTypeService.updateEventType(null, EVENT_TYPE2_NAME, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Old name of event type cannot be blank");
+        }
+    }
+
+    @Test
+    public void testUpdateEventTypeNullNewName() {
+        EventType eventType = null;
+        try {
+            eventType = eventTypeService.updateEventType(EVENT_TYPE1_NAME, null, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "New name of event type cannot be blank");
+        }
+    }
+
+    @Test
+    public void testUpdateTypeBlankOldName() {
+        EventType eventType = null;
+        try {
+            eventType = eventTypeService.updateEventType(null, EVENT_TYPE2_NAME, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Old name of event type cannot be blank");
+        }
+    }
+
+    @Test
+    public void testUpdateTypeBlankNewName() {
+        EventType eventType = null;
+        try {
+            eventType = eventTypeService.updateEventType(EVENT_TYPE1_NAME, null, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "New name of event type cannot be blank");
+        }
+    }
+
+    @Test
+    public void testUpdateEventTypeNullDescription() {
+        EventType eventType = null;
+        try {
+            eventType = eventTypeService.updateEventType(EVENT_TYPE1_NAME, EVENT_TYPE2_NAME, null, EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Description of event type cannot be blank");
+        }
+    }
+    @Test
+    public void testUpdateEventTypeBlankDescription() {
+        EventType eventType = null;
+        try {
+            eventType = eventTypeService.updateEventType(EVENT_TYPE1_NAME, EVENT_TYPE2_NAME, "", EVENT_TYPE1_AGE);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Description of event type cannot be blank");
+        }
+    }
+    @Test
+    public void testUpdateEventTypeNegativeAge() {
+        EventType eventType = null;
+        int ageTester = -1;
+        try {
+            eventType = eventTypeService.updateEventType(EVENT_TYPE1_NAME, EVENT_TYPE2_NAME, EVENT_TYPE1_DESCRIPTION, ageTester);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Age of event type cannot be negative");
+        }
+    }
+
+    @Test
+    public void testDeleteEventType() {
+        boolean deleted = eventTypeService.deleteByName(EVENT_TYPE1_NAME);
+        assertTrue(deleted);
+        assertTrue(eventTypeRepository.existsEventTypeByName(EVENT_TYPE1_NAME) == false);
+    }
+
+    @Test
+    public void testDeleteEventTypeNotFound() {
+        try {
+            boolean deleted = eventTypeService.deleteByName("Hi");
+        } catch(Exception e) {
+            assertEquals(e.getMessage(), "EventType not found.");
+        }
+    }
+
 }
-
-
-
-
-
-
-
-
-
