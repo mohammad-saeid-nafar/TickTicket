@@ -74,22 +74,19 @@ public class ReviewController {
 
     @GetMapping(value = {"/view_all_reviews"})
     public List<ReviewDTO> getAllReviews() {
-        return reviewService.getAllReviews().stream().map(review ->
-                Conversion.convertToDTO(review)).collect(Collectors.toList());
+        return reviewService.getAllReviews().stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping(value = {"/view_reviews_for_event"})
     public List<ReviewDTO> viewReviewsForService(@RequestParam("eventName") String eventName) {
         Event event = eventRepository.findEventsByName(eventName);
-        return reviewService.viewReviewsOfEvent(event).stream().map(review ->
-                Conversion.convertToDTO(review)).collect(Collectors.toList());
+        return reviewService.viewReviewsOfEvent(event).stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping(value = {"/view_reviews_of_user"})
     public List<ReviewDTO> viewReviewsOfUser(@RequestParam("username") String username) {
         User user = userRepository.findUserByUsername(username);
-        return reviewService.viewReviewsOfUser(user).stream().map(review ->
-                Conversion.convertToDTO(review)).collect(Collectors.toList());
+        return reviewService.viewReviewsOfUser(user).stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping(value = {"/get_average_service_review"})

@@ -29,11 +29,11 @@ public class Conversion {
         return new EventTypeDTO(eventType.getName(), eventType.getDescription(), eventType.getAgeRequirement());
     }
 
-//	public static ReviewDTO convertToDTO(Review review) {
-//		if(review==null) throw new IllegalArgumentException("Review not found.");
-//		return new ReviewDTO(review.getTitle(), review.getRating(), review.getDescription(),
-//				convertToDTO(review.getUser()), convertToDTO(review.getEvent()));
-//	}
+	public static ReviewDTO convertToDTO(Review review) {
+		if(review==null) throw new IllegalArgumentException("Review not found.");
+		return new ReviewDTO(review.getTitle(), review.getRating(), review.getDescription(),
+				convertToDTO(review.getUser()), convertToDTO(review.getEvent()));
+	}
 
 	public static EventScheduleDTO convertToDTO(EventSchedule eventSchedule){
 		if(eventSchedule == null) throw new IllegalArgumentException("Event Schedule not found.");
