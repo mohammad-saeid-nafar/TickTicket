@@ -41,4 +41,15 @@ public class Conversion {
         return new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime());
     }
 
+	public static EventDTO convertToDTO(Event event){
+		if(event == null) throw new IllegalArgumentException("Event not found");
+		List<EventTypeDTO> eventTypes = new ArrayList<>();
+		for(EventType type : event.getEventTypes()){
+			eventTypes.add(convertToDTO(type));
+		}
+		return new EventDTO(event.getName(), event.getDescription(), event.getCapacity(), event.getCost(),
+				event.getAddress(), event.getEmail(), event.getPhoneNumber(),
+				convertToDTO(event.getOrganizer()), convertToDTO(event.getEventSchedule()),eventTypes);
+	}
+
 }

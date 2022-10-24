@@ -11,11 +11,13 @@ public class EventDTO {
     private String email;
     private String phoneNumber;
     private UserDTO organizer;
-    private List<EventTypeDTO> eventType;
+    private EventScheduleDTO eventSchedule;
+    private List<EventTypeDTO> eventTypes;
 
 
     public EventDTO(String name, String description, Integer capacity, 
-        Double cost, String address, String email, String phoneNumber, UserDTO organizer, List<EventTypeDTO> eventType ) {
+        Double cost, String address, String email, String phoneNumber,
+                    UserDTO organizer, EventScheduleDTO eventSchedule, List<EventTypeDTO> eventType) {
             
         this.name = name;
         this.description = description;
@@ -25,7 +27,8 @@ public class EventDTO {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.organizer = organizer;
-        this.eventType = eventType;
+        this.eventSchedule = eventSchedule;
+        this.eventTypes = eventType;
     }
 
     public String getName() {
@@ -52,7 +55,6 @@ public class EventDTO {
 		return phoneNumber;
 	}
 
-
 	public String getEmail() {
 		return email;
 	}
@@ -61,7 +63,9 @@ public class EventDTO {
         return organizer;
     }
 
+    public EventScheduleDTO getEventSchedule() { return eventSchedule; }
+
     public List<EventTypeDTO> getEventType(){
-        return eventType;
+        return eventTypes;
     }
 }
