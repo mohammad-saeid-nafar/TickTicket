@@ -15,10 +15,12 @@ import tickticket.dao.EventRepository;
 import tickticket.dao.ReviewRepository;
 import tickticket.dao.UserRepository;
 import tickticket.model.Event;
+import tickticket.model.EventSchedule;
 import tickticket.model.Review;
 import tickticket.model.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -83,6 +85,9 @@ public class ReviewServiceTest {
     private static final String EVENT_EMAIL = "testevent@mail.ca";
     private static final String EVENT_PHONE_NUMBER = "12345678";
 
+    private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 2, 12, 0);
+    private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 2, 23, 59);
+
 
     @BeforeEach
     public void setMockOutput() {
@@ -114,6 +119,10 @@ public class ReviewServiceTest {
         lenient().when(eventRepository.findEventsByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(EVENT_NAME)) {
 
+                EventSchedule eventSchedule = new EventSchedule();
+                eventSchedule.setStartDateTime(EVENT_START);
+                eventSchedule.setEndDateTime(EVENT_END);
+
                 Event event = new Event();
                 event.setName(EVENT_NAME);
                 event.setDescription(EVENT_DESCRIPTION);
@@ -122,6 +131,7 @@ public class ReviewServiceTest {
                 event.setPhoneNumber(EVENT_PHONE_NUMBER);
                 event.setCapacity(EVENT_CAPACITY);
                 event.setCost(EVENT_COST);
+                event.setEventSchedule(eventSchedule);
 
                 return event;
 

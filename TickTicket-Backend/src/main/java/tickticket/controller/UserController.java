@@ -47,11 +47,9 @@ public class UserController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		
 		}
-		if(user instanceof User) {
 
-			return new ResponseEntity<>(Conversion.convertToDTO((User) user), HttpStatus.OK);
-		}
-		return null;
+		return new ResponseEntity<>(Conversion.convertToDTO((User) user), HttpStatus.OK);
+
 	}
 
     @PostMapping(value = {"/create_user/","/create_user"})
