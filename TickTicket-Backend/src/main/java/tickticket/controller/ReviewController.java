@@ -36,7 +36,7 @@ public class ReviewController {
 
         Review review = null;
         try {
-            review = reviewService.createReview(eventName, username, title, rating, description);
+            review = reviewService.createReview(eventName, username, title, description, rating);
         }catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -54,7 +54,7 @@ public class ReviewController {
 
         Review review = null;
         try {
-            review = reviewService.editReview(event, user, newTitle, newRating, newDescription);
+            review = reviewService.editReview(event, user, newTitle, newDescription, newRating);
         }catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

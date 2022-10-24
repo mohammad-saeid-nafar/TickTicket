@@ -29,7 +29,7 @@ public class ReviewService {
     EventRepository eventRepository;
 
     @Transactional
-    public Review createReview(String eventName, String username, String title, int rating, String description) {
+    public Review createReview(String eventName, String username, String title, String description, int rating) {
 
         if(eventName == null || eventName.isEmpty()) {
             throw new IllegalArgumentException("Service not found");
@@ -84,7 +84,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review editReview(Event event, User user, String newTitle, int newRating, String newDescription) {
+    public Review editReview(Event event, User user, String newTitle, String newDescription, int newRating) {
 
         if(event == null) {
             throw new IllegalArgumentException("Event not found");
