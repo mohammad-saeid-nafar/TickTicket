@@ -1,8 +1,8 @@
 package tickticket.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,6 @@ import tickticket.model.EventType;
 @SpringBootTest
 @ActiveProfiles("test")
 public class TestEventTypePersistence {
-
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -63,10 +60,9 @@ public class TestEventTypePersistence {
 
         eventTypeRepository.save(testEventType);
 
-        testEventType = null;
 
         boolean exists = eventTypeRepository.existsEventTypeByName("Test Type");
-        assertEquals(exists, true);
+        assertTrue(exists);
 
         testEventType = eventTypeRepository.findEventTypeByName("Test Type");
 

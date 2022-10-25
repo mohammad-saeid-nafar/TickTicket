@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
-import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -90,8 +89,8 @@ public class TestTicketPersistence {
         testUser.setProfile(testProfile);
 
         EventSchedule testEventSchedule = new EventSchedule();
-        testEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 5, 17, 00));
-        testEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 5, 22, 00));
+        testEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 5, 17, 0));
+        testEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 5, 22, 0));
 
         Event testEvent = new Event();
         testEvent.setName("Test Event");
@@ -114,11 +113,8 @@ public class TestTicketPersistence {
         eventTypeRepository.save(testEventType);
         profileRepository.save(testProfile);
         userRepository.save(testUser);
-        eventScheduleRepository.save(testEventSchedule);
         eventRepository.save(testEvent);
         ticketRepository.save(testTicket);
-
-        testTicket = null;
 
         boolean exists = ticketRepository.existsByEventAndUser(testEvent, testUser);
         testTicket = ticketRepository.findTicketsByUser(testUser).get(0);
@@ -172,8 +168,8 @@ public class TestTicketPersistence {
         testUser2.setCreated(LocalDate.of(2022, 10, 16));
 
         EventSchedule testEventSchedule = new EventSchedule();
-        testEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 5, 17, 00));
-        testEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 5, 22, 00));
+        testEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 5, 17, 0));
+        testEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 5, 22, 0));
 
         Event testEvent = new Event();
         testEvent.setName("Test Event");
@@ -200,7 +196,6 @@ public class TestTicketPersistence {
         eventTypeRepository.save(testEventType);
         userRepository.save(testUser);
         userRepository.save(testUser2);
-        eventScheduleRepository.save(testEventSchedule);
         eventRepository.save(testEvent);
         ticketRepository.save(testTicket1);
         ticketRepository.save(testTicket2);

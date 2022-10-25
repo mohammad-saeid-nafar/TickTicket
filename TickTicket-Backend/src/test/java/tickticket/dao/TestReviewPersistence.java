@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 public class TestReviewPersistence {
-
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -90,8 +85,8 @@ public class TestReviewPersistence {
 
         // EventSchedule
         EventSchedule testEventSchedule = new EventSchedule();
-        testEventSchedule.setStartDateTime(LocalDateTime.of(2022,12,5,17,00));
-        testEventSchedule.setEndDateTime(LocalDateTime.of(2022,12,5,22,00));
+        testEventSchedule.setStartDateTime(LocalDateTime.of(2022,12,5,17,0));
+        testEventSchedule.setEndDateTime(LocalDateTime.of(2022,12,5,22,0));
 
         // Event
         Event testEvent = new Event();
@@ -119,13 +114,10 @@ public class TestReviewPersistence {
 
         // SAVE
         eventTypeRepository.save(testEventType);
-        eventScheduleRepository.save(testEventSchedule);
         profileRepository.save(testProfile);
         userRepository.save(testUser);
         eventRepository.save(testEvent);
         reviewRepository.save(testReview);
-
-        testReview = null;
 
         boolean exists = reviewRepository.existsByEventAndUser(testEvent,testUser);
         testReview = reviewRepository.findReviewsByUser(testUser).get(0);
@@ -156,10 +148,6 @@ public class TestReviewPersistence {
         assertEquals(testEvent.getPhoneNumber(),testReview.getEvent().getPhoneNumber());
 
         assertEquals(testEventSchedule.getStartDateTime(),testReview.getEvent().getEventSchedule().getStartDateTime());
-
-
-
-
 
     }
 }

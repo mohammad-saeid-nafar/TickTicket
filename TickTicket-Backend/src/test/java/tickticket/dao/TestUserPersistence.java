@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,6 @@ import tickticket.model.User;
 @SpringBootTest
 @ActiveProfiles("test")
 public class TestUserPersistence {
-
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -93,8 +89,6 @@ public class TestUserPersistence {
         eventTypeRepository.save(testEventType);
         profileRepository.save(testProfile);
         userRepository.save(testUser);
-
-        testUser = null;
 
         boolean exists = userRepository.existsByUsername(username);
         testUser = userRepository.findUserByUsername(username);

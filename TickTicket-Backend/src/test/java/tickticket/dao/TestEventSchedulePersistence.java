@@ -3,7 +3,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterEach;
@@ -23,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 public class TestEventSchedulePersistence {
 
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -61,8 +58,8 @@ public class TestEventSchedulePersistence {
     @Transactional
     @Test
     public void testPersistAndLoadEventSchedule() {
-        LocalDateTime start = LocalDateTime.of(2022, 01, 01, 12, 0);
-        LocalDateTime end = LocalDateTime.of(2022, 01, 01, 23, 59);
+        LocalDateTime start = LocalDateTime.of(2022, 1, 1, 12, 0);
+        LocalDateTime end = LocalDateTime.of(2022, 1, 1, 23, 59);
 
         EventSchedule eventSchedule = new EventSchedule();
         eventSchedule.setStartDateTime(start);
@@ -70,7 +67,6 @@ public class TestEventSchedulePersistence {
 
         eventScheduleRepository.save(eventSchedule);
 
-        eventSchedule = null;
 
         eventSchedule = toList(eventScheduleRepository.findAll()).get(0);
 
@@ -80,7 +76,7 @@ public class TestEventSchedulePersistence {
     }
 
     private <T> List<T> toList(Iterable<T> iterable){
-        List<T> resultList = new ArrayList<T>();
+        List<T> resultList = new ArrayList<>();
         for (T t : iterable) {
             resultList.add(t);
         }

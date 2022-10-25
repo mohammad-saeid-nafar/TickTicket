@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tickticket.model.*;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,9 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 public class TestEventPersistence {
-
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -71,8 +67,8 @@ public class TestEventPersistence {
         organizer.setPassword("testPassword");
         organizer.setCreated(LocalDate.of(2022,10,16));
 
-        LocalDateTime start = LocalDateTime.of(2022, 01, 01, 12, 0);
-        LocalDateTime end = LocalDateTime.of(2022, 01, 01, 23, 59);
+        LocalDateTime start = LocalDateTime.of(2022, 1, 1, 12, 0);
+        LocalDateTime end = LocalDateTime.of(2022, 1, 1, 23, 59);
         EventSchedule testEventSchedule = new EventSchedule();
         testEventSchedule.setStartDateTime(start);
         testEventSchedule.setEndDateTime(end);
@@ -91,10 +87,7 @@ public class TestEventPersistence {
 
         eventTypeRepository.save(testEventType);
         userRepository.save(organizer);
-        eventScheduleRepository.save(testEventSchedule);
         eventRepository.save(testEvent);
-
-        testEvent = null;
 
         testEvent = eventRepository.findEventsByOrganizer(organizer).get(0);
 
@@ -111,8 +104,6 @@ public class TestEventPersistence {
 
         assertEquals(testEvent.getEventSchedule().getStartDateTime(), start);
         assertEquals(testEvent.getEventSchedule().getEndDateTime(), end);
-
-        testEvent = null;
 
         testEvent = eventRepository.findEventsByEventTypesIn(eventTypeList).get(0);
 
