@@ -126,7 +126,6 @@ public class EventServiceTest {
                 EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
                 EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
-
                 List<EventType> eventTypes = new ArrayList<>();
                 eventTypes.add(eventType1);
                 eventTypes.add(eventType2);
@@ -156,152 +155,31 @@ public class EventServiceTest {
         });
 
         lenient().when(eventRepository.findEventsByEventTypesIn(any())).thenAnswer((InvocationOnMock invocation) -> {
-
-                User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
-
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-
-                List<EventType> eventTypes = new ArrayList<>();
-                eventTypes.add(eventType1);
-                eventTypes.add(eventType2);
-
-                EventSchedule eventSchedule = new EventSchedule();
-                eventSchedule.setStartDateTime(EVENT_START);
-                eventSchedule.setEndDateTime(EVENT_END);
-
-                Event event = new Event();
-                event.setId(EVENT_ID);
-                event.setName(EVENT_NAME);
-                event.setDescription(EVENT_DESCRIPTION);
-                event.setAddress(EVENT_ADDRESS);
-                event.setEmail(EVENT_EMAIL);
-                event.setPhoneNumber(EVENT_PHONE_NUMBER);
-                event.setCapacity(EVENT_CAPACITY);
-                event.setCost(EVENT_COST);
-                event.setOrganizer(organizer);
-                event.setEventTypes(eventTypes);
-                event.setEventSchedule(eventSchedule);
-
-                List<Event> events = new ArrayList<>();
-                events.add(event);
-
-                return events;
-
+            Event event = eventRepository.findById(EVENT_ID).orElse(null);
+            List<Event> events = new ArrayList<>();
+            events.add(event);
+            return events;
         });
 
         lenient().when(eventRepository.findEventsByOrganizer(any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if (((User) invocation.getArgument(0)).getId().equals(ORGANIZER_ID)) {
-                User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
-
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-
-                List<EventType> eventTypes = new ArrayList<>();
-                eventTypes.add(eventType1);
-                eventTypes.add(eventType2);
-
-                EventSchedule eventSchedule = new EventSchedule();
-                eventSchedule.setStartDateTime(EVENT_START);
-                eventSchedule.setEndDateTime(EVENT_END);
-
-                Event event = new Event();
-                event.setId(EVENT_ID);
-                event.setName(EVENT_NAME);
-                event.setDescription(EVENT_DESCRIPTION);
-                event.setAddress(EVENT_ADDRESS);
-                event.setEmail(EVENT_EMAIL);
-                event.setPhoneNumber(EVENT_PHONE_NUMBER);
-                event.setCapacity(EVENT_CAPACITY);
-                event.setCost(EVENT_COST);
-                event.setOrganizer(organizer);
-                event.setEventTypes(eventTypes);
-                event.setEventSchedule(eventSchedule);
-
-                List<Event> events = new ArrayList<>();
-                events.add(event);
-
-                return events;
-            }else{
-                return null;
-            }
-
+            Event event = eventRepository.findById(EVENT_ID).orElse(null);
+            List<Event> events = new ArrayList<>();
+            events.add(event);
+            return events;
         });
 
         lenient().when(eventRepository.findEventsByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
-            if ((invocation.getArgument(0)).equals(EVENT_NAME)) {
-                User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
-
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-
-                List<EventType> eventTypes = new ArrayList<>();
-                eventTypes.add(eventType1);
-                eventTypes.add(eventType2);
-
-                EventSchedule eventSchedule = new EventSchedule();
-                eventSchedule.setStartDateTime(EVENT_START);
-                eventSchedule.setEndDateTime(EVENT_END);
-
-                Event event = new Event();
-                event.setId(EVENT_ID);
-                event.setName(EVENT_NAME);
-                event.setDescription(EVENT_DESCRIPTION);
-                event.setAddress(EVENT_ADDRESS);
-                event.setEmail(EVENT_EMAIL);
-                event.setPhoneNumber(EVENT_PHONE_NUMBER);
-                event.setCapacity(EVENT_CAPACITY);
-                event.setCost(EVENT_COST);
-                event.setOrganizer(organizer);
-                event.setEventTypes(eventTypes);
-                event.setEventSchedule(eventSchedule);
-
-                List<Event> events = new ArrayList<>();
-                events.add(event);
-
-                return events;
-            }else{
-                return null;
-            }
-
+            Event event = eventRepository.findById(EVENT_ID).orElse(null);
+            List<Event> events = new ArrayList<>();
+            events.add(event);
+            return events;
         });
 
         lenient().when(eventRepository.findAll()).thenAnswer((InvocationOnMock invocation) -> {
-            User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
-
-            EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-            EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-
-            List<EventType> eventTypes = new ArrayList<>();
-            eventTypes.add(eventType1);
-            eventTypes.add(eventType2);
-
-            EventSchedule eventSchedule = new EventSchedule();
-            eventSchedule.setStartDateTime(EVENT_START);
-            eventSchedule.setEndDateTime(EVENT_END);
-
-            Event event = new Event();
-            event.setId(EVENT_ID);
-            event.setName(EVENT_NAME);
-            event.setDescription(EVENT_DESCRIPTION);
-            event.setAddress(EVENT_ADDRESS);
-            event.setEmail(EVENT_EMAIL);
-            event.setPhoneNumber(EVENT_PHONE_NUMBER);
-            event.setCapacity(EVENT_CAPACITY);
-            event.setCost(EVENT_COST);
-            event.setOrganizer(organizer);
-            event.setEventTypes(eventTypes);
-            event.setEventSchedule(eventSchedule);
-
+            Event event = eventRepository.findById(EVENT_ID).orElse(null);
             List<Event> events = new ArrayList<>();
             events.add(event);
-
             return events;
-
         });
 
         Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
