@@ -12,7 +12,6 @@ import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
 import tickticket.model.EventType;
 import tickticket.model.Profile;
-import tickticket.model.User;
 
 @Service
 public class ProfileService {
@@ -26,19 +25,19 @@ public class ProfileService {
 	@Transactional
 	public Profile createProfile(String firstName, String lastName, String address, String email, String phoneNumber, String profilePicture, LocalDate dateOfBirth, List<EventType> interests) {
 
-		if(firstName ==null || firstName =="") 
+		if(firstName ==null || firstName.equals(""))
 			throw new IllegalArgumentException("First name cannot be blank.");
 
-		if(lastName ==null || lastName =="") 
+		if(lastName ==null || lastName.equals(""))
 			throw new IllegalArgumentException("Last name cannot be blank.");
 
-		if(address ==null || address =="") 
+		if(address ==null || address.equals(""))
 			throw new IllegalArgumentException("Address cannot be blank.");
 
-        if(email ==null || email =="") 
+        if(email ==null || email.equals(""))
             throw new IllegalArgumentException("Email cannot be blank.");
 
-		if(phoneNumber ==null || phoneNumber =="") 
+		if(phoneNumber ==null || phoneNumber.equals(""))
 			throw new IllegalArgumentException("Phone number cannot be blank.");
 
         if(dateOfBirth == null)
@@ -128,7 +127,7 @@ public class ProfileService {
 
 	@Transactional
 	public List<Profile> getAllProfiles(){
-		return UserService.toList(profileRepository.findAll());
+		return profileRepository.findAll();
 	}
 
     private boolean emailIsValid(String email) {

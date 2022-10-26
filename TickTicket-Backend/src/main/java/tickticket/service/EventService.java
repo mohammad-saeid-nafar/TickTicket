@@ -9,7 +9,6 @@ import tickticket.model.Event;
 import tickticket.model.EventType;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,13 +66,9 @@ public class EventService {
 	public Event updateEvent(UUID id, String name, String description, Integer capacity, Double cost, String address,
 							 String email, String phoneNumber, User organizer, List<EventType> eventTypes) {
 
-		Event event = getEventById(id);
+		Event event = getEvent(id);
 
-        if (event == null){
-            throw new IllegalArgumentException("Event not found");
-        }
-
-		if (name != null || !name.equals("") && !name.equals(event.getName())){
+		if (name != null && !name.equals("") && !name.equals(event.getName())){
 			event.setName(name);
 		}
 
@@ -114,16 +109,15 @@ public class EventService {
 		return event;
 	}
 
-
-	public Event getEventById(UUID id) {
-		return eventRepository.findById(id).orElseThrow(() ->
-				new IllegalArgumentException("Event " + id + " not found"));
-	}
-
-	public boolean deleteEventById(UUID id) {
-		Event event = getEventById(id);
+	public boolean deleteEvent(UUID id) {
+		Event event = getEvent(id);
 		eventRepository.delete(event);
 		return true;
+	}
+
+	public Event getEvent(UUID id) {
+		return eventRepository.findById(id).orElseThrow(() ->
+				new IllegalArgumentException("Event " + id + " not found"));
 	}
 
     public List<Event> getEventsByName(String name){
@@ -136,19 +130,10 @@ public class EventService {
 
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
-
 	}
 
 	public List<Event> getAllEvents(){
-		return toList(eventRepository.findAll());
+		return eventRepository.findAll();
 	}
 
-    private <T> List<T> toList(Iterable<T> iterable){
-		List<T> resultList = new ArrayList<T>();
-		for (T t : iterable) {
-			resultList.add(t);
-		}
-		return resultList;
-
-	}
 }

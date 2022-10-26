@@ -36,7 +36,7 @@ public class ReviewController {
 
         Review review;
         try {
-            review = reviewService.createReview(eventService.getEventById(eventId), userService.getUser(userId), title, description, rating);
+            review = reviewService.createReview(eventService.getEvent(eventId), userService.getUser(userId), title, description, rating);
         }catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,7 +72,7 @@ public class ReviewController {
 
     @GetMapping(value = {"/view_reviews_for_event/{id}"})
     public List<ReviewDTO> viewReviewsForService(@PathVariable("id") UUID id) {
-        Event event = eventService.getEventById(id);
+        Event event = eventService.getEvent(id);
         return reviewService.viewReviewsOfEvent(event).stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
@@ -84,7 +84,7 @@ public class ReviewController {
 
     @GetMapping(value = {"/get_average_service_review/{id}"})
     public double getAverageEventReview(@PathVariable("id") UUID id) {
-        return reviewService.getAverageEventReview(eventService.getEventById(id));
+        return reviewService.getAverageEventReview(eventService.getEvent(id));
     }
 
 

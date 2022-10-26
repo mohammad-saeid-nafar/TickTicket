@@ -85,7 +85,7 @@ public class EventServiceTest {
                 eventType1.setDescription(EVENT_TYPE1_DESCRIPTION);
                 eventType1.setAgeRequirement(EVENT_TYPE1_AGE);
 
-                return eventType1;
+                return Optional.of(eventType1);
 
             }else if(invocation.getArgument(0).equals(EVENT_TYPE2_NAME)) {
 
@@ -94,11 +94,11 @@ public class EventServiceTest {
                 eventType2.setDescription(EVENT_TYPE2_DESCRIPTION);
                 eventType2.setAgeRequirement(EVENT_TYPE2_AGE);
 
-                return eventType2;
+                return Optional.of(eventType2);
 
             }
             else {
-                return null;
+                return Optional.empty();
             }
         });
 
@@ -123,8 +123,8 @@ public class EventServiceTest {
 
                 User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
 
                 List<EventType> eventTypes = new ArrayList<>();
@@ -159,8 +159,8 @@ public class EventServiceTest {
 
                 User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
 
                 List<EventType> eventTypes = new ArrayList<>();
@@ -195,8 +195,8 @@ public class EventServiceTest {
             if (((User) invocation.getArgument(0)).getId().equals(ORGANIZER_ID)) {
                 User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
 
                 List<EventType> eventTypes = new ArrayList<>();
@@ -234,8 +234,8 @@ public class EventServiceTest {
             if ((invocation.getArgument(0)).equals(EVENT_NAME)) {
                 User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
 
                 List<EventType> eventTypes = new ArrayList<>();
@@ -272,8 +272,8 @@ public class EventServiceTest {
         lenient().when(eventRepository.findAll()).thenAnswer((InvocationOnMock invocation) -> {
             User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-            EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-            EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+            EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+            EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
 
             List<EventType> eventTypes = new ArrayList<>();
@@ -314,8 +314,8 @@ public class EventServiceTest {
     public void testCreateEvent(){
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -360,8 +360,8 @@ public class EventServiceTest {
     public void testCreateEventNullName() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -379,8 +379,8 @@ public class EventServiceTest {
     public void testCreateEventBlankName() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -398,8 +398,8 @@ public class EventServiceTest {
     public void testCreateEventNullAddress() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -417,8 +417,8 @@ public class EventServiceTest {
     public void testCreateEventBlankAddress() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -436,8 +436,8 @@ public class EventServiceTest {
     public void testCreateEventNullEmail() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -456,8 +456,8 @@ public class EventServiceTest {
     public void testCreateEventBlankEmail() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -475,8 +475,8 @@ public class EventServiceTest {
     public void testCreateEventNullPhoneNumber() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -494,8 +494,8 @@ public class EventServiceTest {
     public void testCreateEventBlankPhoneNumber() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -513,8 +513,8 @@ public class EventServiceTest {
     public void testCreateEventZeroCapacity() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -532,8 +532,8 @@ public class EventServiceTest {
     public void testCreateEventNullCost() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -551,8 +551,8 @@ public class EventServiceTest {
     public void testCreateEventNullStart() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -570,8 +570,8 @@ public class EventServiceTest {
     public void testCreateEventNullEnd() {
         User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
+        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);
@@ -593,7 +593,7 @@ public class EventServiceTest {
         newOrganizer.setPassword("NewPass123");
         newOrganizer.setCreated(LocalDate.of(2022, 10, 2));
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
 
         List<EventType> newEventTypes = new ArrayList<>();
         newEventTypes.add(eventType1);
@@ -643,7 +643,7 @@ public class EventServiceTest {
         newOrganizer.setPassword("NewPass123");
         newOrganizer.setCreated(LocalDate.of(2022, 10, 2));
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
 
         List<EventType> newEventTypes = new ArrayList<>();
         newEventTypes.add(eventType1);
@@ -669,7 +669,7 @@ public class EventServiceTest {
     public void testDeleteEvent(){
         boolean success = false;
         try{
-            success = eventService.deleteEventById(EVENT_ID);
+            success = eventService.deleteEvent(EVENT_ID);
         }catch (Exception e){
             fail();
         }
@@ -680,7 +680,7 @@ public class EventServiceTest {
     public void testDeleteEventNotFound(){
         UUID id = UUID.randomUUID();
         try{
-            eventService.deleteEventById(id);
+            eventService.deleteEvent(id);
         }catch (Exception e){
             assertEquals(e.getMessage(), "Event " + id + " not found");
         }
@@ -723,7 +723,7 @@ public class EventServiceTest {
     @Test
     public void testGetAllEventsFromType() {
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
+        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
 
         List<EventType> eventTypes = new ArrayList<>();
         eventTypes.add(eventType1);

@@ -11,7 +11,6 @@ import tickticket.model.User;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -121,16 +120,6 @@ public class ReviewService {
 
     @Transactional
     public List<Review> getAllReviews(){
-        return toList(reviewRepository.findAll());
+        return reviewRepository.findAll();
     }
-
-    private <T> List<T> toList(Iterable<T> iterable){
-        List<T> resultList = new ArrayList<T>();
-        for (T t : iterable) {
-            resultList.add(t);
-        }
-        return resultList;
-    }
-
-
 }

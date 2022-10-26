@@ -8,7 +8,6 @@ import tickticket.model.EventType;
 import tickticket.model.User;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository

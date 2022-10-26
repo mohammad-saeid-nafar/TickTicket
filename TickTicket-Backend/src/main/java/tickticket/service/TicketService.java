@@ -26,7 +26,7 @@ public class TicketService {
         ticket.setBookingDate(LocalDateTime.now());
 
         UUID eventId = ticketDTO.getEvent().getId();
-        Event event = eventService.getEventById(eventId);
+        Event event = eventService.getEvent(eventId);
 
         if (event == null) {
             throw new RuntimeException("Event not found");
@@ -54,11 +54,11 @@ public class TicketService {
     }
 
     public boolean existsByEventAndUser(UUID eventId, UUID userId) {
-        return ticketRepository.existsByEventAndUser(eventService.getEventById(eventId), userService.getUser(userId));
+        return ticketRepository.existsByEventAndUser(eventService.getEvent(eventId), userService.getUser(userId));
     }
 
     public Ticket getTicketByEventAndUser(UUID eventId, UUID userId) {
-        return ticketRepository.findTicketByEventAndUser(eventService.getEventById(eventId), userService.getUser(userId))
+        return ticketRepository.findTicketByEventAndUser(eventService.getEvent(eventId), userService.getUser(userId))
                 .orElseThrow(() ->
                         new IllegalArgumentException("Ticket for event " + eventId + " and user " + userId + " not found"));
     }
@@ -68,10 +68,10 @@ public class TicketService {
     }
 
     public List<Ticket> getTicketsByEvent(UUID eventId) {
-        return ticketRepository.findTicketsByEvent(eventService.getEventById(eventId));
+        return ticketRepository.findTicketsByEvent(eventService.getEvent(eventId));
     }
 
     public List<Ticket> getAllTickets() {
-        return (List<Ticket>) ticketRepository.findAll();
+        return ticketRepository.findAll();
     }
 }

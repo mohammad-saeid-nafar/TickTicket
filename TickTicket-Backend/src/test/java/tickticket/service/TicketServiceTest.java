@@ -114,7 +114,7 @@ public class TicketServiceTest {
 
     @Test
     public void testCreateTicket() {
-        when(eventService.getEventById(any())).thenReturn(event1);
+        when(eventService.getEvent(any())).thenReturn(event1);
         when(userService.getUser(any(String.class))).thenReturn(user1);
         when(ticketRepository.save(any())).thenReturn(ticket1);
 
@@ -127,7 +127,7 @@ public class TicketServiceTest {
 
     @Test
     public void testCreateTicketWithEventNotFound() {
-        when(eventService.getEventById(any())).thenReturn(null);
+        when(eventService.getEvent(any())).thenReturn(null);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> ticketService.createTicket(ticket1DTO));
 
@@ -136,7 +136,7 @@ public class TicketServiceTest {
 
     @Test
     public void testCreateTicketWithUserNotFound() {
-        when(eventService.getEventById(any())).thenReturn(event1);
+        when(eventService.getEvent(any())).thenReturn(event1);
         when(userService.getUser(any(String.class))).thenReturn(null);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> ticketService.createTicket(ticket1DTO));

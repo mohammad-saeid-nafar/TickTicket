@@ -32,11 +32,11 @@ public class EventController {
     @PostMapping(value = {"/create_event", "/create_event/"})
     public ResponseEntity<?> createEvent(@RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
                                                 @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
-                                                @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<String> eventTypesNames,
+                                                @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<UUID> eventTypesIds,
                                                 @RequestParam String start, @RequestParam String end){
         List<EventType> eventTypes = new ArrayList<>();
-        for(String eventTypeName : eventTypesNames){
-            eventTypes.add(eventTypeService.getEventType(eventTypeName));
+        for(UUID eventTypeId : eventTypesIds){
+            eventTypes.add(eventTypeService.getEventType(eventTypeId));
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime startDateTime = LocalDateTime.parse(start, formatter);
@@ -53,10 +53,10 @@ public class EventController {
     @PatchMapping(value = {"/update_event", "/update_event/"})
     public ResponseEntity<?> updateEvent(@RequestParam UUID id, @RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
                                          @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
-                                         @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<String> eventTypesNames){
+                                         @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<UUID> eventTypesIds){
         List<EventType> eventTypes = new ArrayList<>();
-        for(String eventTypeName : eventTypesNames){
-            eventTypes.add(eventTypeService.getEventType(eventTypeName));
+        for(UUID eventTypeId : eventTypesIds){
+            eventTypes.add(eventTypeService.getEventType(eventTypeId));
         }
         Event event;
         try{
@@ -70,7 +70,7 @@ public class EventController {
     @DeleteMapping(value = {"/delete_event/{id}"})
     public ResponseEntity<?> deleteEvent(@PathVariable("id") UUID id){
         try{
-            eventService.deleteEventById(id);
+            eventService.deleteEvent(id);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -81,7 +81,7 @@ public class EventController {
     public ResponseEntity<?> getEventById(@PathVariable("id") UUID id){
         Event event;
         try{
-            event = eventService.getEventById(id);
+            event = eventService.getEvent(id);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -117,10 +117,10 @@ public class EventController {
     }
 
     @GetMapping(value = {"/view_events_event_types"})
-    public ResponseEntity<?> getEventsByEventTypes(@RequestParam List<String> eventTypesNames){
+    public ResponseEntity<?> getEventsByEventTypes(@RequestParam List<UUID> eventTypesIds){
         List<EventType> eventTypes = new ArrayList<>();
-        for(String eventTypeName : eventTypesNames){
-            eventTypes.add(eventTypeService.getEventType(eventTypeName));
+        for(UUID id : eventTypesIds){
+            eventTypes.add(eventTypeService.getEventType(id));
         }
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{

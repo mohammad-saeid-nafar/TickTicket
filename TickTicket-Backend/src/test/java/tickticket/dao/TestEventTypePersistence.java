@@ -1,8 +1,5 @@
 package tickticket.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +10,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import tickticket.model.EventType;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -64,8 +63,9 @@ public class TestEventTypePersistence {
         boolean exists = eventTypeRepository.existsEventTypeByName("Test Type");
         assertTrue(exists);
 
-        testEventType = eventTypeRepository.findEventTypeByName("Test Type");
+        testEventType = eventTypeRepository.findEventTypeByName("Test Type").orElse(null);
 
+        assertNotNull(testEventType);
         assertEquals(testEventType.getDescription(), "Persistence Test!");
         assertEquals(testEventType.getName(), "Test Type");
         assertEquals(testEventType.getAgeRequirement(), 13);

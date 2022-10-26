@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface EventScheduleRepository extends JpaRepository<EventSchedule, UUID> {
-    EventSchedule findEventScheduleById(UUID id);
+
 }

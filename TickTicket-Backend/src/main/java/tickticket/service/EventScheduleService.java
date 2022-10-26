@@ -1,6 +1,5 @@
 package tickticket.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -48,32 +47,20 @@ public class EventScheduleService {
 
 	@Transactional
 	public boolean deleteEventSchedule(UUID id) {
-		EventSchedule eventSchedule = eventScheduleRepository.findEventScheduleById(id);
-		if(eventSchedule==null) throw new IllegalArgumentException("Event schedule not found");
+		EventSchedule eventSchedule = getEventSchedule(id);
 		eventScheduleRepository.delete(eventSchedule);
 		return true;
 	}
 
     @Transactional
     public EventSchedule getEventSchedule(UUID id){
-		EventSchedule schedule = eventScheduleRepository.findEventScheduleById(id);
-		if(schedule==null) throw new IllegalArgumentException("Event schedule not found");
-		return schedule;
+		return eventScheduleRepository.findById(id).orElseThrow(() ->
+				new IllegalArgumentException("Event schedule " + id + " not found"));
     }
 
     @Transactional
 	public List<EventSchedule> getAllEventSchedules(){
-		return toList(eventScheduleRepository.findAll());
-	}
-
-
-	private <T> List<T> toList(Iterable<T> iterable){
-		List<T> resultList = new ArrayList<T>();
-		for (T t : iterable) {
-			resultList.add(t);
-		}
-		return resultList;
-
+		return eventScheduleRepository.findAll();
 	}
 
 }

@@ -1,7 +1,6 @@
 package tickticket.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import java.util.UUID;
@@ -41,9 +40,9 @@ public class UserService {
     @Transactional
 	public User createUser(String username, String password, Profile profile) {
 
-		if(username==null || username=="") throw new IllegalArgumentException("Username cannot be blank");
+		if(username==null || username.equals("")) throw new IllegalArgumentException("Username cannot be blank");
 
-		if(password==null || password=="") throw new IllegalArgumentException("Password cannot be blank");
+		if(password==null || password.equals("")) throw new IllegalArgumentException("Password cannot be blank");
 
 		usernameIsValid(username);
 
@@ -95,16 +94,7 @@ public class UserService {
 
 	@Transactional
 	public List<User> getAllUsers(){
-		return toList(userRepository.findAll());
-	}
-
-    public static  <T> List<T> toList(Iterable<T> iterable){
-		List<T> resultList = new ArrayList<T>();
-		for (T t : iterable) {
-			resultList.add(t);
-		}
-		return resultList;
-
+		return userRepository.findAll();
 	}
 
     private boolean usernameIsValid(String username) {
@@ -126,14 +116,10 @@ public class UserService {
 			else if(Character.isDigit(password.charAt(i))) numberFlag = true;
 		}
 
-		if(upperCaseFlag == false) throw new IllegalArgumentException ("Password must contain at least one uppercase character");
-		if(lowerCaseFlag == false) throw new IllegalArgumentException ("Password must contain at least one lowercase character");
-		if(numberFlag == false) throw new IllegalArgumentException ("Password must contain at least one numeric character");
+		if(!upperCaseFlag) throw new IllegalArgumentException ("Password must contain at least one uppercase character");
+		if(!lowerCaseFlag) throw new IllegalArgumentException ("Password must contain at least one lowercase character");
+		if(!numberFlag) throw new IllegalArgumentException ("Password must contain at least one numeric character");
 
 		return true;
 	}
-
-
-
-
 }

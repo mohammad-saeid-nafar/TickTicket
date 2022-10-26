@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tickticket.dao.EventTypeRepository;
 import tickticket.model.EventType;
-import tickticket.model.Profile;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EventTypeService {
@@ -16,13 +18,11 @@ public class EventTypeService {
 
     @Transactional
     public EventType createEventType(String name, String description, int ageRequirement){
-		if(name==null || name=="") throw new IllegalArgumentException("Name of event type cannot be blank");
-        if(description==null || description=="") throw new IllegalArgumentException("Description of event type cannot be blank");
-        if(ageRequirement<=0) throw new IllegalArgumentException("Age of event type cannot be negative");
+		if(name==null || name.equals("")) throw new IllegalArgumentException("Name of event type cannot be blank");
+        if(description==null || description.equals("")) throw new IllegalArgumentException("Description of event type cannot be blank");
+        if(ageRequirement<=0) throw new IllegalArgumentException("Invalid age requirement");
 
-
-
-        nameIsValid(name);
+        if(eventTypeRepository.findEventTypeByName(name).orElse(null) != null) throw new IllegalArgumentException("Event type "+name+" already exists");
 
         EventType eventType = new EventType();
         eventType.setName(name);
@@ -36,28 +36,18 @@ public class EventTypeService {
     }
 
     @Transactional
-    public EventType getEventType(String name){
-        return eventTypeRepository.findEventTypeByName(name);
-    }
+    public EventType updateEventType(UUID id, String name, String description, int ageRequirement){
+        EventType eventType = getEventType(id);
 
-    private boolean nameIsValid(String name) {
-		if(eventTypeRepository.findEventTypeByName(name) ==null) return true;
-		else throw new IllegalArgumentException("Event type already exists");
-	}
+        if(name!=null && !name.equals("")){
+            eventType.setName(name);
+        }
+        if(description!=null && !description.equals("")){
+            eventType.setDescription(description);
+        }
 
+        if(ageRequirement<=0) throw new IllegalArgumentException("Invalid age requirement");
 
-    @Transactional
-    public EventType updateEventType(String oldName, String newName, String description, int ageRequirement){
-        if(oldName==null || oldName=="") throw new IllegalArgumentException("Old name of event type cannot be blank");
-        if(newName==null || newName=="") throw new IllegalArgumentException("New name of event type cannot be blank");
-        if(description==null || description=="") throw new IllegalArgumentException("Description of event type cannot be blank");
-        if(ageRequirement<=0) throw new IllegalArgumentException("Age of event type cannot be negative");
-
-        EventType eventType = eventTypeRepository.findEventTypeByName(oldName);
-        if(eventType == null) throw new IllegalArgumentException("Event type does not exist");
-
-        eventType.setName(newName);
-        eventType.setDescription(description);
         eventType.setAgeRequirement(ageRequirement);
 
         eventTypeRepository.save(eventType);
@@ -66,10 +56,31 @@ public class EventTypeService {
     }
 
     @Transactional
-    public boolean deleteByName(String name) {
-        EventType eventType = getEventType(name);
-        if(eventType==null) throw new IllegalArgumentException("EventType not found.");
+    public boolean deleteEventType(UUID id) {
+        EventType eventType = getEventType(id);
         eventTypeRepository.delete(eventType);
         return true;
+    }
+
+    @Transactional
+    public boolean deleteEventTypeByName(String name) {
+        EventType eventType = getEventTypeByName(name);
+        eventTypeRepository.delete(eventType);
+        return true;
+    }
+
+    @Transactional
+    public EventType getEventType(UUID id){
+        return eventTypeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Event type " + id + " not found"));
+    }
+
+    @Transactional
+    public EventType getEventTypeByName(String name){
+        return eventTypeRepository.findEventTypeByName(name).orElseThrow(() -> new IllegalArgumentException("Event type " + name + " not found"));
+    }
+
+    @Transactional
+    public List<EventType> getAllEventTypes(){
+        return eventTypeRepository.findAll();
     }
 }

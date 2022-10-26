@@ -14,6 +14,7 @@ import tickticket.model.EventSchedule;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,15 +36,15 @@ public class EventScheduleServiceTest {
 
     @BeforeEach
     public void setMockOutput() {
-        lenient().when(eventScheduleRepository.findEventScheduleById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+        lenient().when(eventScheduleRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(ID)){
                 EventSchedule schedule =  new EventSchedule();
                 schedule.setId(ID);
                 schedule.setStartDateTime(START);
                 schedule.setEndDateTime(END);
-                return schedule;
+                return Optional.of(schedule);
             }else{
-                return null;
+                return Optional.empty();
             }
         });
         lenient().when(eventScheduleRepository.findAll()).thenAnswer((InvocationOnMock invocation) -> {
@@ -126,7 +127,7 @@ public class EventScheduleServiceTest {
         try{
             eventScheduleService.deleteEventSchedule(id);
         }catch (Exception e){
-            assertEquals("Event schedule not found", e.getMessage());
+            assertEquals("Event schedule " + id + " not found", e.getMessage());
         }
     }
 
@@ -149,7 +150,7 @@ public class EventScheduleServiceTest {
         try{
             eventScheduleService.getEventSchedule(id);
         }catch (Exception e){
-            assertEquals("Event schedule not found", e.getMessage());
+            assertEquals("Event schedule " + id + " not found", e.getMessage());
         }
     }
 
