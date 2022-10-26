@@ -13,7 +13,7 @@ public class Conversion {
 
     public static ProfileDTO convertToDTO(Profile profile) {
 		if(profile == null) throw new IllegalArgumentException("Profile not found.");
-        List<EventTypeDTO> interests = new ArrayList<EventTypeDTO>();
+        List<EventTypeDTO> interests = new ArrayList<>();
 
 		for (EventType interest : profile.getInterests() ) {
 			interests.add(convertToDTO(interest));
@@ -47,7 +47,7 @@ public class Conversion {
 		for(EventType type : event.getEventTypes()){
 			eventTypes.add(convertToDTO(type));
 		}
-		return new EventDTO(event.getName(), event.getDescription(), event.getCapacity(), event.getCost(),
+		return new EventDTO(event.getId(), event.getName(), event.getDescription(), event.getCapacity(), event.getCost(),
 				event.getAddress(), event.getEmail(), event.getPhoneNumber(),
 				convertToDTO(event.getOrganizer()), convertToDTO(event.getEventSchedule()),eventTypes);
 	}

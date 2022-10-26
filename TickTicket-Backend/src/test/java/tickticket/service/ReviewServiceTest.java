@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.lenient;
@@ -77,6 +78,7 @@ public class ReviewServiceTest {
     private static final LocalDate USER_CREATED2 = LocalDate.of(2022, 10, 1);
 
     // Event
+    private static final UUID EVENT_ID = UUID.randomUUID();
     private static final String EVENT_NAME = "event name";
     private static final String EVENT_DESCRIPTION = "event description";
     private static final int EVENT_CAPACITY = 100;
@@ -94,7 +96,6 @@ public class ReviewServiceTest {
 
         lenient().when(userRepository.findUserByUsername(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(USER_USERNAME)) {
-
                 User user = new User();
                 user.setId(USER_ID);
                 user.setUsername(USER_USERNAME);
@@ -116,14 +117,15 @@ public class ReviewServiceTest {
             }
         });
 
-        lenient().when(eventRepository.findEventsByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
-            if (invocation.getArgument(0).equals(EVENT_NAME)) {
+        lenient().when(eventRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument(0).equals(EVENT_ID)) {
 
                 EventSchedule eventSchedule = new EventSchedule();
                 eventSchedule.setStartDateTime(EVENT_START);
                 eventSchedule.setEndDateTime(EVENT_END);
 
                 Event event = new Event();
+                event.setId(EVENT_ID);
                 event.setName(EVENT_NAME);
                 event.setDescription(EVENT_DESCRIPTION);
                 event.setAddress(EVENT_ADDRESS);
@@ -133,27 +135,15 @@ public class ReviewServiceTest {
                 event.setCost(EVENT_COST);
                 event.setEventSchedule(eventSchedule);
 
-                return event;
+                return Optional.of(event);
 
             } else {
-                return null;
+                return Optional.empty();
             }
         });
 
         lenient().when(reviewRepository.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME) && ((User) invocation.getArgument(1)).getId().equals(USER_ID)) {
-
-                User user = userRepository.findUserByUsername(USER_USERNAME);
-                Event event = eventRepository.findEventsByName(EVENT_NAME);
-
-                Review review1 = new Review();
-                review1.setId(reviewID1);
-                review1.setTitle(title1);
-                review1.setDescription(reviewDescription1);
-                review1.setRating(rating1);
-                review1.setUser(user);
-                review1.setEvent(event);
-
                 return true;
             }
             else {
@@ -165,7 +155,7 @@ public class ReviewServiceTest {
         lenient().when(reviewRepository.findReviewsByUser(any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (((User) invocation.getArgument(0)).getId().equals(USER_ID)) {
                 User user = userRepository.findUserByUsername(USER_USERNAME);
-                Event event = eventRepository.findEventsByName(EVENT_NAME);
+                Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 Review review1 = new Review();
                 review1.setId(reviewID1);
@@ -186,9 +176,9 @@ public class ReviewServiceTest {
         });
 
         lenient().when(reviewRepository.findReviewsByEvent(any(Event.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if (((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME)) {
+            if (((Event) invocation.getArgument(0)).getId().equals(EVENT_ID)) {
                 User user = userRepository.findUserByUsername(USER_USERNAME);
-                Event event = eventRepository.findEventsByName(EVENT_NAME);
+                Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 User user2 = new User();
                 user2.setId(USER_ID2);
@@ -227,7 +217,7 @@ public class ReviewServiceTest {
             if (((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME) && ((User) invocation.getArgument(1)).getId().equals(USER_ID)) {
 
                 User user = userRepository.findUserByUsername(USER_USERNAME);
-                Event event = eventRepository.findEventsByName(EVENT_NAME);
+                Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 Review review1 = new Review();
                 review1.setId(reviewID1);
@@ -237,10 +227,31 @@ public class ReviewServiceTest {
                 review1.setUser(user);
                 review1.setEvent(event);
 
-                return review1;
+                return Optional.of(review1);
             }
             else {
-                return null;
+                return Optional.empty();
+            }
+        });
+
+        lenient().when(reviewRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if ((invocation.getArgument(0)).equals(reviewID1)) {
+
+                User user = userRepository.findUserByUsername(USER_USERNAME);
+                Event event = eventRepository.findById(EVENT_ID).orElse(null);
+
+                Review review1 = new Review();
+                review1.setId(reviewID1);
+                review1.setTitle(title1);
+                review1.setDescription(reviewDescription1);
+                review1.setRating(rating1);
+                review1.setUser(user);
+                review1.setEvent(event);
+
+                return Optional.of(review1);
+            }
+            else {
+                return Optional.empty();
             }
         });
 
@@ -249,10 +260,10 @@ public class ReviewServiceTest {
     @Test
     public void testCreateReview1(){
         User user = userRepository.findUserByUsername(USER_USERNAME2);
-        Event event = eventRepository.findEventsByName(EVENT_NAME);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
-            review = reviewService.createReview(EVENT_NAME, USER_USERNAME2, title1, reviewDescription1, rating1);
+            review = reviewService.createReview(event, user, title1, reviewDescription1, rating1);
         }catch(Exception e){
             fail();
         }
@@ -275,31 +286,11 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview2(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
-            review = reviewService.createReview(null, USER_USERNAME2, title1, reviewDescription1, rating1);
-        }catch(Exception e){
-            assertEquals(e.getMessage(), "Service not found");
-        }
-        assertNull(review);
-    }
-
-    @Test
-    public void testCreateReview3(){
-        Review review = null;
-        try{
-            review = reviewService.createReview(EVENT_NAME, null, title1, reviewDescription1, rating1);
-        }catch(Exception e){
-            assertEquals(e.getMessage(), "User not found");
-        }
-        assertNull(review);
-    }
-
-    @Test
-    public void testCreateReview4(){
-        Review review = null;
-        try{
-            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, null, reviewDescription1, rating1);
+            review = reviewService.createReview(event, user, null, reviewDescription1, rating1);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Rating must have a title");
         }
@@ -307,10 +298,12 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testCreateReview5(){
+    public void testCreateReview3(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
-            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, null, rating1);
+            review = reviewService.createReview(event, user, title1, null, rating1);
         }catch(Exception e){
             assertEquals(e.getMessage(), "No description");
         }
@@ -318,10 +311,12 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testCreateReview6(){
+    public void testCreateReview4(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
-            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, reviewDescription1, 6);
+            review = reviewService.createReview(event, user, title1, reviewDescription1, 6);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Event rating must be between 0 and 5 (inclusive)");
         }
@@ -329,46 +324,24 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testCreateReview7(){
+    public void testCreateReview5(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
-            review = reviewService.createReview(EVENT_NAME, USER_USERNAME, title1, "", rating1);
+            review = reviewService.createReview(event, user, title1, "", rating1);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Description must contain at least 1 character");
         }
         assertNull(review);
     }
 
-    @Test
-    public void testCreateReview8(){
-        Review review = null;
-        try{
-            review = reviewService.createReview(EVENT_NAME, "DB", title1, reviewDescription1, rating1);
-        }catch(Exception e){
-            assertEquals(e.getMessage(), "No user found");
-        }
-        assertNull(review);
-    }
-
-    @Test
-    public void testCreateReview9(){
-        Review review = null;
-        try{
-            review = reviewService.createReview("TEST", USER_USERNAME, title1, reviewDescription1, rating1);
-        }catch(Exception e){
-            assertEquals(e.getMessage(), "No event found");
-        }
-        assertNull(review);
-    }
 
     @Test
     public void testEditReview(){
-        User user = userRepository.findUserByUsername(USER_USERNAME);
-        Event event = eventRepository.findEventsByName(EVENT_NAME);
-        Review review = reviewRepository.findReviewByEventAndUser(event, user);
-        System.out.println(review.getDescription());
+        Review review = null;
         try{
-            review = reviewService.editReview(event, user, newTitle, newDescription, newRating);
+            review = reviewService.editReview(reviewID1, newTitle, newDescription, newRating);
         }catch(Exception e){
             fail();
         }
@@ -392,26 +365,21 @@ public class ReviewServiceTest {
 
     @Test
     public void testDeleteReview(){
-        User user = userRepository.findUserByUsername(USER_USERNAME);
-        Event event = eventRepository.findEventsByName(EVENT_NAME);
-        Review temp = reviewRepository.findReviewByEventAndUser(event, user);
-
+        boolean success = false;
         try{
-            reviewService.deleteReview(event, user);
+            success = reviewService.deleteReview(reviewID1);
         }catch(Exception e){
             fail();
         }
 
-        Review review = reviewRepository.findReviewByEventAndUser(event, user);
-        assertNotEquals(temp, review);
+        assertTrue(success);
 
     }
 
     @Test
     public void testViewReviewsOfUser(){
         User user = userRepository.findUserByUsername(USER_USERNAME);
-        Event event = eventRepository.findEventsByName(EVENT_NAME);
-        List<Review> reviews = new ArrayList<Review>();
+        List<Review> reviews = new ArrayList<>();
 
         try{
             reviews = reviewService.viewReviewsOfUser(user);
@@ -438,10 +406,8 @@ public class ReviewServiceTest {
 
     @Test
     public void testViewReviewsOfEvent(){
-        User user = userRepository.findUserByUsername(USER_USERNAME);
-        User user2 = userRepository.findUserByUsername(USER_USERNAME2);
-        Event event = eventRepository.findEventsByName(EVENT_NAME);
-        List<Review> reviews = new ArrayList<Review>();
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        List<Review> reviews = new ArrayList<>();
 
         try{
             reviews = reviewService.viewReviewsOfEvent(event);
@@ -466,10 +432,11 @@ public class ReviewServiceTest {
 
     @Test
     public void testGetAverageEventReview(){
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         double average = 0.0;
 
         try{
-            average = reviewService.getAverageEventReview(EVENT_NAME);
+            average = reviewService.getAverageEventReview(event);
         }catch(Exception e){
             fail();
         }

@@ -1,12 +1,15 @@
 package tickticket.dto;
 
 import java.util.List;
+import java.util.UUID;
+
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @NoArgsConstructor
 public class EventDTO {
+    private UUID id;
     private String name;
     private String description;
     private Integer capacity;
@@ -19,9 +22,10 @@ public class EventDTO {
     private List<EventTypeDTO> eventTypes;
 
 
-    public EventDTO(String name, String description, Integer capacity, 
+    public EventDTO(UUID id, String name, String description, Integer capacity,
         Double cost, String address, String email, String phoneNumber,
                     UserDTO organizer, EventScheduleDTO eventSchedule, List<EventTypeDTO> eventType) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.capacity = capacity;
@@ -34,18 +38,7 @@ public class EventDTO {
         this.eventTypes = eventType;
     }
 
-    public EventDTO(String name, String description, Integer capacity,
-        Double cost, String address, String email, String phoneNumber, UserDTO organizer, List<EventTypeDTO> eventType ) {
-        this.name = name;
-        this.description = description;
-        this.capacity = capacity;
-        this.cost = cost;
-        this.address = address;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.organizer = organizer;
-        this.eventTypes = eventType;
-    }
+    public UUID getId() { return id;}
 
     public String getName() {
 		return name;

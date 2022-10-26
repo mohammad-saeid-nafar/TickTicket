@@ -1,7 +1,8 @@
 package tickticket.dao;
 
 import java.util.Optional;
-import org.springframework.data.repository.CrudRepository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import tickticket.model.Ticket;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface TicketRepository extends CrudRepository<Ticket, UUID> {
+public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     boolean existsByEventAndUser(Event event, User user);
     List<Ticket> findTicketsByUser(User user);
     List<Ticket> findTicketsByEvent(Event event);

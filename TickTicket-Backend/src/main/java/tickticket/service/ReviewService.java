@@ -4,9 +4,7 @@ package tickticket.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tickticket.dao.EventRepository;
 import tickticket.dao.ReviewRepository;
-import tickticket.dao.UserRepository;
 import tickticket.model.Event;
 import tickticket.model.Review;
 import tickticket.model.User;
@@ -15,6 +13,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ReviewService {
@@ -22,22 +21,9 @@ public class ReviewService {
     @Autowired
     ReviewRepository reviewRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    EventRepository eventRepository;
-
     @Transactional
-    public Review createReview(String eventName, String username, String title, String description, int rating) {
+    public Review createReview(Event event, User user, String title, String description, int rating) {
 
-        if(eventName == null || eventName.isEmpty()) {
-            throw new IllegalArgumentException("Service not found");
-        }
-
-        if(username == null || username.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
-        }
 
         if(title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Rating must have a title");
@@ -55,17 +41,8 @@ public class ReviewService {
             throw new IllegalArgumentException("Description must contain at least 1 character");
         }
 
-        User user =  userRepository.findUserByUsername(username);
-        if(user == null) {
-            throw new IllegalArgumentException("No user found");
-        }
 
-        Event event = eventRepository.findEventsByName(eventName);
-        if(event == null) {
-            throw new IllegalArgumentException("No event found");
-        }
-
-        Review review = reviewRepository.findReviewByEventAndUser(event, user);
+        Review review = reviewRepository.findReviewByEventAndUser(event, user).orElse(null);
         if(review != null) {
             throw new IllegalArgumentException("Review already exists");
         }
@@ -84,17 +61,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review editReview(Event event, User user, String newTitle, String newDescription, int newRating) {
+    public Review editReview(UUID id, String newTitle, String newDescription, int newRating) {
 
-        if(event == null) {
-            throw new IllegalArgumentException("Event not found");
-        }
 
-        if(user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-
-        Review review = reviewRepository.findReviewByEventAndUser(event, user);
+        Review review = getReviewById(id);
 
         if (newTitle.isEmpty()) {
             throw new IllegalArgumentException("New title must contain at least 1 character");
@@ -116,18 +86,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public boolean deleteReview(Event event, User user) {
-
-        if(event == null) {
-            throw new IllegalArgumentException("Review not deleted. Event not found");
-        }
-
-        if(user == null) {
-            throw new IllegalArgumentException("Review not deleted. User not found");
-        }
-        Review review = reviewRepository.findReviewByEventAndUser(event, user);
-        reviewRepository.delete(review);
+    public boolean deleteReview(UUID id) {
+        reviewRepository.delete(getReviewById(id));
         return true;
+    }
+
+    public Review getReviewById(UUID id){
+        return reviewRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("Review " + id + " not found"));
     }
 
     @Transactional
@@ -141,12 +107,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public double getAverageEventReview(String eventName) {
-        Event event = eventRepository.findEventsByName(eventName);
+    public double getAverageEventReview(Event event) {
 
-        if(event == null) {
-            throw new IllegalArgumentException("Event not found");
-        }
         List<Review> reviewsForEvent = viewReviewsOfEvent(event);
         int totalEventRating = 0;
         for(Review review : reviewsForEvent) {

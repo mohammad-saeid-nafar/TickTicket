@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tickticket.dao.EventRepository;
-import tickticket.dao.UserRepository;
 import tickticket.dto.ReviewDTO;
 import tickticket.model.Event;
 import tickticket.model.Review;
 import tickticket.model.User;
+import tickticket.service.EventService;
 import tickticket.service.ReviewService;
+import tickticket.service.UserService;
 
-import java.sql.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -24,19 +24,19 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    private EventRepository eventRepository;
+    private EventService eventService;
 
     @PostMapping(value = {"/create_review/"})
-    public ResponseEntity<?> createReview(@RequestParam("eventName") String eventName, @RequestParam("username") String username,
+    public ResponseEntity<?> createReview(@RequestParam("eventId") UUID eventId, @RequestParam("userId") UUID userId,
                                           @RequestParam("title") String title, @RequestParam("rating") int rating,
                                           @RequestParam("description") String description ) {
 
-        Review review = null;
+        Review review;
         try {
-            review = reviewService.createReview(eventName, username, title, description, rating);
+            review = reviewService.createReview(eventService.getEventById(eventId), userService.getUser(userId), title, description, rating);
         }catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -44,17 +44,15 @@ public class ReviewController {
         return new ResponseEntity<>(Conversion.convertToDTO(review), HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = {"/edit_review/"})
-    public ResponseEntity<?> editReview(@RequestParam("eventName") String eventName, @RequestParam("username") String username,
+    @PatchMapping(value = {"/edit_review/{id}"})
+    public ResponseEntity<?> editReview(@PathVariable("id") UUID id,
                                         @RequestParam("newTitle") String newTitle, @RequestParam("newRating") int newRating,
                                         @RequestParam("newDescription") String newDescription) {
 
-        Event event = eventRepository.findEventsByName(eventName);
-        User user = userRepository.findUserByUsername(username);
 
-        Review review = null;
+        Review review;
         try {
-            review = reviewService.editReview(event, user, newTitle, newDescription, newRating);
+            review = reviewService.editReview(id, newTitle, newDescription, newRating);
         }catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -62,14 +60,9 @@ public class ReviewController {
         return new ResponseEntity<>(Conversion.convertToDTO(review), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = {"/delete_review/"})
-    public boolean deleteReview(@RequestParam("eventName") String eventName,
-                                @RequestParam("username") String username) {
-
-        Event event = eventRepository.findEventsByName(eventName);
-        User user = userRepository.findUserByUsername(username);
-
-        return reviewService.deleteReview(event, user);
+    @DeleteMapping(value = {"/delete_review/{id}"})
+    public boolean deleteReview(@PathVariable("id") UUID id) {
+        return reviewService.deleteReview(id);
     }
 
     @GetMapping(value = {"/view_all_reviews"})
@@ -77,21 +70,21 @@ public class ReviewController {
         return reviewService.getAllReviews().stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
-    @GetMapping(value = {"/view_reviews_for_event"})
-    public List<ReviewDTO> viewReviewsForService(@RequestParam("eventName") String eventName) {
-        Event event = eventRepository.findEventsByName(eventName);
+    @GetMapping(value = {"/view_reviews_for_event/{id}"})
+    public List<ReviewDTO> viewReviewsForService(@PathVariable("id") UUID id) {
+        Event event = eventService.getEventById(id);
         return reviewService.viewReviewsOfEvent(event).stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
-    @GetMapping(value = {"/view_reviews_of_user"})
-    public List<ReviewDTO> viewReviewsOfUser(@RequestParam("username") String username) {
-        User user = userRepository.findUserByUsername(username);
+    @GetMapping(value = {"/view_reviews_of_user/{id}"})
+    public List<ReviewDTO> viewReviewsOfUser(@PathVariable("id") UUID id) {
+        User user = userService.getUser(id);
         return reviewService.viewReviewsOfUser(user).stream().map(Conversion::convertToDTO).collect(Collectors.toList());
     }
 
-    @GetMapping(value = {"/get_average_service_review"})
-    public double getAverageEventReview(@RequestParam("eventName") String eventName) {
-        return reviewService.getAverageEventReview(eventName);
+    @GetMapping(value = {"/get_average_service_review/{id}"})
+    public double getAverageEventReview(@PathVariable("id") UUID id) {
+        return reviewService.getAverageEventReview(eventService.getEventById(id));
     }
 
 

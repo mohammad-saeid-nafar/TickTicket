@@ -25,8 +25,8 @@ public class TicketService {
         Ticket ticket = new Ticket();
         ticket.setBookingDate(LocalDateTime.now());
 
-        String eventName = ticketDTO.getEvent().getName();
-        Event event = eventService.getEventByName(eventName);
+        UUID eventId = ticketDTO.getEvent().getId();
+        Event event = eventService.getEventById(eventId);
 
         if (event == null) {
             throw new RuntimeException("Event not found");

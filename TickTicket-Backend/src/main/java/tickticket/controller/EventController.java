@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class EventController {
@@ -50,7 +51,7 @@ public class EventController {
     }
 
     @PatchMapping(value = {"/update_event", "/update_event/"})
-    public ResponseEntity<?> updateEvent(@RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
+    public ResponseEntity<?> updateEvent(@RequestParam UUID id, @RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
                                          @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
                                          @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<String> eventTypesNames){
         List<EventType> eventTypes = new ArrayList<>();
@@ -59,28 +60,28 @@ public class EventController {
         }
         Event event;
         try{
-            event = eventService.updateEvent(name, description, capacity, cost, address, email, phoneNumber, userService.getUser(username), eventTypes);
+            event = eventService.updateEvent(id, name, description, capacity, cost, address, email, phoneNumber, userService.getUser(username), eventTypes);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(Conversion.convertToDTO(event), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = {"/delete_event/{name}"})
-    public ResponseEntity<?> deleteEvent(@PathVariable("name") String name){
+    @DeleteMapping(value = {"/delete_event/{id}"})
+    public ResponseEntity<?> deleteEvent(@PathVariable("id") UUID id){
         try{
-            eventService.deleteEvent(name);
+            eventService.deleteEventById(id);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
-    @GetMapping(value = {"/view_event/{name}"})
-    public ResponseEntity<?> getEventByName(@PathVariable("name") String name){
+    @GetMapping(value = {"/view_event/{id}"})
+    public ResponseEntity<?> getEventById(@PathVariable("id") UUID id){
         Event event;
         try{
-            event = eventService.getEventByName(name);
+            event = eventService.getEventById(id);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

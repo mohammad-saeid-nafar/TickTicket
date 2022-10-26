@@ -26,6 +26,7 @@ public class TicketDTO {
 
         Event event = ticket.getEvent();
         EventDTO eventDTO = new EventDTO(
+                event.getId(),
                 event.getName(),
                 event.getDescription(),
                 event.getCapacity(),
@@ -34,6 +35,7 @@ public class TicketDTO {
                 event.getEmail(),
                 event.getPhoneNumber(),
                 Conversion.convertToDTO(event.getOrganizer()),
+                Conversion.convertToDTO(event.getEventSchedule()),
                 event.getEventTypes().stream().map(Conversion::convertToDTO).toList()
         );
 

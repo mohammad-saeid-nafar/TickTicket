@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -47,7 +48,7 @@ public class EventServiceTest {
     @InjectMocks
     private EventService eventService;
 
-
+    private static final UUID EVENT_ID = UUID.randomUUID();
     private static final String EVENT_NAME = "event name";
     private static final String EVENT_DESCRIPTION = "event description";
     private static final int EVENT_CAPACITY = 100;
@@ -117,8 +118,8 @@ public class EventServiceTest {
             }
         });
 
-        lenient().when(eventRepository.findEventsByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
-            if (invocation.getArgument(0).equals(EVENT_NAME)) {
+        lenient().when(eventRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument(0).equals(EVENT_ID)) {
 
                 User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
@@ -135,6 +136,7 @@ public class EventServiceTest {
                 eventSchedule.setEndDateTime(EVENT_END);
 
                 Event event = new Event();
+                event.setId(EVENT_ID);
                 event.setName(EVENT_NAME);
                 event.setDescription(EVENT_DESCRIPTION);
                 event.setAddress(EVENT_ADDRESS);
@@ -146,14 +148,14 @@ public class EventServiceTest {
                 event.setEventTypes(eventTypes);
                 event.setEventSchedule(eventSchedule);
 
-                return event;
+                return Optional.of(event);
 
             } else {
-                return null;
+                return Optional.empty();
             }
         });
 
-        lenient().when(eventRepository.findEventsByEventTypesIn(any(List.class))).thenAnswer((InvocationOnMock invocation) -> {
+        lenient().when(eventRepository.findEventsByEventTypesIn(any())).thenAnswer((InvocationOnMock invocation) -> {
 
                 User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
 
@@ -170,6 +172,7 @@ public class EventServiceTest {
                 eventSchedule.setEndDateTime(EVENT_END);
 
                 Event event = new Event();
+                event.setId(EVENT_ID);
                 event.setName(EVENT_NAME);
                 event.setDescription(EVENT_DESCRIPTION);
                 event.setAddress(EVENT_ADDRESS);
@@ -205,6 +208,46 @@ public class EventServiceTest {
                 eventSchedule.setEndDateTime(EVENT_END);
 
                 Event event = new Event();
+                event.setId(EVENT_ID);
+                event.setName(EVENT_NAME);
+                event.setDescription(EVENT_DESCRIPTION);
+                event.setAddress(EVENT_ADDRESS);
+                event.setEmail(EVENT_EMAIL);
+                event.setPhoneNumber(EVENT_PHONE_NUMBER);
+                event.setCapacity(EVENT_CAPACITY);
+                event.setCost(EVENT_COST);
+                event.setOrganizer(organizer);
+                event.setEventTypes(eventTypes);
+                event.setEventSchedule(eventSchedule);
+
+                List<Event> events = new ArrayList<>();
+                events.add(event);
+
+                return events;
+            }else{
+                return null;
+            }
+
+        });
+
+        lenient().when(eventRepository.findEventsByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
+            if ((invocation.getArgument(0)).equals(EVENT_NAME)) {
+                User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
+
+                EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
+                EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
+
+
+                List<EventType> eventTypes = new ArrayList<>();
+                eventTypes.add(eventType1);
+                eventTypes.add(eventType2);
+
+                EventSchedule eventSchedule = new EventSchedule();
+                eventSchedule.setStartDateTime(EVENT_START);
+                eventSchedule.setEndDateTime(EVENT_END);
+
+                Event event = new Event();
+                event.setId(EVENT_ID);
                 event.setName(EVENT_NAME);
                 event.setDescription(EVENT_DESCRIPTION);
                 event.setAddress(EVENT_ADDRESS);
@@ -242,6 +285,7 @@ public class EventServiceTest {
             eventSchedule.setEndDateTime(EVENT_END);
 
             Event event = new Event();
+            event.setId(EVENT_ID);
             event.setName(EVENT_NAME);
             event.setDescription(EVENT_DESCRIPTION);
             event.setAddress(EVENT_ADDRESS);
@@ -278,16 +322,15 @@ public class EventServiceTest {
         eventTypes.add(eventType2);
 
         Event event = null;
-        String eventName = "test_name";
 
         try{
-            event = eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            event = eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         }catch(Exception e){
             fail();
         }
 
         assertNotNull(event);
-        assertEquals(event.getName(), eventName);
+        assertEquals(event.getName(), EVENT_NAME);
         assertEquals(event.getDescription(), EVENT_DESCRIPTION);
         assertEquals(event.getCapacity(), EVENT_CAPACITY);
         assertEquals(event.getCost(), EVENT_COST);
@@ -312,24 +355,6 @@ public class EventServiceTest {
 
     }
 
-    @Test
-    public void testCreateEventNameAlreadyExists() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
-
-        try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "An event with this name already exists");
-        }
-
-    }
 
     @Test
     public void testCreateEventNullName() {
@@ -380,10 +405,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, null, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, null, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Address cannot be blank");
         }
@@ -401,10 +424,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, "", EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, "", EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Address cannot be blank");
         }
@@ -422,10 +443,9 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
 
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, null, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, null, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Email cannot be blank");
         }
@@ -443,10 +463,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, "", EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, "", EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Email cannot be blank");
         }
@@ -464,10 +482,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, null, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, null, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Phone number cannot be blank");
         }
@@ -485,10 +501,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, "", organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, "", organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Phone number cannot be blank");
         }
@@ -506,10 +520,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, 0, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, 0, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Capacity cannot be blank or 0");
         }
@@ -527,10 +539,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, null, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, null, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Cost cannot be blank");
         }
@@ -548,10 +558,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, null, EVENT_END);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, null, EVENT_END);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Start of event schedule cannot be blank");
         }
@@ -569,10 +577,8 @@ public class EventServiceTest {
         eventTypes.add(eventType1);
         eventTypes.add(eventType2);
 
-        String eventName = "test_name";
-
         try {
-            eventService.createEvent(eventName, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, null);
+            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, null);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "End of event schedule cannot be blank");
         }
@@ -593,6 +599,7 @@ public class EventServiceTest {
         newEventTypes.add(eventType1);
 
         Event event = null;
+        String newName = "New name";
         String newDescription = "New description";
         String newAddress = "123 New Ave";
         String newEmail = "newemail@mail.ca";
@@ -601,13 +608,14 @@ public class EventServiceTest {
         double newCost = 200.0;
 
         try {
-            event = eventService.updateEvent(EVENT_NAME, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
+            event = eventService.updateEvent(EVENT_ID, newName, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
         } catch (Exception e) {
             fail();
         }
 
         assertNotNull(event);
-        assertEquals(event.getName(), EVENT_NAME);
+        assertEquals(event.getId(), EVENT_ID);
+        assertEquals(event.getName(), newName);
         assertEquals(event.getDescription(), newDescription);
         assertEquals(event.getCapacity(), newCapacity);
         assertEquals(event.getCost(), newCost);
@@ -640,73 +648,19 @@ public class EventServiceTest {
         List<EventType> newEventTypes = new ArrayList<>();
         newEventTypes.add(eventType1);
 
+        String newName = "New name";
         String newDescription = "New description";
         String newAddress = "123 New Ave";
         String newEmail = "newemail@mail.ca";
         String newPhoneNumber = "987654321";
         int newCapacity = 200;
         double newCost = 200.0;
+        UUID id = UUID.randomUUID();
 
         try {
-            eventService.updateEvent("Non existent event", newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
+            eventService.updateEvent(id, newName, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "Event not found");
-        }
-
-    }
-
-    @Test
-    public void testUpdateEventNullName() {
-        User newOrganizer = new User();
-        newOrganizer.setId(UUID.randomUUID());
-        newOrganizer.setUsername("New organizer");
-        newOrganizer.setPassword("NewPass123");
-        newOrganizer.setCreated(LocalDate.of(2022, 10, 2));
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-
-        List<EventType> newEventTypes = new ArrayList<>();
-        newEventTypes.add(eventType1);
-
-        String newDescription = "New description";
-        String newAddress = "123 New Ave";
-        String newEmail = "newemail@mail.ca";
-        String newPhoneNumber = "987654321";
-        int newCapacity = 200;
-        double newCost = 200.0;
-
-        try {
-            eventService.updateEvent(null, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Invalid event name");
-        }
-
-    }
-
-    @Test
-    public void testUpdateEventBlankName() {
-        User newOrganizer = new User();
-        newOrganizer.setId(UUID.randomUUID());
-        newOrganizer.setUsername("New organizer");
-        newOrganizer.setPassword("NewPass123");
-        newOrganizer.setCreated(LocalDate.of(2022, 10, 2));
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME);
-
-        List<EventType> newEventTypes = new ArrayList<>();
-        newEventTypes.add(eventType1);
-
-        String newDescription = "New description";
-        String newAddress = "123 New Ave";
-        String newEmail = "newemail@mail.ca";
-        String newPhoneNumber = "987654321";
-        int newCapacity = 200;
-        double newCost = 200.0;
-
-        try {
-            eventService.updateEvent("", newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Invalid event name");
+            assertEquals(e.getMessage(), "Event " + id + " not found");
         }
 
     }
@@ -715,7 +669,7 @@ public class EventServiceTest {
     public void testDeleteEvent(){
         boolean success = false;
         try{
-            success = eventService.deleteEvent(EVENT_NAME);
+            success = eventService.deleteEventById(EVENT_ID);
         }catch (Exception e){
             fail();
         }
@@ -724,13 +678,47 @@ public class EventServiceTest {
 
     @Test
     public void testDeleteEventNotFound(){
-
+        UUID id = UUID.randomUUID();
         try{
-            eventService.deleteEvent("Non existent event");
+            eventService.deleteEventById(id);
         }catch (Exception e){
-            assertEquals(e.getMessage(), "Event not found");
+            assertEquals(e.getMessage(), "Event " + id + " not found");
         }
     }
+
+    @Test
+    public void testGetEventsByName() {
+
+        List<Event> events = new ArrayList<>();
+        try {
+            events = eventService.getEventsByName(EVENT_NAME);
+        } catch (Exception e) {
+            fail();
+        }
+
+        assertEquals(events.size(), 1);
+        assertEquals(events.get(0).getId(), EVENT_ID);
+        assertEquals(events.get(0).getName(), EVENT_NAME);
+        assertEquals(events.get(0).getDescription(), EVENT_DESCRIPTION);
+        assertEquals(events.get(0).getCapacity(), EVENT_CAPACITY);
+        assertEquals(events.get(0).getCost(), EVENT_COST);
+        assertEquals(events.get(0).getAddress(), EVENT_ADDRESS);
+        assertEquals(events.get(0).getEmail(), EVENT_EMAIL);
+        assertEquals(events.get(0).getPhoneNumber(), EVENT_PHONE_NUMBER);
+
+        assertEquals(events.get(0).getOrganizer().getId(), ORGANIZER_ID);
+        assertEquals(events.get(0).getOrganizer().getUsername(), ORGANIZER_USERNAME);
+        assertEquals(events.get(0).getOrganizer().getPassword(), ORGANIZER_PASSWORD);
+        assertEquals(events.get(0).getOrganizer().getCreated(), ORGANIZER_CREATED);
+
+        assertEquals(events.get(0).getEventTypes().size(), 2);
+
+        assertEquals(events.get(0).getEventTypes().get(0).getName(), EVENT_TYPE1_NAME);
+        assertEquals(events.get(0).getEventTypes().get(0).getDescription(), EVENT_TYPE1_DESCRIPTION);
+        assertEquals(events.get(0).getEventTypes().get(0).getAgeRequirement(), EVENT_TYPE1_AGE);
+
+    }
+
 
     @Test
     public void testGetAllEventsFromType() {
@@ -748,6 +736,7 @@ public class EventServiceTest {
         }
 
         assertEquals(events.size(), 1);
+        assertEquals(events.get(0).getId(), EVENT_ID);
         assertEquals(events.get(0).getName(), EVENT_NAME);
         assertEquals(events.get(0).getDescription(), EVENT_DESCRIPTION);
         assertEquals(events.get(0).getCapacity(), EVENT_CAPACITY);
@@ -781,6 +770,7 @@ public class EventServiceTest {
         }
 
         assertEquals(events.size(), 1);
+        assertEquals(events.get(0).getId(), EVENT_ID);
         assertEquals(events.get(0).getName(), EVENT_NAME);
         assertEquals(events.get(0).getDescription(), EVENT_DESCRIPTION);
         assertEquals(events.get(0).getCapacity(), EVENT_CAPACITY);
@@ -813,6 +803,7 @@ public class EventServiceTest {
         }
 
         assertEquals(events.size(), 1);
+        assertEquals(events.get(0).getId(), EVENT_ID);
         assertEquals(events.get(0).getName(), EVENT_NAME);
         assertEquals(events.get(0).getDescription(), EVENT_DESCRIPTION);
         assertEquals(events.get(0).getCapacity(), EVENT_CAPACITY);

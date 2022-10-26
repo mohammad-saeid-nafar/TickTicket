@@ -26,11 +26,6 @@ public class EventService {
 	public Event createEvent(String name, String description, Integer capacity, Double cost, String address,
 							 String email, String phoneNumber, User organizer, List<EventType> eventTypes,
 							 LocalDateTime start, LocalDateTime end) {
-        
-        //If the name is already taken raise an exception
-		Event event = getEventByName(name);
-
-        if (event != null) throw new IllegalArgumentException("An event with this name already exists");
 
 		if(name == null || name.equals("")) throw new IllegalArgumentException("Name cannot be blank");
 
@@ -69,19 +64,18 @@ public class EventService {
 		return newEvent;
 	}
 
-	public Event updateEvent(String name, String description, Integer capacity, Double cost, String address,
+	public Event updateEvent(UUID id, String name, String description, Integer capacity, Double cost, String address,
 							 String email, String phoneNumber, User organizer, List<EventType> eventTypes) {
 
-        if (name == null || name.equals("")){
-            throw new IllegalArgumentException("Invalid event name");
-        }
-
-        //I can't update the name
-		Event event = getEventByName(name);
+		Event event = getEventById(id);
 
         if (event == null){
             throw new IllegalArgumentException("Event not found");
         }
+
+		if (name != null || !name.equals("") && !name.equals(event.getName())){
+			event.setName(name);
+		}
 
 		if(organizer != null && !organizer.getId().equals(event.getOrganizer().getId())){
 			event.setOrganizer(organizer);
@@ -120,23 +114,21 @@ public class EventService {
 		return event;
 	}
 
-	public boolean deleteEvent(String name) {
-		Event event = getEventByName(name);
-		if(event==null) throw new IllegalArgumentException("Event not found");
-		eventRepository.delete(event);
-		return true;
-	}
-
-    public Event getEventByName(String name){
-        if(name == null) throw new IllegalArgumentException("Name cannot be blank");
-        return eventRepository.findEventsByName(name);
-
-    }
 
 	public Event getEventById(UUID id) {
 		return eventRepository.findById(id).orElseThrow(() ->
 				new IllegalArgumentException("Event " + id + " not found"));
 	}
+
+	public boolean deleteEventById(UUID id) {
+		Event event = getEventById(id);
+		eventRepository.delete(event);
+		return true;
+	}
+
+    public List<Event> getEventsByName(String name){
+        return eventRepository.findEventsByName(name);
+    }
 
 	public List<Event> getAllEventsFromType(List<EventType> eventTypes) {
 		return eventRepository.findEventsByEventTypesIn(eventTypes);
