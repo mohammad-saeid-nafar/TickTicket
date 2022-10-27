@@ -2,6 +2,7 @@ package tickticket.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ public class ProfileService {
 
 	@Autowired
 	EventTypeRepository eventTypeRepository;
-
 
 	@Transactional
 	public Profile createProfile(String firstName, String lastName, String address, String email, String phoneNumber, String profilePicture, LocalDate dateOfBirth, List<EventType> interests) {
@@ -43,12 +43,8 @@ public class ProfileService {
         if(dateOfBirth == null)
             throw new IllegalArgumentException("Date of birth cannot be blank.");
 
-		if(!emailIsValid(email)) 
+		if(emailIsNotValid(email))
 			throw new IllegalArgumentException("Invalid email.");
-		
-		if(profileRepository.findProfileByEmail(email)!=null) {
-			throw new IllegalArgumentException("User with email entered already exists.");
-		}
 		
 		Profile profile = new Profile();
 		profile.setFirstName(firstName);
@@ -63,64 +59,55 @@ public class ProfileService {
 		return profile;
     }
 
-    @Transactional
-	public boolean deleteByEmail(String email) {
-		Profile profile = profileRepository.findProfileByEmail(email);
-		if(profile!=null) { 
-			profileRepository.delete(profile);
-			return true;
-		}
-		return false;
-	}
-
 	@Transactional
-	public Profile getProfileByEmail(String email) {
-		return profileRepository.findProfileByEmail(email);
-	}
+	public Profile updateProfile(UUID id, String firstName, String lastName, String address, String email, String phoneNumber, String profilePicture, LocalDate dateOfBirth, List<EventType> interests) {
 
-	@Transactional
-	public Profile updateProfile(String firstName, String lastName, String address, String email, String phoneNumber, String profilePicture, LocalDate dateOfBirth, List<EventType> interests) {
-		if(email == null || email.equals("") || ! emailIsValid(email)) {
-			throw new IllegalArgumentException("Invalid email");
+		Profile profile = getProfile(id);
+
+		if(email != null && !email.equals("") && !email.equals(profile.getEmail())){
+			if(emailIsNotValid(email)) throw new IllegalArgumentException("Invalid email");
+			profile.setEmail(email);
 		}
 
-		Profile profile = profileRepository.findProfileByEmail(email);
-		if(profile == null) {
-			throw new IllegalArgumentException("Could not find a profile with the given email");
-		}
-
-		if(firstName != null && ! firstName.equals("")) {
+		if(firstName != null && !firstName.equals("")){
 			profile.setFirstName(firstName);
-		} else {
-			throw new IllegalArgumentException("First name cannot be blank.");
 		}
 
-		if(lastName != null && ! lastName.equals("")) {
+		if(lastName != null && !lastName.equals("")){
 			profile.setLastName(lastName);
-		} else {
-			throw new IllegalArgumentException("Last name cannot be blank.");
 		}
 
-		if(address != null && ! address.equals("")) {
+		if(address != null && !address.equals("")){
 			profile.setAddress(address);
-		} else {
-			throw new IllegalArgumentException("Address cannot be blank.");
 		}
 
-		if(phoneNumber != null && ! phoneNumber.equals("")) {
+		if(phoneNumber != null && !phoneNumber.equals("")){
 			profile.setPhoneNumber(phoneNumber);
-		} else {
-			throw new IllegalArgumentException("Phone number cannot be blank.");
+		}
+
+		if(profilePicture != null && !profilePicture.equals("")){
+			profile.setProfilePicture(profilePicture);
 		}
 
 		if(dateOfBirth != null) {
 			profile.setDateOfBirth(dateOfBirth);
-		} else {
-			throw new IllegalArgumentException("Date of birth cannot be blank");
 		}
 
 		profileRepository.save(profile);
 		return profile;
+	}
+
+
+	@Transactional
+	public Profile getProfile(UUID id) {
+		return profileRepository.findById(id).orElseThrow(() ->
+				new IllegalArgumentException("Profile " + id + " not found"));
+	}
+
+	@Transactional
+	public Profile getProfileByEmail(String email) {
+		return profileRepository.findProfileByEmail(email).orElseThrow(() ->
+				new IllegalArgumentException("Profile " + email + " not found"));
 	}
 
 	@Transactional
@@ -128,14 +115,16 @@ public class ProfileService {
 		return profileRepository.findAll();
 	}
 
-    private boolean emailIsValid(String email) {
+    private boolean emailIsNotValid(String email) {
+		if(profileRepository.findProfileByEmail(email).isPresent()){
+			throw new IllegalArgumentException("User with email entered already exists.");
+		}
 		String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+ 
 				"[a-zA-Z0-9_+&*-]+)*@" + 
 				"(?:[a-zA-Z0-9-]+\\.)+[a-z" + 
 				"A-Z]{2,7}$"; 
 
-		Pattern pat = Pattern.compile(emailRegex); 
-
-		return pat.matcher(email).matches(); 
+		Pattern pat = Pattern.compile(emailRegex);
+		return !pat.matcher(email).matches();
 	}
 }

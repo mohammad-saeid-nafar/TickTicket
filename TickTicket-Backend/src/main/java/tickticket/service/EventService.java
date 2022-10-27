@@ -68,11 +68,11 @@ public class EventService {
 
 		Event event = getEvent(id);
 
-		if (name != null && !name.equals("") && !name.equals(event.getName())){
+		if (name != null && !name.equals("")){
 			event.setName(name);
 		}
 
-		if(organizer != null && !organizer.getId().equals(event.getOrganizer().getId())){
+		if(organizer != null){
 			event.setOrganizer(organizer);
 		}
 
@@ -80,11 +80,11 @@ public class EventService {
 			event.setEventTypes(eventTypes);
 		}
 		
-		if(description != null && !description.equals("") && !description.equals(event.getDescription())) {
+		if(description != null && !description.equals("")) {
 			event.setDescription(description);
 		}
 
-		if(capacity != null && !capacity.equals(0) && capacity != event.getCapacity()) {
+		if(capacity != null && !capacity.equals(0)) {
 			event.setCapacity(capacity);
 		}
 
@@ -92,15 +92,15 @@ public class EventService {
 			event.setCost(cost);
 		}
 
-		if(address != null && !address.equals("") && !address.equals(event.getAddress())) {
+		if(address != null && !address.equals("")) {
 			event.setAddress(address);
 		}
 
-        if(email != null && !email.equals("") && !email.equals(event.getEmail())) {
+        if(email != null && !email.equals("")) {
 			event.setEmail(email);
 		}
 
-		if(phoneNumber != null && !phoneNumber.equals("") && !phoneNumber.equals(event.getPhoneNumber())) {
+		if(phoneNumber != null && !phoneNumber.equals("")) {
 			event.setPhoneNumber(phoneNumber);
 		}
 

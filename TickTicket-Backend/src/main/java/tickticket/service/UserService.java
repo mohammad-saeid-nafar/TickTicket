@@ -101,7 +101,7 @@ public class UserService {
 	}
 
     private void usernameIsValid(String username) {
-		if(userRepository.findUserByUsername(username).orElse(null)!=null) throw new IllegalArgumentException("Username is already taken");
+		if(userRepository.findUserByUsername(username).isPresent()) throw new IllegalArgumentException("Username is already taken");
 	}
 
     private boolean passwordIsValid(String password){

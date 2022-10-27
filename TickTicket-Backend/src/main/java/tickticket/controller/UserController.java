@@ -67,14 +67,12 @@ public class UserController {
 		}catch(IllegalArgumentException exception) {
 			return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		User user;
 		try {
 			user = userService.createUser(username, password, profile);
 		}catch(IllegalArgumentException exception) {
-			profileService.deleteByEmail(email);
 			return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
 		}
 		return new ResponseEntity<>(Conversion.convertToDTO(user), HttpStatus.CREATED);
 

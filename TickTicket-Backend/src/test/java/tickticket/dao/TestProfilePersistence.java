@@ -10,10 +10,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import tickticket.model.Profile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -69,9 +68,9 @@ public class TestProfilePersistence {
 	        profileRepository.save(testProfile);
 	        
 	        assertTrue(profileRepository.existsByEmail("testemail@test.com"));
-	        testProfile = profileRepository.findProfileByEmail("testemail@test.com");
+	        testProfile = profileRepository.findProfileByEmail("testemail@test.com").orElse(null);
 	        
-	        
+	        assertNotNull(testProfile);
 	        assertEquals("testemail@test.com", testProfile.getEmail());
 	        assertEquals("TestName", testProfile.getFirstName());
 	        assertEquals("TestLastName", testProfile.getLastName());

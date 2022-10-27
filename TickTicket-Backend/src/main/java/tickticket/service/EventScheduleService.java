@@ -35,10 +35,10 @@ public class EventScheduleService {
     @Transactional
 	public EventSchedule editEventSchedule(UUID id, LocalDateTime start, LocalDateTime end) {
 		EventSchedule eventSchedule = getEventSchedule(id);
-		if(start != null && !eventSchedule.getStartDateTime().equals(start)){
+		if(start != null){
 			eventSchedule.setStartDateTime(start);
 		}
-		if(end != null && !eventSchedule.getEndDateTime().equals(end)){
+		if(end != null){
 			eventSchedule.setEndDateTime(end);
 		}
 		eventScheduleRepository.save(eventSchedule);

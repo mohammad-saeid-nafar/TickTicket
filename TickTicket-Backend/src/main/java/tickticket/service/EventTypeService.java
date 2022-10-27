@@ -22,7 +22,7 @@ public class EventTypeService {
         if(description==null || description.equals("")) throw new IllegalArgumentException("Description of event type cannot be blank");
         if(ageRequirement<=0) throw new IllegalArgumentException("Invalid age requirement");
 
-        if(eventTypeRepository.findEventTypeByName(name).orElse(null) != null) throw new IllegalArgumentException("Event type "+name+" already exists");
+        if(eventTypeRepository.findEventTypeByName(name).isPresent()) throw new IllegalArgumentException("Event type "+name+" already exists");
 
         EventType eventType = new EventType();
         eventType.setName(name);
@@ -39,16 +39,17 @@ public class EventTypeService {
     public EventType updateEventType(UUID id, String name, String description, int ageRequirement){
         EventType eventType = getEventType(id);
 
-        if(name!=null && !name.equals("")){
+        if(name!=null && !name.equals("") && !eventType.getName().equals(name)){
+            if(eventTypeRepository.findEventTypeByName(name).isPresent()) throw new IllegalArgumentException("Event type "+name+" already exists");
             eventType.setName(name);
         }
         if(description!=null && !description.equals("")){
             eventType.setDescription(description);
         }
 
-        if(ageRequirement<=0) throw new IllegalArgumentException("Invalid age requirement");
+        if(ageRequirement<0) throw new IllegalArgumentException("Invalid age requirement");
 
-        eventType.setAgeRequirement(ageRequirement);
+        if(ageRequirement != 0) eventType.setAgeRequirement(ageRequirement);
 
         eventTypeRepository.save(eventType);
 

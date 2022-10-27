@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ public class ProfileServiceTest {
     @InjectMocks
     private ProfileService profileService;
 
+    private static final UUID PROFILE_ID = UUID.randomUUID();
     private static final String PROFILE_FIRSTNAME ="Bob";
     private static final String PROFILE_LASTNAME ="Fisher";
     private static final String PROFILE_ADDRESS ="1000, MEMORY LANE";
@@ -90,6 +92,7 @@ public class ProfileServiceTest {
                 interests.add(eventType);
 
                 Profile profile = new Profile();
+                profile.setId(PROFILE_ID);
                 profile.setFirstName(PROFILE_FIRSTNAME);
                 profile.setLastName(PROFILE_LASTNAME);
                 profile.setAddress(PROFILE_ADDRESS);
@@ -99,10 +102,19 @@ public class ProfileServiceTest {
                 profile.setDateOfBirth(PROFILE_DATE_OF_BIRTH);
                 profile.setInterests(interests);
 
-                return profile;
+                return Optional.of(profile);
             }
             else {
-                return null;
+                return Optional.empty();
+            }
+        });
+
+        lenient().when(profileRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if(invocation.getArgument(0).equals(PROFILE_ID)) {
+                return profileRepository.findProfileByEmail(PROFILE_EMAIL);
+            }
+            else {
+                return Optional.empty();
             }
         });
 
@@ -233,19 +245,6 @@ public class ProfileServiceTest {
     }
 
     @Test
-    public void testDeleteProfile() {
-        boolean deleted = profileService.deleteByEmail(PROFILE_EMAIL);
-        assertTrue(deleted);
-        assertFalse(profileRepository.existsByEmail(PROFILE_EMAIL));
-    }
-
-    @Test
-    public void testDeleteProfileNotFound() {
-        boolean deleted = profileService.deleteByEmail(PROFILE2_EMAIL);
-        assertFalse(deleted);
-    }
-
-    @Test
     public void testGetProfile() {
         Profile profile = profileService.getProfileByEmail(PROFILE_EMAIL);
         assertNotNull(profile);
@@ -260,8 +259,11 @@ public class ProfileServiceTest {
 
     @Test
     public void testGetProfileNotFound() {
-        Profile profile = profileService.getProfileByEmail(PROFILE2_EMAIL);
-        assertNull(profile);
+        try{
+            profileService.getProfileByEmail(PROFILE2_EMAIL);
+        }catch(IllegalArgumentException e){
+            assertEquals(e.getMessage(), "Profile "+PROFILE2_EMAIL+" not found");
+        }
     }
 
     @Test
@@ -271,7 +273,7 @@ public class ProfileServiceTest {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
             List<EventType> interests = new ArrayList<>();
             interests.add(eventType);
-            profile = profileService.updateProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            profile = profileService.updateProfile(PROFILE_ID, PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
         } catch(IllegalArgumentException e) {
             fail();
         }
@@ -284,120 +286,6 @@ public class ProfileServiceTest {
         assertEquals(PROFILE2_PHONE, profile.getPhoneNumber());
         assertEquals(PROFILE2_PICTURE, profile.getProfilePicture());
         assertEquals(PROFILE2_DATE_OF_BIRTH,profile.getDateOfBirth());
-    }
-
-    @Test
-    public void testUpdateProfileInvalidFirstName() {
-        Profile profile = null;
-        String error = "";
-        try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-
-            profile = profileService.updateProfile("", PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
-
-        } catch(IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-
-        assertNull(profile);
-        assertEquals(error, "First name cannot be blank.");
-    }
-
-    @Test
-    public void testUpdateProfileInvalidLastName() {
-        Profile profile = null;
-        String error = "";
-        try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-
-            profile = profileService.createProfile(PROFILE2_FIRSTNAME, "", PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
-
-        } catch(IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-
-        assertNull(profile);
-        assertEquals(error, "Last name cannot be blank.");
-    }
-
-    @Test
-    public void testUpdateProfileInvalidAddress() {
-        Profile profile = null;
-        String error = "";
-        try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-
-            profile = profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, "", PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
-
-        } catch(IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-
-        assertNull(profile);
-        assertEquals(error, "Address cannot be blank.");
-    }
-
-    @Test
-    public void testUpdateProfileInvalidEmail() {
-        Profile profile = null;
-        String error = "";
-        try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-
-            profile = profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, "aadeew", PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
-
-        } catch(IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-
-        assertNull(profile);
-        assertEquals(error, "Invalid email.");
-    }
-    
-    @Test
-    public void testUpdateProfileInvalidPhone() {
-        Profile profile = null;
-        String error = "";
-        try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-
-            profile = profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE2_EMAIL, "", PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
-
-        } catch(IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-
-        assertNull(profile);
-        assertEquals(error, "Phone number cannot be blank.");
-    }
-
-    @Test
-    public void testUpdateProfileInvalidDateOfBirth() {
-        Profile profile = null;
-        String error = "";
-        try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-
-            profile = profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE2_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, null, interests);
-
-        } catch(IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-
-        assertNull(profile);
-        assertEquals(error, "Date of birth cannot be blank.");
     }
 
 }

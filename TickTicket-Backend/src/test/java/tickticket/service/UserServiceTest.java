@@ -113,7 +113,7 @@ public class UserServiceTest {
 				profile.setDateOfBirth(PROFILE_DATE_OF_BIRTH);
 				profile.setInterests(interests);
 
-				return profile;
+				return Optional.of(profile);
 			}else if(invocation.getArgument(0).equals(PROFILE2_EMAIL)){
 				EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
 				List<EventType> interests = new ArrayList<>();
@@ -129,16 +129,16 @@ public class UserServiceTest {
 				profile.setDateOfBirth(PROFILE2_DATE_OF_BIRTH);
 				profile.setInterests(interests);
 
-				return profile;
+				return Optional.of(profile);
 			}
 			else {
-				return null;
+				return Optional.empty();
 			}
 		});
 
 		lenient().when(userRepository.findUserByUsername(anyString())).thenAnswer((InvocationOnMock invocation) -> {
 			if(invocation.getArgument(0).equals(USER_USERNAME)) {
-               Profile profile = profileRepository.findProfileByEmail(PROFILE_EMAIL);
+               Profile profile = profileRepository.findProfileByEmail(PROFILE_EMAIL).orElse(null);
                 User user = new User();
 				user.setId(USER_ID);
                 user.setUsername(USER_USERNAME);
@@ -175,7 +175,7 @@ public class UserServiceTest {
 		User user = null;
 
 		try {
-			user = userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			user = userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			fail();
 		}
@@ -201,7 +201,7 @@ public class UserServiceTest {
 	@Test
 	public void testCreateUserTakenUsername(){
 		try {
-			userService.createUser(USER_USERNAME, USER_PASSWORD, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(USER_USERNAME, USER_PASSWORD, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			assertEquals("Username is already taken", e.getMessage());
 		}
@@ -212,7 +212,7 @@ public class UserServiceTest {
 		String username ="";
 		String password = "Password123";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch (IllegalArgumentException e) {
 			assertEquals("Username cannot be blank", e.getMessage());
 		}
@@ -223,7 +223,7 @@ public class UserServiceTest {
 		String username ="GarryJimmy";
 		String password = "";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch (IllegalArgumentException e) {
 			assertEquals("Password cannot be blank", e.getMessage());
 		}
@@ -234,7 +234,7 @@ public class UserServiceTest {
 		String username = "GaryJimmy";
 		String password = "password123";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must contain at least one uppercase character", e.getMessage());
 		}
@@ -246,7 +246,7 @@ public class UserServiceTest {
 		String username = "GaryJimmy";
 		String password = "PASSWORD123";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must contain at least one lowercase character", e.getMessage());
 		}
@@ -257,7 +257,7 @@ public class UserServiceTest {
 		String username = "GaryJimmy";
 		String password = "Password";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must contain at least one numeric character", e.getMessage());
 		}
@@ -268,7 +268,7 @@ public class UserServiceTest {
 		String username = "GaryJimmy";
 		String password = "Pass1";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must have at least 8 characters", e.getMessage());
 		}
@@ -280,7 +280,7 @@ public class UserServiceTest {
 		String username = "GaryJimmy";
 		String password = "Password1234567890123456789";
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL));
+			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must not have more than 20 characters", e.getMessage());
 		}
