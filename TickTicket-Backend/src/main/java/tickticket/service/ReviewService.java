@@ -23,23 +23,17 @@ public class ReviewService {
     @Transactional
     public Review createReview(Event event, User user, String title, String description, int rating) {
 
-
         if(title == null || title.isEmpty()) {
-            throw new IllegalArgumentException("Rating must have a title");
+            throw new IllegalArgumentException("Review must have a title");
         }
 
         if(rating < 0 || rating > 5 ) {
             throw new IllegalArgumentException("Event rating must be between 0 and 5 (inclusive)");
         }
 
-        if(description == null) {
-            throw new IllegalArgumentException("No description");
-        }
-
-        if(description.isEmpty()) {
+        if(description == null || description.isEmpty()) {
             throw new IllegalArgumentException("Description must contain at least 1 character");
         }
-
 
         Review review = reviewRepository.findReviewByEventAndUser(event, user).orElse(null);
         if(review != null) {
@@ -65,20 +59,18 @@ public class ReviewService {
 
         Review review = getReviewById(id);
 
-        if (newTitle.isEmpty()) {
-            throw new IllegalArgumentException("New title must contain at least 1 character");
+        if (newTitle!= null && !newTitle.isEmpty()) {
+            review.setTitle(newTitle);
+        }
+
+        if(newDescription!= null && !newDescription.isEmpty()) {
+            review.setDescription(newDescription);
         }
 
         if(newRating < 0 || newRating > 5) {
             throw new IllegalArgumentException("Event rating must be between 0 and 5 (inclusive)");
         }
 
-        if(newDescription.isEmpty()) {
-            throw new IllegalArgumentException("New description must contain at least 1 character");
-        }
-
-        review.setTitle(newTitle);
-        review.setDescription(newDescription);
         review.setRating(newRating);
         reviewRepository.save(review);
         return review;

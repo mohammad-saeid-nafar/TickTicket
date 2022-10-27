@@ -245,7 +245,7 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testCreateReview1(){
+    public void testCreateReview(){
         User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
@@ -272,55 +272,47 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testCreateReview2(){
+    public void testCreateReviewNullTitle(){
         User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
-        Review review = null;
         try{
-            review = reviewService.createReview(event, user, null, reviewDescription1, rating1);
+            reviewService.createReview(event, user, null, reviewDescription1, rating1);
         }catch(Exception e){
-            assertEquals(e.getMessage(), "Rating must have a title");
+            assertEquals(e.getMessage(), "Review must have a title");
         }
-        assertNull(review);
     }
 
     @Test
-    public void testCreateReview3(){
+    public void testCreateReviewNullDescription(){
         User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
-        Review review = null;
         try{
-            review = reviewService.createReview(event, user, title1, null, rating1);
-        }catch(Exception e){
-            assertEquals(e.getMessage(), "No description");
-        }
-        assertNull(review);
-    }
-
-    @Test
-    public void testCreateReview4(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
-        Review review = null;
-        try{
-            review = reviewService.createReview(event, user, title1, reviewDescription1, 6);
-        }catch(Exception e){
-            assertEquals(e.getMessage(), "Event rating must be between 0 and 5 (inclusive)");
-        }
-        assertNull(review);
-    }
-
-    @Test
-    public void testCreateReview5(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
-        Review review = null;
-        try{
-            review = reviewService.createReview(event, user, title1, "", rating1);
+            reviewService.createReview(event, user, title1, null, rating1);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Description must contain at least 1 character");
         }
-        assertNull(review);
+    }
+
+    @Test
+    public void testCreateReviewInvalidRating(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        try{
+            reviewService.createReview(event, user, title1, reviewDescription1, 6);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "Event rating must be between 0 and 5 (inclusive)");
+        }
+    }
+
+    @Test
+    public void testCreateReviewBlankDescription(){
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
+        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        try{
+            reviewService.createReview(event, user, title1, "", rating1);
+        }catch(Exception e){
+            assertEquals(e.getMessage(), "Description must contain at least 1 character");
+        }
     }
 
 
