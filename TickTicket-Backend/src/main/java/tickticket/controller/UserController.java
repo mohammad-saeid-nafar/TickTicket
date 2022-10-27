@@ -80,40 +80,40 @@ public class UserController {
 
 	}
 
-    @DeleteMapping(value = {"/delete_user/{username}"})
-	public boolean deleteUser(@PathVariable("username") String username) {
-		return userService.deleteUser(username);
+	@PatchMapping(value = {"/change_password/{id}"})
+	public ResponseEntity<?> changePassword(@PathVariable("id") UUID id,@RequestParam String oldPassword, @RequestParam String newPassword) {
+		User user;
+		try {
+			user = userService.editUserPassword(id, oldPassword, newPassword);
+		}catch(IllegalArgumentException exception) {
+			return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(Conversion.convertToDTO(user), HttpStatus.OK);
 	}
 
-    @GetMapping(value = {"/view_user/{username}"})
-	public UserDTO viewUser(@PathVariable("username") String username) {
-		return Conversion.convertToDTO(userService.getUser(username));
+	@DeleteMapping(value = {"/delete_user/{id}"})
+	public boolean deleteUserByUsername(@PathVariable("id") UUID id) {
+		return userService.deleteUser(id);
+	}
+
+	@GetMapping(value = {"/view_user/{id}"})
+	public UserDTO viewUserByUsername(@PathVariable("id") UUID id) {
+		return Conversion.convertToDTO(userService.getUser(id));
+	}
+
+    @DeleteMapping(value = {"/delete_user_username/{username}"})
+	public boolean deleteUserByUsername(@PathVariable("username") String username) {
+		return userService.deleteUserByUsername(username);
+	}
+
+    @GetMapping(value = {"/view_user_username/{username}"})
+	public UserDTO viewUserByUsername(@PathVariable("username") String username) {
+		return Conversion.convertToDTO(userService.getUserByUsername(username));
 	}
 
     @GetMapping(value = {"/view_users", "/view_users/"})
 	public List<UserDTO> viewUsers(){
-
 		return userService.getAllUsers().stream().map(Conversion::convertToDTO).collect(Collectors.toList());
-	
 	}
 
-    @PatchMapping(value = {"/change_password/{username}"})
-	public ResponseEntity<?> changePassword(@PathVariable("username") String username,@RequestParam String oldPassword, @RequestParam String newPassword) {
-		User user = userService.getUser(username);
-		if(user==null) {
-			return new ResponseEntity<>("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-		if(!oldPassword.equals(user.getPassword())) {
-			return new ResponseEntity<>("Current password entered is incorrect", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-		try {
-			user=userService.editUserPassword(username, newPassword);
-		}catch(IllegalArgumentException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-		return new ResponseEntity<>(Conversion.convertToDTO(user), HttpStatus.OK);
-	}
 }

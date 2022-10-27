@@ -87,11 +87,10 @@ public class TestUserPersistence {
         testUser.setProfile(testProfile);
 
         eventTypeRepository.save(testEventType);
-        profileRepository.save(testProfile);
         userRepository.save(testUser);
 
         boolean exists = userRepository.existsByUsername(username);
-        testUser = userRepository.findUserByUsername(username);
+        testUser = userRepository.findUserByUsername(username).orElse(null);
 
         assertNotNull(testUser);
         assertTrue(exists);

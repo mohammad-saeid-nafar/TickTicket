@@ -59,12 +59,6 @@ public class ReviewServiceTest {
     private static final int rating2 = 4;
     private static final String reviewDescription2 = "Worst experience";
 
-    // Review2
-    private static final UUID reviewID3 = UUID.randomUUID();
-    private static final String title3 = "Third Review";
-    private static final int rating3 = 5;
-    private static final String reviewDescription3 = "Wow experience";
-
     // User1
     private static final UUID USER_ID = UUID.randomUUID();
     private static final String USER_USERNAME = "User1";
@@ -102,7 +96,7 @@ public class ReviewServiceTest {
                 user.setPassword(USER_PASSWORD);
                 user.setCreated(USER_CREATED);
 
-                return user;
+                return Optional.of(user);
             }
             else if (invocation.getArgument(0).equals(USER_USERNAME2)){
                 User user2 = new User();
@@ -110,10 +104,10 @@ public class ReviewServiceTest {
                 user2.setUsername(USER_USERNAME2);
                 user2.setPassword(USER_PASSWORD2);
                 user2.setCreated(USER_CREATED2);
-                return user2;
+                return Optional.of(user2);
             }
             else {
-                return null;
+                return Optional.empty();
             }
         });
 
@@ -142,19 +136,12 @@ public class ReviewServiceTest {
             }
         });
 
-        lenient().when(reviewRepository.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if (((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME) && ((User) invocation.getArgument(1)).getId().equals(USER_ID)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        });
+        lenient().when(reviewRepository.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> ((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME) && ((User) invocation.getArgument(1)).getId().equals(USER_ID));
 
 
         lenient().when(reviewRepository.findReviewsByUser(any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (((User) invocation.getArgument(0)).getId().equals(USER_ID)) {
-                User user = userRepository.findUserByUsername(USER_USERNAME);
+                User user = userRepository.findUserByUsername(USER_USERNAME).orElse(null);
                 Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 Review review1 = new Review();
@@ -177,7 +164,7 @@ public class ReviewServiceTest {
 
         lenient().when(reviewRepository.findReviewsByEvent(any(Event.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (((Event) invocation.getArgument(0)).getId().equals(EVENT_ID)) {
-                User user = userRepository.findUserByUsername(USER_USERNAME);
+                User user = userRepository.findUserByUsername(USER_USERNAME).orElse(null);
                 Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 User user2 = new User();
@@ -216,7 +203,7 @@ public class ReviewServiceTest {
         lenient().when(reviewRepository.findReviewByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME) && ((User) invocation.getArgument(1)).getId().equals(USER_ID)) {
 
-                User user = userRepository.findUserByUsername(USER_USERNAME);
+                User user = userRepository.findUserByUsername(USER_USERNAME).orElse(null);
                 Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 Review review1 = new Review();
@@ -237,7 +224,7 @@ public class ReviewServiceTest {
         lenient().when(reviewRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
             if ((invocation.getArgument(0)).equals(reviewID1)) {
 
-                User user = userRepository.findUserByUsername(USER_USERNAME);
+                User user = userRepository.findUserByUsername(USER_USERNAME).orElse(null);
                 Event event = eventRepository.findById(EVENT_ID).orElse(null);
 
                 Review review1 = new Review();
@@ -259,7 +246,7 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview1(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
@@ -286,7 +273,7 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview2(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
@@ -299,7 +286,7 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview3(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
@@ -312,7 +299,7 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview4(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
@@ -325,7 +312,7 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview5(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2);
+        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
         Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
         try{
@@ -378,7 +365,7 @@ public class ReviewServiceTest {
 
     @Test
     public void testViewReviewsOfUser(){
-        User user = userRepository.findUserByUsername(USER_USERNAME);
+        User user = userRepository.findUserByUsername(USER_USERNAME).orElse(null);
         List<Review> reviews = new ArrayList<>();
 
         try{

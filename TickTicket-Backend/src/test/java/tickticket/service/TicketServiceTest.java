@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,7 +116,7 @@ public class TicketServiceTest {
     @Test
     public void testCreateTicket() {
         when(eventService.getEvent(any())).thenReturn(event1);
-        when(userService.getUser(any(String.class))).thenReturn(user1);
+        when(userService.getUser(any())).thenReturn(user1);
         when(ticketRepository.save(any())).thenReturn(ticket1);
 
         Ticket result = ticketService.createTicket(ticket1DTO);
@@ -137,7 +138,7 @@ public class TicketServiceTest {
     @Test
     public void testCreateTicketWithUserNotFound() {
         when(eventService.getEvent(any())).thenReturn(event1);
-        when(userService.getUser(any(String.class))).thenReturn(null);
+        when(userService.getUser(any())).thenReturn(null);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> ticketService.createTicket(ticket1DTO));
 

@@ -114,7 +114,6 @@ public class TestReviewPersistence {
 
         // SAVE
         eventTypeRepository.save(testEventType);
-        profileRepository.save(testProfile);
         userRepository.save(testUser);
         eventRepository.save(testEvent);
         reviewRepository.save(testReview);

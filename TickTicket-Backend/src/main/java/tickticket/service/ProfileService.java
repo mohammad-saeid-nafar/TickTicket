@@ -60,8 +60,6 @@ public class ProfileService {
 		profile.setDateOfBirth(dateOfBirth);
 		profile.setInterests(interests);
 
-		profileRepository.save(profile);
-
 		return profile;
     }
 

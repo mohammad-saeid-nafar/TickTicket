@@ -33,8 +33,8 @@ public class TicketService {
         }
         ticket.setEvent(event);
 
-        String username = ticketDTO.getUser().getUsername();
-        User user = userService.getUser(username);
+        UUID id = ticketDTO.getUser().getId();
+        User user = userService.getUser(id);
 
         if (user == null) {
             throw new RuntimeException("User not found");

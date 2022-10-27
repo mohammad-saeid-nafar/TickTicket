@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tickticket.dao.ProfileRepository;
 import tickticket.dao.UserRepository;
 import tickticket.model.Profile;
 import tickticket.model.User;
@@ -19,9 +18,6 @@ public class UserService {
     @Autowired
 	private UserRepository userRepository;
 
-    @Autowired
-	private ProfileRepository profileRepository;
-
 	@Transactional
 	public User login(String username, String password) {
 
@@ -29,7 +25,7 @@ public class UserService {
 			throw new IllegalArgumentException("Invalid username");
 		}
 
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsername(username).orElse(null);
         if(user!=null && user.getPassword().equals(password))
             return user;
 
@@ -60,10 +56,12 @@ public class UserService {
 	}
 
     @Transactional
-	public User editUserPassword(String username, String password) {
-		User user = userRepository.findUserByUsername(username);
-		if(user==null) throw new IllegalArgumentException("User not found.");
-		if(password==null) throw new IllegalArgumentException("New password cannot be blank.");
+	public User editUserPassword(UUID id, String oldPassword, String password) {
+		User user = getUser(id);
+		if(password==null || password.equals("")) throw new IllegalArgumentException("New password cannot be blank.");
+		if(!oldPassword.equals(user.getPassword())) {
+			throw new IllegalArgumentException("Old password entered is incorrect");
+		}
 		if(passwordIsValid(password)) {
 			user.setPassword(password);
 		}
@@ -72,18 +70,17 @@ public class UserService {
 	}
 
 	@Transactional
-	public boolean deleteUser(String username) {
-		User user = getUser(username);
-		if(user==null) throw new IllegalArgumentException("User not found.");
-		profileRepository.delete(user.getProfile());
+	public boolean deleteUser(UUID id) {
+		User user = getUser(id);
 		userRepository.delete(user);
 		return true;
 	}
 
-    @Transactional
-	public User getUser(String username) {
-		return userRepository.findUserByUsername(username);
-
+	@Transactional
+	public boolean deleteUserByUsername(String username) {
+		User user = getUserByUsername(username);
+		userRepository.delete(user);
+		return true;
 	}
 
 	@Transactional
@@ -92,19 +89,24 @@ public class UserService {
 				-> new IllegalArgumentException("User " + id + " not found."));
 	}
 
+    @Transactional
+	public User getUserByUsername(String username) {
+		return userRepository.findUserByUsername(username).orElseThrow(()
+				-> new IllegalArgumentException("User " + username + " not found."));
+	}
+
 	@Transactional
 	public List<User> getAllUsers(){
 		return userRepository.findAll();
 	}
 
-    private boolean usernameIsValid(String username) {
-		if(userRepository.findUserByUsername(username)==null) return true;
-		else throw new IllegalArgumentException("Username is already taken");
+    private void usernameIsValid(String username) {
+		if(userRepository.findUserByUsername(username).orElse(null)!=null) throw new IllegalArgumentException("Username is already taken");
 	}
 
     private boolean passwordIsValid(String password){
 		if (password.length()<8) throw new IllegalArgumentException("Password must have at least 8 characters");
-		if(password.length()>20) throw new IllegalArgumentException("Password must not have more than 20 characters");
+		if (password.length()>20) throw new IllegalArgumentException("Password must not have more than 20 characters");
 
 		boolean upperCaseFlag = false;
 		boolean lowerCaseFlag = false;

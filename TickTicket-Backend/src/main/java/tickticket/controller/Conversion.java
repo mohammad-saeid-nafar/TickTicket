@@ -8,7 +8,7 @@ import tickticket.model.*;
 public class Conversion {
     public static UserDTO convertToDTO(User user) {
 		if(user == null) throw new IllegalArgumentException("User not found.");
-		return new UserDTO(user.getUsername(),user.getPassword(),user.getCreated(),convertToDTO(user.getProfile()));
+		return new UserDTO(user.getId(),user.getUsername(),user.getPassword(),user.getCreated(),convertToDTO(user.getProfile()));
 	}
 
     public static ProfileDTO convertToDTO(Profile profile) {

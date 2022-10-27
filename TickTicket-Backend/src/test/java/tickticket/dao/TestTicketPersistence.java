@@ -111,7 +111,6 @@ public class TestTicketPersistence {
         testTicket.setUser(testUser);
 
         eventTypeRepository.save(testEventType);
-        profileRepository.save(testProfile);
         userRepository.save(testUser);
         eventRepository.save(testEvent);
         ticketRepository.save(testTicket);

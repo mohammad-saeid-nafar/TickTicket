@@ -49,7 +49,7 @@ public class User {
         this.created = created;
     }
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     public Profile getProfile() {
         return profile;
     }

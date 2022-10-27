@@ -1,23 +1,29 @@
 package tickticket.dto;
 
 import java.time.LocalDate;
+import java.util.UUID;
+
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @NoArgsConstructor
 public class UserDTO {
+	private UUID id;
 	private String username;
 	private String password;
     private LocalDate created;
     private ProfileDTO profile;
 	
-	public UserDTO(String username, String password, LocalDate created, ProfileDTO profile) {
+	public UserDTO(UUID id, String username, String password, LocalDate created, ProfileDTO profile) {
+		this.id = id;
 		this.username=username;
 		this.password=password;
         this.created=created;
         this.profile=profile;
 	}
+
+	public UUID getId() { return  id; }
 
 	public String getUsername() {
 		return username;

@@ -32,7 +32,7 @@ public class EventController {
     @PostMapping(value = {"/create_event", "/create_event/"})
     public ResponseEntity<?> createEvent(@RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
                                                 @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
-                                                @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<UUID> eventTypesIds,
+                                                @RequestParam String phoneNumber, @RequestParam UUID organizerId, @RequestParam List<UUID> eventTypesIds,
                                                 @RequestParam String start, @RequestParam String end){
         List<EventType> eventTypes = new ArrayList<>();
         for(UUID eventTypeId : eventTypesIds){
@@ -43,7 +43,7 @@ public class EventController {
         LocalDateTime endDateTime = LocalDateTime.parse(end, formatter);
         Event event;
         try{
-            event = eventService.createEvent(name, description, capacity, cost, address, email, phoneNumber, userService.getUser(username), eventTypes, startDateTime, endDateTime);
+            event = eventService.createEvent(name, description, capacity, cost, address, email, phoneNumber, userService.getUser(organizerId), eventTypes, startDateTime, endDateTime);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -53,14 +53,14 @@ public class EventController {
     @PatchMapping(value = {"/update_event", "/update_event/"})
     public ResponseEntity<?> updateEvent(@RequestParam UUID id, @RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
                                          @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
-                                         @RequestParam String phoneNumber, @RequestParam String username, @RequestParam List<UUID> eventTypesIds){
+                                         @RequestParam String phoneNumber, @RequestParam UUID organizerId, @RequestParam List<UUID> eventTypesIds){
         List<EventType> eventTypes = new ArrayList<>();
         for(UUID eventTypeId : eventTypesIds){
             eventTypes.add(eventTypeService.getEventType(eventTypeId));
         }
         Event event;
         try{
-            event = eventService.updateEvent(id, name, description, capacity, cost, address, email, phoneNumber, userService.getUser(username), eventTypes);
+            event = eventService.updateEvent(id, name, description, capacity, cost, address, email, phoneNumber, userService.getUser(organizerId), eventTypes);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -106,7 +106,7 @@ public class EventController {
     public ResponseEntity<?> getEventsByOrganizer(@PathVariable("username") String username){
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
-           List<Event> events = eventService.getAllEventsFromOrganizer(userService.getUser(username));
+           List<Event> events = eventService.getAllEventsFromOrganizer(userService.getUserByUsername(username));
            for(Event event : events){
                eventsDTO.add(Conversion.convertToDTO(event));
            }
