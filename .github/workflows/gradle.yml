@@ -13,14 +13,21 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    services:
+      postgres_db:
+        image: postgres
+        env:
+          POSTGRES_USER: sa
+          POSTGRES_PASSWORD: sa
+          POSTGRES_DB: tt-test
+        ports:
+        - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -34,5 +41,5 @@ jobs:
       run: chmod +x gradlew
       working-directory: TickTicket-Backend
     - name: Build with Gradle
-      run: ./gradlew build --stacktrace --debug
+      run: ./gradlew build --stacktrace --scan
       working-directory: TickTicket-Backend
