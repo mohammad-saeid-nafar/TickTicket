@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/TickTicket/tickticket-frontend/static/css/main.073c9b0a.css",
+    "main.js": "/TickTicket/tickticket-frontend/static/js/main.abbdee39.js",
+    "static/js/787.7a9b5351.chunk.js": "/TickTicket/tickticket-frontend/static/js/787.7a9b5351.chunk.js",
+    "index.html": "/TickTicket/tickticket-frontend/index.html",
+    "main.073c9b0a.css.map": "/TickTicket/tickticket-frontend/static/css/main.073c9b0a.css.map",
+    "main.abbdee39.js.map": "/TickTicket/tickticket-frontend/static/js/main.abbdee39.js.map",
+    "787.7a9b5351.chunk.js.map": "/TickTicket/tickticket-frontend/static/js/787.7a9b5351.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.abbdee39.js"
+  ]
+}
