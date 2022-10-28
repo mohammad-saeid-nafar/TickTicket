@@ -41,5 +41,5 @@ jobs:
       run: chmod +x gradlew
       working-directory: TickTicket-Backend
     - name: Build with Gradle
-      run: ./gradlew build --stacktrace
+      run: ./gradlew build --stacktrace --scan
       working-directory: TickTicket-Backend
