@@ -1,5 +1,6 @@
 package tickticket.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,17 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@AllArgsConstructor
+@RequestMapping("/api/v1/event-types")
 public class EventTypeController {
 
-    @Autowired
     private EventTypeService eventTypeService;
 
-    @PostMapping(value = {"/create_eventType"})
-    public ResponseEntity<?> createEventType(@RequestParam String name, @RequestParam String description,
-                                           @RequestParam int ageRequirement) {
+    @PostMapping
+    public ResponseEntity<?> createEventType(@RequestBody EventTypeDTO eventTypeDTO) {
         EventType eventType;
         try {
-            eventType = eventTypeService.createEventType(name, description, ageRequirement);
+            eventType = eventTypeService.createEventType(eventTypeDTO);
         }catch(IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -33,12 +34,12 @@ public class EventTypeController {
 
     }
 
-    @PatchMapping(value = {"/update_eventType/{id}"})
-    public ResponseEntity<?> updateProfile(@PathVariable("id") UUID id, @RequestParam String newName, @RequestParam String description, @RequestParam int ageRequirement) {
+    @PatchMapping
+    public ResponseEntity<?> updateProfile(@RequestBody EventTypeDTO eventTypeDTO) {
 
         EventType eventType;
         try {
-            eventType = eventTypeService.updateEventType(id, newName, description, ageRequirement);
+            eventType = eventTypeService.updateEventType(eventTypeDTO);
         }catch(IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,14 +47,26 @@ public class EventTypeController {
 
     }
 
-    @DeleteMapping(value = {"/delete_eventType/{id}"})
+    @DeleteMapping(value = {"/{id}"})
     public boolean deleteEventType(@PathVariable("id") UUID id) {
         return eventTypeService.deleteEventType(id);
     }
 
-    @GetMapping(value = {"/view_eventType/{id}"})
+    @GetMapping(value = {"/{id}"})
     public EventTypeDTO viewEventType(@PathVariable("id") UUID id) {
         return Conversion.convertToDTO(eventTypeService.getEventType(id));
+    }
+
+    @GetMapping(value = {"/name/{name}"})
+    public EventTypeDTO viewEventTypeByName(@PathVariable("name") String name) {
+        return Conversion.convertToDTO(eventTypeService.getEventTypeByName(name));
+    }
+
+    @GetMapping
+    public List<EventTypeDTO> viewAllEventTypes() {
+        return eventTypeService.getAllEventTypes().stream()
+                .map(Conversion::convertToDTO)
+                .toList();
     }
 
 

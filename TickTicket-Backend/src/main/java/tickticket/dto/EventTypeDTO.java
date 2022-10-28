@@ -1,7 +1,18 @@
 package tickticket.dto;
 
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class EventTypeDTO {
 
+    private UUID id;
     private String name;
     private String description;
     private int ageRequirement;

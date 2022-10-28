@@ -15,6 +15,6 @@ public class TickTicketApplication {
 
 	@RequestMapping("/")
 	public String greeting(){
-		return "Hello world!";
+		return "Welcome to TickTicket!";
 	}
 }

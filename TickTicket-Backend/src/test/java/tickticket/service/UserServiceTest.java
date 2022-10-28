@@ -29,6 +29,7 @@ import org.mockito.stubbing.Answer;
 import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
 import tickticket.dao.UserRepository;
+import tickticket.dto.UserDTO;
 import tickticket.model.*;
 
 
@@ -174,8 +175,12 @@ public class UserServiceTest {
 		String password = "Password123";
 		User user = null;
 
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
+
 		try {
-			user = userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			user = userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			fail();
 		}
@@ -184,24 +189,28 @@ public class UserServiceTest {
 		assertEquals(username, user.getUsername());
 		assertEquals(password, user.getPassword());
 
-		assertNotNull(user.getProfile());
-		assertEquals(PROFILE2_FIRSTNAME, user.getProfile().getFirstName());
-		assertEquals(PROFILE2_LASTNAME, user.getProfile().getLastName());
-		assertEquals(PROFILE2_ADDRESS, user.getProfile().getAddress());
-		assertEquals(PROFILE2_EMAIL, user.getProfile().getEmail());
-		assertEquals(PROFILE2_PHONE, user.getProfile().getPhoneNumber());
-		assertEquals(PROFILE2_PICTURE, user.getProfile().getProfilePicture());
-        assertEquals(PROFILE2_DATE_OF_BIRTH,user.getProfile().getDateOfBirth());
-        assertEquals(EVENT_TYPE2_NAME, user.getProfile().getInterests().get(0).getName());
-        assertEquals(EVENT_TYPE2_DESCRIPTION, user.getProfile().getInterests().get(0).getDescription());
-        assertEquals(EVENT_TYPE2_AGE_REQUIREMENT, user.getProfile().getInterests().get(0).getAgeRequirement());
+//		assertNotNull(user.getProfile());
+//		assertEquals(PROFILE2_FIRSTNAME, user.getProfile().getFirstName());
+//		assertEquals(PROFILE2_LASTNAME, user.getProfile().getLastName());
+//		assertEquals(PROFILE2_ADDRESS, user.getProfile().getAddress());
+//		assertEquals(PROFILE2_EMAIL, user.getProfile().getEmail());
+//		assertEquals(PROFILE2_PHONE, user.getProfile().getPhoneNumber());
+//		assertEquals(PROFILE2_PICTURE, user.getProfile().getProfilePicture());
+//        assertEquals(PROFILE2_DATE_OF_BIRTH,user.getProfile().getDateOfBirth());
+//        assertEquals(EVENT_TYPE2_NAME, user.getProfile().getInterests().get(0).getName());
+//        assertEquals(EVENT_TYPE2_DESCRIPTION, user.getProfile().getInterests().get(0).getDescription());
+//        assertEquals(EVENT_TYPE2_AGE_REQUIREMENT, user.getProfile().getInterests().get(0).getAgeRequirement());
 
 	}
 	
 	@Test
 	public void testCreateUserTakenUsername(){
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(USER_USERNAME);
+		userDTO.setPassword(USER_PASSWORD);
+
 		try {
-			userService.createUser(USER_USERNAME, USER_PASSWORD, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			assertEquals("Username is already taken", e.getMessage());
 		}
@@ -211,8 +220,12 @@ public class UserServiceTest {
 	public void testCreateUserErrorBlankUsername() {
 		String username ="";
 		String password = "Password123";
+
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch (IllegalArgumentException e) {
 			assertEquals("Username cannot be blank", e.getMessage());
 		}
@@ -222,8 +235,11 @@ public class UserServiceTest {
 	public void testCreateUserErrorBlankPassword() {
 		String username ="GarryJimmy";
 		String password = "";
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch (IllegalArgumentException e) {
 			assertEquals("Password cannot be blank", e.getMessage());
 		}
@@ -233,8 +249,11 @@ public class UserServiceTest {
 	public void invalidPasswordUpperCase(){
 		String username = "GaryJimmy";
 		String password = "password123";
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must contain at least one uppercase character", e.getMessage());
 		}
@@ -245,8 +264,11 @@ public class UserServiceTest {
 	public void invalidPasswordLowerCase(){
 		String username = "GaryJimmy";
 		String password = "PASSWORD123";
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must contain at least one lowercase character", e.getMessage());
 		}
@@ -256,8 +278,11 @@ public class UserServiceTest {
 	public void invalidPasswordNumeric(){
 		String username = "GaryJimmy";
 		String password = "Password";
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must contain at least one numeric character", e.getMessage());
 		}
@@ -267,8 +292,11 @@ public class UserServiceTest {
 	public void invalidPasswordLengthUnder8(){
 		String username = "GaryJimmy";
 		String password = "Pass1";
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must have at least 8 characters", e.getMessage());
 		}
@@ -279,8 +307,11 @@ public class UserServiceTest {
 	public void invalidPasswordLengthOver20(){
 		String username = "GaryJimmy";
 		String password = "Password1234567890123456789";
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(username);
+		userDTO.setPassword(password);
 		try {
-			userService.createUser(username, password, profileRepository.findProfileByEmail(PROFILE2_EMAIL).orElse(null));
+			userService.createUser(userDTO);
 		}catch(IllegalArgumentException e) {
 			assertEquals("Password must not have more than 20 characters", e.getMessage());
 		}
