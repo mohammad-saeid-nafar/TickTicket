@@ -8,7 +8,10 @@ import tickticket.model.*;
 public class Conversion {
     public static UserDTO convertToDTO(User user) {
 		if(user == null) throw new IllegalArgumentException("User not found.");
-		return new UserDTO(user.getId(),user.getUsername(),user.getPassword(),user.getCreated(),convertToDTO(user.getProfile()));
+		Profile profile = user.getProfile();
+		UserDTO dto = new UserDTO(user.getId(), user.getUsername(), user.getPassword(), user.getCreated(), profile == null ? null : convertToDTO(profile));
+		dto.setProfileId(profile == null ? null : profile.getId());
+		return dto;
 	}
 
     public static ProfileDTO convertToDTO(Profile profile) {
@@ -19,14 +22,18 @@ public class Conversion {
 			interests.add(convertToDTO(interest));
 		}
 
-		return new ProfileDTO(profile.getFirstName(), profile.getLastName(), profile.getAddress(), profile.getEmail(), profile.getPhoneNumber(),
-				profile.getProfilePicture(), profile.getDateOfBirth(),interests );
+		ProfileDTO dto = new ProfileDTO(profile.getFirstName(), profile.getLastName(), profile.getAddress(), profile.getEmail(), profile.getPhoneNumber(),
+				profile.getProfilePicture(), profile.getDateOfBirth(), interests);
+		dto.setId(profile.getId());
+		return dto;
 	}
 
     public static EventTypeDTO convertToDTO(EventType eventType){
 		if(eventType == null) throw new IllegalArgumentException("Event Type not found.");
 
-        return new EventTypeDTO(eventType.getName(), eventType.getDescription(), eventType.getAgeRequirement());
+		EventTypeDTO dto = new EventTypeDTO(eventType.getName(), eventType.getDescription(), eventType.getAgeRequirement());
+		dto.setId(eventType.getId());
+		return dto;
     }
 
 	public static ReviewDTO convertToDTO(Review review) {

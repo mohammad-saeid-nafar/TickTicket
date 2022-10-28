@@ -12,6 +12,7 @@ import org.mockito.stubbing.Answer;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import tickticket.dao.EventTypeRepository;
+import tickticket.dto.EventTypeDTO;
 import tickticket.model.EventType;
 
 import java.util.ArrayList;
@@ -33,11 +34,14 @@ public class EventTypeServiceTest {
     private static final String EVENT_TYPE1_DESCRIPTION = "Fun & Dancing";
     private static final int EVENT_TYPE1_AGE = 18;
 
+    private EventTypeDTO eventTypeDTO;
+
     @InjectMocks
     private EventTypeService eventTypeService;
 
     @BeforeEach
     public void setMockOutput() {
+        eventTypeDTO = new EventTypeDTO(EVENT_TYPE1_ID, EVENT_TYPE1_NAME, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
 
         lenient().when(eventTypeRepository.findEventTypeByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(EVENT_TYPE1_NAME)) {
@@ -75,8 +79,10 @@ public class EventTypeServiceTest {
         EventType eventType = null;
         String eventTypeName = "test";
 
+        eventTypeDTO.setName(eventTypeName);
+
         try {
-            eventType = eventTypeService.createEventType(eventTypeName, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+            eventType = eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             fail();
         }
@@ -89,7 +95,7 @@ public class EventTypeServiceTest {
     @Test
     public void testCreateEventTypeAlreadyExists() {
         try {
-            eventTypeService.createEventType(EVENT_TYPE1_NAME, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+            eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Event type "+EVENT_TYPE1_NAME+" already exists");
         }
@@ -97,8 +103,9 @@ public class EventTypeServiceTest {
 
     @Test
     public void testCreateEventTypeNullName() {
+        eventTypeDTO.setName(null);
         try {
-            eventTypeService.createEventType(null, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+            eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Name of event type cannot be blank");
         }
@@ -106,33 +113,36 @@ public class EventTypeServiceTest {
 
     @Test
     public void testCreateTypeBlankName() {
+        eventTypeDTO.setName("");
         try {
-           eventTypeService.createEventType("", EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+           eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Name of event type cannot be blank");
         }
     }
     @Test
     public void testCreateEventTypeNullDescription() {
+        eventTypeDTO.setDescription(null);
         try {
-            eventTypeService.createEventType(EVENT_TYPE1_NAME,null, EVENT_TYPE1_AGE);
+            eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Description of event type cannot be blank");
         }
     }
     @Test
     public void testCreateEventTypeBlankDescription() {
+        eventTypeDTO.setDescription("");
         try {
-            eventTypeService.createEventType(EVENT_TYPE1_NAME,"", EVENT_TYPE1_AGE);
+            eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Description of event type cannot be blank");
         }
     }
     @Test
     public void testCreateEventTypeNegativeAge() {
-        int ageTester = -1;
+        eventTypeDTO.setAgeRequirement(-1);
         try {
-            eventTypeService.createEventType(EVENT_TYPE1_NAME,EVENT_TYPE1_DESCRIPTION,ageTester);
+            eventTypeService.createEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Invalid age requirement");
         }
@@ -141,8 +151,9 @@ public class EventTypeServiceTest {
     @Test
     public void testUpdateEventTypeDoesNotExists() {
         UUID id = UUID.randomUUID();
+        eventTypeDTO.setId(id);
         try {
-            eventTypeService.updateEventType(id, EVENT_TYPE1_NAME, EVENT_TYPE1_DESCRIPTION, EVENT_TYPE1_AGE);
+            eventTypeService.updateEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Event type " + id + " not found");
         }
@@ -150,9 +161,9 @@ public class EventTypeServiceTest {
 
     @Test
     public void testUpdateEventTypeNegativeAge() {
-        int ageTester = -1;
+        eventTypeDTO.setAgeRequirement(-1);
         try {
-            eventTypeService.updateEventType(EVENT_TYPE1_ID, EVENT_TYPE1_NAME, EVENT_TYPE1_DESCRIPTION, ageTester);
+            eventTypeService.updateEventType(eventTypeDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Invalid age requirement");
         }

@@ -4,50 +4,54 @@ import java.time.LocalDate;
 import java.util.List;
 
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import tickticket.dao.UserRepository;
+import tickticket.dto.UserDTO;
 import tickticket.model.Profile;
 import tickticket.model.User;
 
 @Service
+@AllArgsConstructor
 public class UserService {
     
-    @Autowired
 	private UserRepository userRepository;
 
 	@Transactional
 	public User login(String username, String password) {
 
-		if(!userRepository.existsByUsername(username)) {
-			throw new IllegalArgumentException("Invalid username");
-		}
+        User user = userRepository.findUserByUsername(username).orElseThrow(() ->
+				new IllegalArgumentException("Invalid username " + username));
 
-        User user = userRepository.findUserByUsername(username).orElse(null);
-        if(user!=null && user.getPassword().equals(password))
+        if (user.getPassword().equals(password))
             return user;
 
 		throw new IllegalArgumentException("Incorrect password");
-
 	}
 
     @Transactional
-	public User createUser(String username, String password, Profile profile) {
+	public User createUser(UserDTO userDTO) {
+		String username = userDTO.getUsername();
+		String password = userDTO.getPassword();
 
-		if(username==null || username.equals("")) throw new IllegalArgumentException("Username cannot be blank");
+		if(username==null || username.equals(""))
+			throw new IllegalArgumentException("Username cannot be blank");
 
-		if(password==null || password.equals("")) throw new IllegalArgumentException("Password cannot be blank");
+		if(password==null || password.equals(""))
+			throw new IllegalArgumentException("Password cannot be blank");
 
 		usernameIsValid(username);
-
 		passwordIsValid(password);
+
+//		Profile profile = profileService.getProfile(userDTO.getProfileId());
 
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.setProfile(profile);
+//        user.setProfile(profile);
         user.setCreated(LocalDate.now());
 
 		userRepository.save(user);
@@ -71,8 +75,7 @@ public class UserService {
 
 	@Transactional
 	public boolean deleteUser(UUID id) {
-		User user = getUser(id);
-		userRepository.delete(user);
+		userRepository.deleteById(id);
 		return true;
 	}
 

@@ -4,8 +4,10 @@ import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Entity
+@AllArgsConstructor
 public class Profile {
 
     private UUID id;

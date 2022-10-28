@@ -1,49 +1,47 @@
 package tickticket.controller;
 
-import java.time.LocalDate;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tickticket.dto.ProfileDTO;
-import tickticket.model.EventType;
 import tickticket.model.Profile;
-import tickticket.service.EventTypeService;
 import tickticket.service.ProfileService;
 
-
 @RestController
+@AllArgsConstructor
+@RequestMapping("/api/v1/profiles")
 public class ProfileController {
 
-    @Autowired
     private ProfileService profileService;
 
-    @Autowired
-    private EventTypeService eventTypeService;
-
-    @PatchMapping(value = {"/edit_profile/{id}"})
-    public ResponseEntity<?> editProfile(@PathVariable UUID id,@RequestParam String firstName, @RequestParam String lastName, @RequestParam String phoneNumber,
-                                        @RequestParam String email, @RequestParam String address, @RequestParam String profilePicture, @RequestParam LocalDate dateOfBirth,
-                                        @RequestParam List<UUID> eventTypesIds) {
-
-        List<EventType> interests = new ArrayList<>();
-        for(UUID eventTypeId : eventTypesIds){
-            interests.add(eventTypeService.getEventType(eventTypeId));
+    @PostMapping
+    public ResponseEntity<?> createProfile(@RequestBody ProfileDTO profileDTO) {
+        Profile profile;
+        try {
+            profile = profileService.createProfile(profileDTO);
+        }catch(IllegalArgumentException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(Conversion.convertToDTO(profile), HttpStatus.CREATED);
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> editProfile(@RequestBody ProfileDTO profileDTO) {
 
         Profile profile;
         try {
-            profile = profileService.updateProfile(id, firstName, lastName, address, email, phoneNumber, profilePicture, dateOfBirth, interests);
+            profile = profileService.updateProfile(profileDTO);
         }catch(IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -52,19 +50,21 @@ public class ProfileController {
 
     }
 
-    @GetMapping(value = {"/view_profile/{id}"})
+    @GetMapping(value = {"/{id}"})
     public ProfileDTO viewProfile(@PathVariable("id") UUID id) {
         return Conversion.convertToDTO(profileService.getProfile(id));
     }
 
-    @GetMapping(value = {"/view_profile_email/{email}"})
+    @GetMapping(value = {"/email/{email}"})
     public ProfileDTO viewProfileByEmail(@PathVariable("email") String email) {
         return Conversion.convertToDTO(profileService.getProfileByEmail(email));
     }
 
-    @GetMapping(value = {"/view_profiles", "/view_profiles/"})
+    @GetMapping
     public List<ProfileDTO> viewProfiles(){
-        return profileService.getAllProfiles().stream().map(Conversion::convertToDTO).collect(Collectors.toList());
+        return profileService.getAllProfiles().stream()
+                .map(Conversion::convertToDTO)
+                .toList();
     }
 
 }

@@ -4,8 +4,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import java.util.UUID;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@ToString
+@Setter
 public class EventType {
 
     private UUID id;

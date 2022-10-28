@@ -24,8 +24,8 @@ import org.mockito.stubbing.Answer;
 
 import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
+import tickticket.dto.ProfileDTO;
 import tickticket.model.*;
-
 
 @ExtendWith(MockitoExtension.class)
 public class ProfileServiceTest {
@@ -35,6 +35,9 @@ public class ProfileServiceTest {
 
     @Mock
     private EventTypeRepository eventTypeRepository;
+
+    @Mock
+    private EventTypeService eventTypeService;
 
     @InjectMocks
     private ProfileService profileService;
@@ -64,17 +67,31 @@ public class ProfileServiceTest {
     private static final String EVENT_TYPE2_DESCRIPTION = "Pop is a kind of music";
     private static final int EVENT_TYPE2_AGE_REQUIREMENT = 13;
 
+    private ProfileDTO profile2DTO;
+
     @BeforeEach
     public void setMockOutput() {
+        profile2DTO = new ProfileDTO();
+        profile2DTO.setFirstName(PROFILE2_FIRSTNAME);
+        profile2DTO.setLastName(PROFILE2_LASTNAME);
+        profile2DTO.setEmail(PROFILE2_EMAIL);
+        profile2DTO.setPhoneNumber(PROFILE2_PHONE);
+        profile2DTO.setAddress(PROFILE2_ADDRESS);
+        profile2DTO.setProfilePicture(PROFILE2_PICTURE);
+        profile2DTO.setDateOfBirth(PROFILE2_DATE_OF_BIRTH);
+
         lenient().when(eventTypeRepository.findEventTypeByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if(invocation.getArgument(0).equals(EVENT_TYPE_NAME)) {
                 EventType eventType = new EventType();
+                eventType.setId(UUID.randomUUID());
                 eventType.setName(EVENT_TYPE_NAME);
                 eventType.setDescription(EVENT_TYPE_DESCRIPTION);
                 eventType.setAgeRequirement(EVENT_TYPE_AGE_REQUIREMENT);
                 return Optional.of(eventType);
             }else if(invocation.getArgument(0).equals(EVENT_TYPE2_NAME)){
+                System.out.println("here");
                 EventType eventType = new EventType();
+                eventType.setId(UUID.randomUUID());
                 eventType.setName(EVENT_TYPE2_NAME);
                 eventType.setDescription(EVENT_TYPE2_DESCRIPTION);
                 eventType.setAgeRequirement(EVENT_TYPE2_AGE_REQUIREMENT);
@@ -118,6 +135,13 @@ public class ProfileServiceTest {
             }
         });
 
+        lenient().when(eventTypeService.getAllEventTypes(any())).thenAnswer((InvocationOnMock invocation) -> {
+            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
+            List<EventType> eventTypes = new ArrayList<>();
+            eventTypes.add(eventType);
+            return eventTypes;
+        });
+
         Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
 
         lenient().when(profileRepository.save(any(Profile.class))).thenAnswer(returnParameterAsAnswer);
@@ -128,9 +152,10 @@ public class ProfileServiceTest {
         Profile profile = null;
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profile = profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE2_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profile = profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             fail();
         }
@@ -152,9 +177,10 @@ public class ProfileServiceTest {
     public void testCreateProfileTakenEmail() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "User with email entered already exists.");
         }
@@ -164,9 +190,11 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidFirstName() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile("", PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profile2DTO.setFirstName("");
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "First name cannot be blank.");
         }
@@ -176,9 +204,11 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidLastName() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, "", PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profile2DTO.setLastName("");
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Last name cannot be blank.");
         }
@@ -188,9 +218,11 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidAddress() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, "", PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profile2DTO.setAddress("");
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Address cannot be blank.");
         }
@@ -200,9 +232,11 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidEmail() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, "aadeew", PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profile2DTO.setEmail("aadeew");
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Invalid email.");
         }
@@ -212,9 +246,11 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidEmail2() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, "", PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            List<UUID> interests = new ArrayList<>();
+            interests.add(eventType.getId());
+            profile2DTO.setInterestIds(interests);
+            profile2DTO.setEmail("");
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Email cannot be blank.");
         }
@@ -224,9 +260,10 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidPhone() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE2_EMAIL, "", PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            System.out.println(eventType);
+            profile2DTO.setInterestIds(List.of(eventType.getId()));
+            profile2DTO.setPhoneNumber("");
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Phone number cannot be blank.");
         }
@@ -236,9 +273,9 @@ public class ProfileServiceTest {
     public void testCreateProfileInvalidDateOfBirth() {
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profileService.createProfile(PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE2_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, null, interests);
+            profile2DTO.setInterestIds(List.of(eventType.getId()));
+            profile2DTO.setDateOfBirth(null);
+            profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             assertEquals(e.getMessage(), "Date of birth cannot be blank.");
         }
@@ -271,9 +308,10 @@ public class ProfileServiceTest {
         Profile profile = null;
         try {
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<EventType> interests = new ArrayList<>();
-            interests.add(eventType);
-            profile = profileService.updateProfile(PROFILE_ID, PROFILE2_FIRSTNAME, PROFILE2_LASTNAME, PROFILE2_ADDRESS, PROFILE_EMAIL, PROFILE2_PHONE, PROFILE2_PICTURE, PROFILE2_DATE_OF_BIRTH, interests);
+            profile2DTO.setInterestIds(List.of(eventType.getId()));
+            profile2DTO.setId(PROFILE_ID);
+            profile2DTO.setEmail(PROFILE_EMAIL);
+            profile = profileService.updateProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             fail();
         }
