@@ -4,6 +4,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +13,9 @@ import tickticket.dao.EventScheduleRepository;
 import tickticket.model.EventSchedule;
 
 @Service
+@AllArgsConstructor
 public class EventScheduleService {
 
-    @Autowired
     EventScheduleRepository eventScheduleRepository;
 
     @Transactional
@@ -26,10 +27,7 @@ public class EventScheduleService {
         eventSchedule.setStartDateTime(start);
         eventSchedule.setEndDateTime(end);
 
-        eventScheduleRepository.save(eventSchedule);
-
-        return eventSchedule;
-
+        return eventScheduleRepository.save(eventSchedule);
     }
 
     @Transactional
@@ -41,8 +39,7 @@ public class EventScheduleService {
 		if(end != null){
 			eventSchedule.setEndDateTime(end);
 		}
-		eventScheduleRepository.save(eventSchedule);
-		return eventSchedule;
+		return eventScheduleRepository.save(eventSchedule);
 	}
 
 	@Transactional

@@ -49,10 +49,10 @@ public class ProfileService {
 
 		if(email != null && !email.equals("")){
 			if(emailIsNotValid(email))
-				throw new IllegalArgumentException("Invalid email");
+				throw new IllegalArgumentException("Invalid email.");
 			profile.setEmail(email);
 		} else {
-			throw new IllegalArgumentException("Email cannot be blank");
+			throw new IllegalArgumentException("Email cannot be blank.");
 		}
 
 		if(firstName != null && !firstName.equals("")){

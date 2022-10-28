@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import tickticket.dao.EventRepository;
 import tickticket.dao.ReviewRepository;
 import tickticket.dao.UserRepository;
+import tickticket.dto.ReviewDTO;
 import tickticket.model.Event;
 import tickticket.model.EventSchedule;
 import tickticket.model.Review;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.lenient;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
@@ -39,7 +41,13 @@ public class ReviewServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private UserService userService;
+
+    @Mock
     private EventRepository eventRepository;
+
+    @Mock
+    private EventService eventService;
 
     @InjectMocks
     private ReviewService reviewService;
@@ -84,9 +92,17 @@ public class ReviewServiceTest {
     private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 2, 12, 0);
     private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 2, 23, 59);
 
+    private ReviewDTO reviewDTO;
 
     @BeforeEach
     public void setMockOutput() {
+        reviewDTO = new ReviewDTO();
+        reviewDTO.setId(reviewID1);
+        reviewDTO.setTitle(title1);
+        reviewDTO.setRating(rating1);
+        reviewDTO.setDescription(reviewDescription1);
+        reviewDTO.setUserId(USER_ID2);
+        reviewDTO.setEventId(EVENT_ID);
 
         lenient().when(userRepository.findUserByUsername(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(USER_USERNAME)) {
@@ -108,6 +124,29 @@ public class ReviewServiceTest {
             }
             else {
                 return Optional.empty();
+            }
+        });
+
+        lenient().when(userService.getUser(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument(0).equals(USER_ID)) {
+                User user = new User();
+                user.setId(USER_ID);
+                user.setUsername(USER_USERNAME);
+                user.setPassword(USER_PASSWORD);
+                user.setCreated(USER_CREATED);
+
+                return user;
+            }
+            else if (invocation.getArgument(0).equals(USER_ID2)){
+                User user2 = new User();
+                user2.setId(USER_ID2);
+                user2.setUsername(USER_USERNAME2);
+                user2.setPassword(USER_PASSWORD2);
+                user2.setCreated(USER_CREATED2);
+                return user2;
+            }
+            else {
+                return null;
             }
         });
 
@@ -136,7 +175,12 @@ public class ReviewServiceTest {
             }
         });
 
-        lenient().when(reviewRepository.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> ((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME) && ((User) invocation.getArgument(1)).getId().equals(USER_ID));
+        lenient().when(eventService.getEvent(any(UUID.class))).thenAnswer((InvocationOnMock invocation)
+                -> eventRepository.findById(invocation.getArgument(0)).get());
+
+        lenient().when(reviewRepository.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation)
+                -> ((Event) invocation.getArgument(0)).getName().equals(EVENT_NAME)
+                && ((User) invocation.getArgument(1)).getId().equals(USER_ID));
 
 
         lenient().when(reviewRepository.findReviewsByUser(any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
@@ -246,12 +290,12 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReview(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         Review review = null;
+        when(reviewRepository.findReviewByEventAndUser(any(), any())).thenReturn(Optional.empty());
         try{
-            review = reviewService.createReview(event, user, title1, reviewDescription1, rating1);
+            review = reviewService.createReview(reviewDTO);
         }catch(Exception e){
+            System.out.println(e.getMessage());
             fail();
         }
 
@@ -273,10 +317,9 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReviewNullTitle(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        reviewDTO.setTitle(null);
         try{
-            reviewService.createReview(event, user, null, reviewDescription1, rating1);
+            reviewService.createReview(reviewDTO);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Review must have a title");
         }
@@ -284,10 +327,9 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReviewNullDescription(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        reviewDTO.setDescription(null);
         try{
-            reviewService.createReview(event, user, title1, null, rating1);
+            reviewService.createReview(reviewDTO);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Description must contain at least 1 character");
         }
@@ -295,10 +337,9 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReviewInvalidRating(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        reviewDTO.setRating(6);
         try{
-            reviewService.createReview(event, user, title1, reviewDescription1, 6);
+            reviewService.createReview(reviewDTO);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Event rating must be between 0 and 5 (inclusive)");
         }
@@ -306,10 +347,9 @@ public class ReviewServiceTest {
 
     @Test
     public void testCreateReviewBlankDescription(){
-        User user = userRepository.findUserByUsername(USER_USERNAME2).orElse(null);
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
+        reviewDTO.setDescription("");
         try{
-            reviewService.createReview(event, user, title1, "", rating1);
+            reviewService.createReview(reviewDTO);
         }catch(Exception e){
             assertEquals(e.getMessage(), "Description must contain at least 1 character");
         }
@@ -318,9 +358,13 @@ public class ReviewServiceTest {
 
     @Test
     public void testEditReview(){
+        reviewDTO.setTitle(newTitle);
+        reviewDTO.setDescription(newDescription);
+        reviewDTO.setRating(newRating);
+
         Review review = null;
         try{
-            review = reviewService.editReview(reviewID1, newTitle, newDescription, newRating);
+            review = reviewService.editReview(reviewDTO);
         }catch(Exception e){
             fail();
         }
@@ -361,8 +405,9 @@ public class ReviewServiceTest {
         List<Review> reviews = new ArrayList<>();
 
         try{
-            reviews = reviewService.viewReviewsOfUser(user);
+            reviews = reviewService.viewReviewsOfUser(USER_ID);
         }catch(Exception e){
+            System.out.println(e.getMessage());
             fail();
         }
         System.out.println(reviews);
@@ -389,7 +434,7 @@ public class ReviewServiceTest {
         List<Review> reviews = new ArrayList<>();
 
         try{
-            reviews = reviewService.viewReviewsOfEvent(event);
+            reviews = reviewService.viewReviewsOfEvent(EVENT_ID);
         }catch(Exception e){
             fail();
         }
@@ -415,7 +460,7 @@ public class ReviewServiceTest {
         double average = 0.0;
 
         try{
-            average = reviewService.getAverageEventReview(event);
+            average = reviewService.getAverageEventReview(EVENT_ID);
         }catch(Exception e){
             fail();
         }

@@ -43,7 +43,7 @@ public class TicketController {
         return ResponseEntity.ok(TicketDTO.from(ticket));
     }
 
-    @GetMapping("/{id}/users")
+    @GetMapping("/user/{id}")
     public ResponseEntity<List<TicketDTO>> viewTicketsByUser(@PathVariable UUID id) {
         List<Ticket> tickets = ticketService.getTicketsByUser(id);
         List<TicketDTO> ticketDTOS = tickets.stream()
@@ -52,7 +52,7 @@ public class TicketController {
         return ResponseEntity.ok(ticketDTOS);
     }
 
-    @GetMapping("/{id}/events")
+    @GetMapping("/event/{id}")
     public ResponseEntity<List<TicketDTO>> viewTicketsByEvent(@PathVariable UUID id) {
         List<Ticket> tickets = ticketService.getTicketsByEvent(id);
         List<TicketDTO> ticketDTOS = tickets.stream()

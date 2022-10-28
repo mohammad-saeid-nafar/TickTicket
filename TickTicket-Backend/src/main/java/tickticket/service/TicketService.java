@@ -25,7 +25,7 @@ public class TicketService {
         Ticket ticket = new Ticket();
         ticket.setBookingDate(LocalDateTime.now());
 
-        UUID eventId = ticketDTO.getEvent().getId();
+        UUID eventId = ticketDTO.getEventId();
         Event event = eventService.getEvent(eventId);
 
         if (event == null) {
@@ -33,7 +33,7 @@ public class TicketService {
         }
         ticket.setEvent(event);
 
-        UUID id = ticketDTO.getUser().getId();
+        UUID id = ticketDTO.getUserId();
         User user = userService.getUser(id);
 
         if (user == null) {

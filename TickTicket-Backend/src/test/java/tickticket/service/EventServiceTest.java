@@ -15,6 +15,7 @@ import tickticket.dao.EventRepository;
 import tickticket.dao.EventScheduleRepository;
 import tickticket.dao.EventTypeRepository;
 import tickticket.dao.UserRepository;
+import tickticket.dto.EventDTO;
 import tickticket.model.Event;
 import tickticket.model.EventSchedule;
 import tickticket.model.EventType;
@@ -43,7 +44,13 @@ public class EventServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private UserService userService;
+
+    @Mock
     private EventTypeRepository eventTypeRepository;
+
+    @Mock
+    private EventTypeService eventTypeService;
 
     @InjectMocks
     private EventService eventService;
@@ -65,17 +72,34 @@ public class EventServiceTest {
     private static final String ORGANIZER_PASSWORD = "Password123";
     private static final LocalDate ORGANIZER_CREATED = LocalDate.of(2022, 10, 1);
 
+    private static final UUID EVENT_TYPE_ID = UUID.randomUUID();
     private static final String EVENT_TYPE1_NAME = "Party";
     private static final String EVENT_TYPE1_DESCRIPTION = "Fun & Dancing";
     private static final int EVENT_TYPE1_AGE = 18;
 
+    private static final UUID EVENT_TYPE2_ID = UUID.randomUUID();
     private static final String EVENT_TYPE2_NAME = "Concert";
     private static final String EVENT_TYPE2_DESCRIPTION = "Nice music";
     private static final int EVENT_TYPE2_AGE = 13;
 
+    private EventDTO eventDTO;
+
 
     @BeforeEach
     public void setMockOutput() {
+        eventDTO = new EventDTO();
+        eventDTO.setId(EVENT_ID);
+        eventDTO.setName(EVENT_NAME);
+        eventDTO.setDescription(EVENT_DESCRIPTION);
+        eventDTO.setCapacity(EVENT_CAPACITY);
+        eventDTO.setCost(EVENT_COST);
+        eventDTO.setAddress(EVENT_ADDRESS);
+        eventDTO.setEmail(EVENT_EMAIL);
+        eventDTO.setPhoneNumber(EVENT_PHONE_NUMBER);
+        eventDTO.setOrganizerId(ORGANIZER_ID);
+        eventDTO.setEventTypeIds(List.of(EVENT_TYPE_ID, EVENT_TYPE2_ID));
+        eventDTO.setStart(EVENT_START);
+        eventDTO.setEnd(EVENT_END);
 
         lenient().when(eventTypeRepository.findEventTypeByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(EVENT_TYPE1_NAME)) {
@@ -102,6 +126,31 @@ public class EventServiceTest {
             }
         });
 
+        lenient().when(eventTypeService.getAllEventTypes(any(List.class))).thenAnswer((InvocationOnMock invocation) -> {
+            List<EventType> eventTypes = new ArrayList<>();
+            EventType eventType1 = new EventType();
+            eventType1.setId(EVENT_TYPE_ID);
+            eventType1.setName(EVENT_TYPE1_NAME);
+            eventType1.setDescription(EVENT_TYPE1_DESCRIPTION);
+            eventType1.setAgeRequirement(EVENT_TYPE1_AGE);
+            eventTypes.add(eventType1);
+
+            List<UUID> ls = invocation.getArgument(0);
+            if (ls.size() < 2) {
+                return eventTypes;
+            }
+
+            EventType eventType2 = new EventType();
+            eventType2.setId(EVENT_TYPE2_ID);
+            eventType2.setName(EVENT_TYPE2_NAME);
+            eventType2.setDescription(EVENT_TYPE2_DESCRIPTION);
+            eventType2.setAgeRequirement(EVENT_TYPE2_AGE);
+
+            eventTypes.add(eventType2);
+
+            return eventTypes;
+        });
+
         lenient().when(userRepository.findUserByUsername(anyString())).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(ORGANIZER_USERNAME)) {
 
@@ -115,6 +164,27 @@ public class EventServiceTest {
             }
             else {
                 return Optional.empty();
+            }
+        });
+
+        lenient().when(userService.getUser(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument(0).equals(ORGANIZER_ID)) {
+
+                User organizer = new User();
+                organizer.setId(ORGANIZER_ID);
+                organizer.setUsername(ORGANIZER_USERNAME);
+                organizer.setPassword(ORGANIZER_PASSWORD);
+                organizer.setCreated(ORGANIZER_CREATED);
+
+                return organizer;
+            }
+            else {
+                User organizer = new User();
+                organizer.setId(invocation.getArgument(0));
+                organizer.setUsername("New organizer");
+                organizer.setPassword("NewPass123");
+                organizer.setCreated(LocalDate.now());
+                return organizer;
             }
         });
 
@@ -190,20 +260,12 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEvent(){
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
-
         Event event = null;
 
         try{
-            event = eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            event = eventService.createEvent(eventDTO);
         }catch(Exception e){
+            System.out.println(e.getMessage());
             fail();
         }
 
@@ -236,17 +298,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullName() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setName(null);
 
         try {
-            eventService.createEvent(null, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Name cannot be blank");
         }
@@ -255,17 +310,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventBlankName() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setName("");
 
         try {
-            eventService.createEvent("", EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Name cannot be blank");
         }
@@ -274,17 +322,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullAddress() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setAddress(null);
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, null, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Address cannot be blank");
         }
@@ -293,17 +334,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventBlankAddress() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setAddress("");
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, "", EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Address cannot be blank");
         }
@@ -312,18 +346,9 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullEmail() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
-
-
+        eventDTO.setEmail(null);
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, null, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Email cannot be blank");
         }
@@ -332,17 +357,9 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventBlankEmail() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
-
+        eventDTO.setEmail("");
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, "", EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Email cannot be blank");
         }
@@ -351,17 +368,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullPhoneNumber() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setPhoneNumber(null);
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, null, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Phone number cannot be blank");
         }
@@ -370,17 +380,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventBlankPhoneNumber() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setPhoneNumber("");
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, "", organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Phone number cannot be blank");
         }
@@ -389,17 +392,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventZeroCapacity() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setCapacity(0);
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, 0, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Capacity cannot be blank or 0");
         }
@@ -408,17 +404,9 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullCost() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
-
+        eventDTO.setCost(null);
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, null, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Cost cannot be blank");
         }
@@ -427,17 +415,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullStart() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setStart(null);
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, null, EVENT_END);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Start of event schedule cannot be blank");
         }
@@ -446,17 +427,10 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventNullEnd() {
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-        EventType eventType2 = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-        eventTypes.add(eventType2);
+        eventDTO.setEnd(null);
 
         try {
-            eventService.createEvent(EVENT_NAME, EVENT_DESCRIPTION, EVENT_CAPACITY, EVENT_COST, EVENT_ADDRESS, EVENT_EMAIL, EVENT_PHONE_NUMBER, organizer, eventTypes, EVENT_START, null);
+            eventService.createEvent(eventDTO);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "End of event schedule cannot be blank");
         }
@@ -469,7 +443,7 @@ public class EventServiceTest {
         newOrganizer.setId(UUID.randomUUID());
         newOrganizer.setUsername("New organizer");
         newOrganizer.setPassword("NewPass123");
-        newOrganizer.setCreated(LocalDate.of(2022, 10, 2));
+        newOrganizer.setCreated(LocalDate.now());
 
         EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
 
@@ -485,8 +459,18 @@ public class EventServiceTest {
         int newCapacity = 200;
         double newCost = 200.0;
 
+        eventDTO.setName(newName);
+        eventDTO.setDescription(newDescription);
+        eventDTO.setAddress(newAddress);
+        eventDTO.setEmail(newEmail);
+        eventDTO.setPhoneNumber(newPhoneNumber);
+        eventDTO.setCapacity(newCapacity);
+        eventDTO.setCost(newCost);
+        eventDTO.setOrganizerId(newOrganizer.getId());
+        eventDTO.setEventTypeIds(List.of(EVENT_TYPE_ID));
+
         try {
-            event = eventService.updateEvent(EVENT_ID, newName, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
+            event = eventService.updateEvent(eventDTO);
         } catch (Exception e) {
             fail();
         }
@@ -536,7 +520,7 @@ public class EventServiceTest {
         UUID id = UUID.randomUUID();
 
         try {
-            eventService.updateEvent(id, newName, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
+//            eventService.updateEvent(id, newName, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Event " + id + " not found");
         }

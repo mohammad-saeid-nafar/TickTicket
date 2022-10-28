@@ -1,13 +1,19 @@
 package tickticket.dto;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class EventDTO {
     private UUID id;
     private String name;
@@ -17,10 +23,18 @@ public class EventDTO {
     private String address;
     private String email;
     private String phoneNumber;
-    private UserDTO organizer;
-    private EventScheduleDTO eventSchedule;
-    private List<EventTypeDTO> eventTypes;
 
+    private UUID organizerId;
+    private UserDTO organizer;
+
+    private UUID eventScheduleId;
+    private EventScheduleDTO eventSchedule;
+
+    private List<UUID> eventTypeIds = new ArrayList<>();
+    private List<EventTypeDTO> eventTypes = new ArrayList<>();
+
+    private LocalDateTime start;
+    private LocalDateTime end;
 
     public EventDTO(UUID id, String name, String description, Integer capacity,
         Double cost, String address, String email, String phoneNumber,

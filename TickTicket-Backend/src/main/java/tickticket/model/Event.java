@@ -2,8 +2,10 @@ package tickticket.model;
 import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Entity
+@AllArgsConstructor
 public class Event {
 
     private UUID id;
