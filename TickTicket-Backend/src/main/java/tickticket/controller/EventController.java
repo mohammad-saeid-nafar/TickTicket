@@ -1,5 +1,6 @@
 package tickticket.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,56 +19,48 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@AllArgsConstructor
+@RequestMapping("/api/v1/events")
 public class EventController {
 
-    @Autowired
     private EventService eventService;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private EventTypeService eventTypeService;
 
-    @PostMapping(value = {"/create_event", "/create_event/"})
-    public ResponseEntity<?> createEvent(@RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
-                                                @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
-                                                @RequestParam String phoneNumber, @RequestParam UUID organizerId, @RequestParam List<UUID> eventTypesIds,
-                                                @RequestParam String start, @RequestParam String end){
-        List<EventType> eventTypes = new ArrayList<>();
-        for(UUID eventTypeId : eventTypesIds){
-            eventTypes.add(eventTypeService.getEventType(eventTypeId));
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime startDateTime = LocalDateTime.parse(start, formatter);
-        LocalDateTime endDateTime = LocalDateTime.parse(end, formatter);
+    @PostMapping
+    public ResponseEntity<?> createEvent(@RequestBody EventDTO eventDTO) {
+//        List<EventType> eventTypes = new ArrayList<>();
+//        for(UUID eventTypeId : eventTypesIds){
+//            eventTypes.add(eventTypeService.getEventType(eventTypeId));
+//        }
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+//        LocalDateTime startDateTime = LocalDateTime.parse(start, formatter);
+//        LocalDateTime endDateTime = LocalDateTime.parse(end, formatter);
         Event event;
         try{
-            event = eventService.createEvent(name, description, capacity, cost, address, email, phoneNumber, userService.getUser(organizerId), eventTypes, startDateTime, endDateTime);
+            event = eventService.createEvent(eventDTO);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(Conversion.convertToDTO(event), HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = {"/update_event", "/update_event/"})
-    public ResponseEntity<?> updateEvent(@RequestParam UUID id, @RequestParam String name, @RequestParam String description, @RequestParam Integer capacity,
-                                         @RequestParam Double cost, @RequestParam String address, @RequestParam String email,
-                                         @RequestParam String phoneNumber, @RequestParam UUID organizerId, @RequestParam List<UUID> eventTypesIds){
-        List<EventType> eventTypes = new ArrayList<>();
-        for(UUID eventTypeId : eventTypesIds){
-            eventTypes.add(eventTypeService.getEventType(eventTypeId));
-        }
+    @PatchMapping
+    public ResponseEntity<?> updateEvent(@RequestBody EventDTO eventDTO) {
+//        List<EventType> eventTypes = new ArrayList<>();
+//        for(UUID eventTypeId : eventTypesIds){
+//            eventTypes.add(eventTypeService.getEventType(eventTypeId));
+//        }
         Event event;
         try{
-            event = eventService.updateEvent(id, name, description, capacity, cost, address, email, phoneNumber, userService.getUser(organizerId), eventTypes);
+            event = eventService.updateEvent(eventDTO);
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(Conversion.convertToDTO(event), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = {"/delete_event/{id}"})
+    @DeleteMapping(value = {"/{id}"})
     public ResponseEntity<?> deleteEvent(@PathVariable("id") UUID id){
         try{
             eventService.deleteEvent(id);
@@ -77,7 +70,7 @@ public class EventController {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
-    @GetMapping(value = {"/view_event/{id}"})
+    @GetMapping(value = {"/{id}"})
     public ResponseEntity<?> getEventById(@PathVariable("id") UUID id){
         Event event;
         try{
@@ -88,7 +81,7 @@ public class EventController {
         return new ResponseEntity<>(Conversion.convertToDTO(event), HttpStatus.OK);
     }
 
-    @GetMapping(value = {"/view_events", "/view_events/"})
+    @GetMapping
     public ResponseEntity<?> getEvents(){
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
@@ -102,7 +95,7 @@ public class EventController {
         return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = {"/view_events_organizer/{username}"})
+    @GetMapping(value = {"/organizer/{username}"})
     public ResponseEntity<?> getEventsByOrganizer(@PathVariable("username") String username){
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
@@ -116,6 +109,7 @@ public class EventController {
         return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
     }
 
+    // TODO Fix this, it's not working
     @GetMapping(value = {"/view_events_event_types"})
     public ResponseEntity<?> getEventsByEventTypes(@RequestParam List<UUID> eventTypesIds){
         List<EventType> eventTypes = new ArrayList<>();

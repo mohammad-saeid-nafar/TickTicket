@@ -1,10 +1,12 @@
 package tickticket.service;
 
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tickticket.dao.ReviewRepository;
+import tickticket.dto.ReviewDTO;
 import tickticket.model.Event;
 import tickticket.model.Review;
 import tickticket.model.User;
@@ -15,13 +17,21 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class ReviewService {
 
-    @Autowired
-    ReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
+    private UserService userService;
+    private EventService eventService;
 
     @Transactional
-    public Review createReview(Event event, User user, String title, String description, int rating) {
+    public Review createReview(ReviewDTO reviewDTO) {
+        String title = reviewDTO.getTitle();
+        int rating = reviewDTO.getRating();
+        String description = reviewDTO.getDescription();
+
+        User user = userService.getUser(reviewDTO.getUserId());
+        Event event = eventService.getEvent(reviewDTO.getEventId());
 
         if(title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Review must have a title");
@@ -44,6 +54,7 @@ public class ReviewService {
             throw new IllegalArgumentException("Cannot create a review for a future event");
         }
         review = new Review();
+        System.out.println("review created");
         review.setEvent(event);
         review.setUser(user);
         review.setRating(rating);
@@ -54,8 +65,11 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review editReview(UUID id, String newTitle, String newDescription, int newRating) {
-
+    public Review editReview(ReviewDTO reviewDTO) {
+        UUID id = reviewDTO.getId();
+        String newTitle = reviewDTO.getTitle();
+        int newRating = reviewDTO.getRating();
+        String newDescription = reviewDTO.getDescription();
 
         Review review = getReviewById(id);
 
@@ -88,19 +102,20 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<Review> viewReviewsOfUser(User user) {
+    public List<Review> viewReviewsOfUser(UUID userId) {
+        User user = userService.getUser(userId);
         return reviewRepository.findReviewsByUser(user);
     }
 
     @Transactional
-    public List<Review> viewReviewsOfEvent(Event event) {
+    public List<Review> viewReviewsOfEvent(UUID eventId) {
+        Event event = eventService.getEvent(eventId);
         return reviewRepository.findReviewsByEvent(event);
     }
 
     @Transactional
-    public double getAverageEventReview(Event event) {
-
-        List<Review> reviewsForEvent = viewReviewsOfEvent(event);
+    public double getAverageEventReview(UUID eventId) {
+        List<Review> reviewsForEvent = viewReviewsOfEvent(eventId);
         int totalEventRating = 0;
         for(Review review : reviewsForEvent) {
             totalEventRating = totalEventRating + review.getRating();

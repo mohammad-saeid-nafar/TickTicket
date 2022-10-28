@@ -24,6 +24,7 @@ import org.mockito.stubbing.Answer;
 
 import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
+import tickticket.dao.UserRepository;
 import tickticket.dto.ProfileDTO;
 import tickticket.model.*;
 
@@ -38,6 +39,12 @@ public class ProfileServiceTest {
 
     @Mock
     private EventTypeService eventTypeService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private ProfileService profileService;
@@ -72,6 +79,7 @@ public class ProfileServiceTest {
     @BeforeEach
     public void setMockOutput() {
         profile2DTO = new ProfileDTO();
+        profile2DTO.setUsername("TestUser2");
         profile2DTO.setFirstName(PROFILE2_FIRSTNAME);
         profile2DTO.setLastName(PROFILE2_LASTNAME);
         profile2DTO.setEmail(PROFILE2_EMAIL);
@@ -80,7 +88,26 @@ public class ProfileServiceTest {
         profile2DTO.setProfilePicture(PROFILE2_PICTURE);
         profile2DTO.setDateOfBirth(PROFILE2_DATE_OF_BIRTH);
 
+        lenient().when(userService.getUserByUsername(anyString())).thenAnswer((InvocationOnMock invocation) -> {
+            System.out.println("Mocking getUserByUsername");
+            User user = new User();
+            user.setUsername("TestUser");
+            user.setId(UUID.randomUUID());
+            System.out.println("User: " + user);
+            return user;
+        });
+
+        lenient().when(userRepository.findUserByUsername(anyString())).thenAnswer((InvocationOnMock invocation) -> {
+            System.out.println("Mocking getUserByUsername");
+            User user = new User();
+            user.setUsername("TestUser");
+            user.setId(UUID.randomUUID());
+            System.out.println("User: " + user);
+            return Optional.of(user);
+        });
+
         lenient().when(eventTypeRepository.findEventTypeByName(anyString())).thenAnswer((InvocationOnMock invocation) -> {
+            System.out.println("Mocking findEventTypeByName");
             if(invocation.getArgument(0).equals(EVENT_TYPE_NAME)) {
                 EventType eventType = new EventType();
                 eventType.setId(UUID.randomUUID());
@@ -136,6 +163,7 @@ public class ProfileServiceTest {
         });
 
         lenient().when(eventTypeService.getAllEventTypes(any())).thenAnswer((InvocationOnMock invocation) -> {
+            System.out.println("Mocking getAllEventTypes");
             EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
             List<EventType> eventTypes = new ArrayList<>();
             eventTypes.add(eventType);
@@ -151,10 +179,7 @@ public class ProfileServiceTest {
     public void testCreateProfile() {
         Profile profile = null;
         try {
-            EventType eventType = eventTypeRepository.findEventTypeByName(EVENT_TYPE2_NAME).orElse(null);
-            List<UUID> interests = new ArrayList<>();
-            interests.add(eventType.getId());
-            profile2DTO.setInterestIds(interests);
+            profile2DTO.setInterestIds(List.of(UUID.randomUUID()));
             profile = profileService.createProfile(profile2DTO);
         } catch(IllegalArgumentException e) {
             fail();

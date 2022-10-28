@@ -38,14 +38,18 @@ public class Conversion {
 
 	public static ReviewDTO convertToDTO(Review review) {
 		if(review==null) throw new IllegalArgumentException("Review not found.");
-		return new ReviewDTO(review.getTitle(), review.getRating(), review.getDescription(),
+		ReviewDTO reviewDTO = new ReviewDTO(review.getTitle(), review.getRating(), review.getDescription(),
 				convertToDTO(review.getUser()), convertToDTO(review.getEvent()));
+		reviewDTO.setId(review.getId());
+		return reviewDTO;
 	}
 
 	public static EventScheduleDTO convertToDTO(EventSchedule eventSchedule){
 		if(eventSchedule == null) throw new IllegalArgumentException("Event Schedule not found.");
 
-        return new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime());
+		EventScheduleDTO eventScheduleDTO = new EventScheduleDTO(eventSchedule.getStartDateTime(), eventSchedule.getEndDateTime());
+		eventScheduleDTO.setId(eventSchedule.getId());
+		return eventScheduleDTO;
     }
 
 	public static EventDTO convertToDTO(Event event){

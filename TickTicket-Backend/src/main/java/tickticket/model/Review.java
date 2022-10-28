@@ -1,10 +1,11 @@
 package tickticket.model;
 import javax.persistence.*;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Entity
+@AllArgsConstructor
 public class Review {
-
     private UUID id;
     private String title;
     private int rating;

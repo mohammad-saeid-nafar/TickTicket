@@ -1,8 +1,10 @@
 package tickticket.service;
 
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tickticket.dao.EventRepository;
+import tickticket.dto.EventDTO;
 import tickticket.model.EventSchedule;
 import tickticket.model.User;
 import tickticket.model.Event;
@@ -16,15 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class EventService {
 
-	@Autowired
 	private EventRepository eventRepository;
+	private UserService userService;
+	private EventTypeService eventTypeService;
+	private EventScheduleService eventScheduleService;
 
-
-	public Event createEvent(String name, String description, Integer capacity, Double cost, String address,
-							 String email, String phoneNumber, User organizer, List<EventType> eventTypes,
-							 LocalDateTime start, LocalDateTime end) {
+	public Event createEvent(EventDTO eventDTO) {
+		String name = eventDTO.getName();
+		String description = eventDTO.getDescription();
+	    Integer capacity = eventDTO.getCapacity();
+		Double cost = eventDTO.getCost();
+		String address = eventDTO.getAddress();
+		String email = eventDTO.getEmail();
+		String phoneNumber = eventDTO.getPhoneNumber();
+		UUID organizerId = eventDTO.getOrganizerId();
+		UUID eventScheduleId = eventDTO.getEventScheduleId();
+		List<UUID> eventTypeIds = eventDTO.getEventTypeIds();
 
 		if(name == null || name.equals("")) throw new IllegalArgumentException("Name cannot be blank");
 
@@ -38,15 +50,24 @@ public class EventService {
 
         if(cost == null ) throw new IllegalArgumentException("Cost cannot be blank");
 
-		if(start==null) throw new IllegalArgumentException("Start of event schedule cannot be blank");
+		Event newEvent = new Event();
 
-		if(end==null) throw new IllegalArgumentException("End of event schedule cannot be blank");
+		if (eventScheduleId == null) {
+			LocalDateTime start = eventDTO.getStart();
+			LocalDateTime end = eventDTO.getEnd();
 
-		EventSchedule schedule = new EventSchedule();
-		schedule.setStartDateTime(start);
-		schedule.setEndDateTime(end);
+			if(start==null) throw new IllegalArgumentException("Start of event schedule cannot be blank");
+			if(end==null) throw new IllegalArgumentException("End of event schedule cannot be blank");
 
-        Event newEvent = new Event();
+			EventSchedule schedule = new EventSchedule();
+			schedule.setStartDateTime(start);
+			schedule.setEndDateTime(end);
+			newEvent.setEventSchedule(schedule);
+		} else {
+			EventSchedule schedule = eventScheduleService.getEventSchedule(eventScheduleId);
+			newEvent.setEventSchedule(schedule);
+		}
+
         newEvent.setName(name);
         newEvent.setAddress(address);
         newEvent.setDescription(description);
@@ -54,17 +75,26 @@ public class EventService {
         newEvent.setCost(cost);
         newEvent.setEmail(email);
         newEvent.setPhoneNumber(phoneNumber);
-        newEvent.setOrganizer(organizer);
-        newEvent.setEventTypes(eventTypes);
-		newEvent.setEventSchedule(schedule);
+        newEvent.setOrganizer(userService.getUser(organizerId));
+        newEvent.setEventTypes(eventTypeService.getAllEventTypes(eventTypeIds));
 
 		eventRepository.save(newEvent);
 
 		return newEvent;
 	}
 
-	public Event updateEvent(UUID id, String name, String description, Integer capacity, Double cost, String address,
-							 String email, String phoneNumber, User organizer, List<EventType> eventTypes) {
+	public Event updateEvent(EventDTO eventDTO) {
+		UUID id = eventDTO.getId();
+		String name = eventDTO.getName();
+		String description = eventDTO.getDescription();
+		Integer capacity = eventDTO.getCapacity();
+		Double cost = eventDTO.getCost();
+		String address = eventDTO.getAddress();
+		String email = eventDTO.getEmail();
+		String phoneNumber = eventDTO.getPhoneNumber();
+		UUID organizerId = eventDTO.getOrganizerId();
+		UUID eventScheduleId = eventDTO.getEventScheduleId();
+		List<UUID> eventTypeIds = eventDTO.getEventTypeIds();
 
 		Event event = getEvent(id);
 
@@ -72,12 +102,28 @@ public class EventService {
 			event.setName(name);
 		}
 
-		if(organizer != null){
-			event.setOrganizer(organizer);
+		if(organizerId != null){
+			event.setOrganizer(userService.getUser(organizerId));
 		}
 
-		if(eventTypes != null){
+		if(eventTypeIds != null){
+			List<EventType> eventTypes = eventTypeService.getAllEventTypes(eventTypeIds);
 			event.setEventTypes(eventTypes);
+		}
+
+		if (eventScheduleId == null) {
+			LocalDateTime start = eventDTO.getStart();
+			LocalDateTime end = eventDTO.getEnd();
+
+			if (start != null && end != null) {
+				EventSchedule schedule = new EventSchedule();
+				schedule.setStartDateTime(start);
+				schedule.setEndDateTime(end);
+				event.setEventSchedule(schedule);
+			}
+		} else {
+			EventSchedule schedule = eventScheduleService.getEventSchedule(eventScheduleId);
+			event.setEventSchedule(schedule);
 		}
 		
 		if(description != null && !description.equals("")) {
