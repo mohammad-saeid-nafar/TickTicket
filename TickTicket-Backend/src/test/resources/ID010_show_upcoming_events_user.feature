@@ -5,9 +5,9 @@ Feature: Show upcoming events of user
       | Id | username | password  | created    |
       | 1  | user1    | Password1 | 2022-01-01 |
     Given the following events exist in the system:
-      | Id| name  | description  | capacity  | cost  | address | email        | phoneNumber | start            | end              | isRecurrent | recurrences |
-      | 2 | Jazz  | Jazz concert | 20        | 25    | 123 Ave | jazz@mail.ca | 123456789   | 2022-09-15 12:00 | 2022-09-15 23:59 | false       | []          |
-      | 3 | Pop   | Pop concert  | 200       | 50    | 321 Ave | pop@mail.ca  | 987654321   | 2022-10-15 12:00 | 2022-10-15 23:59 | false       | []          |
+      | Id| name  | description  | capacity  | cost  | address | email        | phoneNumber | start            | end              |
+      | 2 | Jazz  | Jazz concert | 20        | 25    | 123 Ave | jazz@mail.ca | 123456789   | 2022-09-15 12:00 | 2022-09-15 23:59 |
+      | 3 | Pop   | Pop concert  | 200       | 50    | 321 Ave | pop@mail.ca  | 987654321   | 2022-10-15 12:00 | 2022-10-15 23:59 |
     Given the following users are registered in the following events:
       | userId | event Ids |
       | 1      | [2,3]     |
@@ -22,7 +22,7 @@ Feature: Show upcoming events of user
     Examples:
       | dateTime         | userId | numEvents | eventIds |
       | 2022-10-10 12:00 | 1      | 1         | [3]      |
-      | 2022-09-01 12:00 | 1      | 0         | [2,3]    |
+      | 2022-09-01 12:00 | 1      | 2         | [2,3]    |
 
   Scenario: Show a user his upcoming events fails
     Given that the current date and time is "2022-10-16 12:00"

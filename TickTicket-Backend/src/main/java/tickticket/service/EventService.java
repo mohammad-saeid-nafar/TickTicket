@@ -1,19 +1,18 @@
 package tickticket.service;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tickticket.dao.EventRepository;
+import tickticket.dao.TicketRepository;
 import tickticket.dto.EventDTO;
-import tickticket.model.EventSchedule;
-import tickticket.model.User;
-import tickticket.model.Event;
-import tickticket.model.EventType;
+import tickticket.model.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -25,6 +24,7 @@ public class EventService {
 	private UserService userService;
 	private EventTypeService eventTypeService;
 	private EventScheduleService eventScheduleService;
+	private TicketRepository ticketRepository;
 
 	public Event createEvent(EventDTO eventDTO) {
 		String name = eventDTO.getName();
@@ -176,6 +176,30 @@ public class EventService {
 
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
+	}
+
+	public List<Event> getUserUpcomingEvents(UUID userId, LocalDateTime currentDateTime){
+		List<Ticket> userTickets = ticketRepository.findTicketsByUser(userService.getUser(userId));
+		List<Event> events = new ArrayList<>();
+		for(Ticket ticket : userTickets){
+			if(ticket.getEvent().getEventSchedule().getStartDateTime().isAfter(currentDateTime)){
+				events.add(ticket.getEvent());
+			}
+		}
+		if(events.isEmpty()) throw new IllegalArgumentException("You do not have any upcoming events.");
+		return events;
+	}
+
+	public List<Event> getUserPastEvents(UUID userId, LocalDateTime currentDateTime){
+		List<Ticket> userTickets = ticketRepository.findTicketsByUser(userService.getUser(userId));
+		List<Event> events = new ArrayList<>();
+		for(Ticket ticket : userTickets){
+			if(ticket.getEvent().getEventSchedule().getStartDateTime().isBefore(currentDateTime)){
+				events.add(ticket.getEvent());
+			}
+		}
+		if(events.isEmpty()) throw new IllegalArgumentException("You do not have any past events.");
+		return events;
 	}
 
 	public List<Event> getAllEvents(){
