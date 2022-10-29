@@ -11,5 +11,5 @@ import java.util.UUID;
 @Repository
 public interface EventTypeRepository extends JpaRepository<EventType, UUID> {
     boolean existsEventTypeByName(String name);
-    Optional<EventType> findEventTypeByName(String name);
+    EventType findEventTypeByName(String name);
 }

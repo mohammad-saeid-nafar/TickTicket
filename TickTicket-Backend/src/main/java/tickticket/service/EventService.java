@@ -37,6 +37,11 @@ public class EventService {
 		UUID organizerId = eventDTO.getOrganizerId();
 		UUID eventScheduleId = eventDTO.getEventScheduleId();
 		List<UUID> eventTypeIds = eventDTO.getEventTypeIds();
+		List<EventType> eventTypes = eventTypeService.getAllEventTypes(eventTypeIds);
+
+		if(eventRepository.findEventByName(name) != null) {
+			throw new IllegalArgumentException("The event already exists");
+		}
 
 		if(name == null || name.equals("")) throw new IllegalArgumentException("Name cannot be blank");
 
@@ -49,6 +54,8 @@ public class EventService {
         if(capacity == null || capacity == 0) throw new IllegalArgumentException("Capacity cannot be blank or 0");
 
         if(cost == null ) throw new IllegalArgumentException("Cost cannot be blank");
+
+		if(eventTypes == null || eventTypes.size() == 0) throw new IllegalArgumentException("Event Type doesn't exist");
 
 		Event newEvent = new Event();
 
