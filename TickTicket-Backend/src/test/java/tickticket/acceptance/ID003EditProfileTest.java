@@ -197,6 +197,33 @@ public class ID003EditProfileTest {
     }
 
     @Test
+    public void updateProfile2() {
+
+        String newPhoneNumber = "4389935031";
+        String newFirstName = "TestName";
+        String newLastName = "TestLast";
+        String newAddress = "TestAddress";
+        String newProfilePicture = "img2.png";
+
+        Optional<Profile> profileOption = profileRepository.findById(PROFILE_ID);
+        Profile profile = profileOption.get();
+        ProfileDTO profileDTO = Conversion.convertToDTO(profile);
+
+        profileDTO.setPhoneNumber(newPhoneNumber);
+        profileDTO.setFirstName(newFirstName);
+        profileDTO.setAddress(newAddress);
+        profileDTO.setLastName(newLastName);
+        profileDTO.setProfilePicture(newProfilePicture);
+        Profile updatedProfile = profileService.updateProfile(profileDTO);
+
+        assertEquals(newFirstName, updatedProfile.getFirstName());
+        assertEquals(newLastName, updatedProfile.getLastName());
+        assertEquals(newAddress, updatedProfile.getAddress());
+        assertEquals(newProfilePicture, updatedProfile.getProfilePicture());
+        assertEquals(newPhoneNumber, updatedProfile.getPhoneNumber());
+    }
+
+    @Test
     public void updateProfileFail() {
 
         String error = "";
