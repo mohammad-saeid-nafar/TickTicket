@@ -109,26 +109,36 @@ public class ProfileService {
 
 		if(firstName != null && !firstName.equals("")){
 			profile.setFirstName(firstName);
+		} else {
+			throw new IllegalArgumentException("The first name cannot be empty");
 		}
 
 		if(lastName != null && !lastName.equals("")){
 			profile.setLastName(lastName);
+		} else {
+			throw new IllegalArgumentException("The last name cannot be empty");
 		}
 
 		if(address != null && !address.equals("")){
 			profile.setAddress(address);
+		} else {
+			throw new IllegalArgumentException("The address cannot be empty");
 		}
 
 		if(phoneNumber != null && !phoneNumber.equals("")){
 			profile.setPhoneNumber(phoneNumber);
+		} else {
+			throw new IllegalArgumentException("The phone number cannot be empty");
 		}
 
-		if(profilePicture != null && !profilePicture.equals("")){
+		if(profilePicture != null){
 			profile.setProfilePicture(profilePicture);
 		}
 
 		if(dateOfBirth != null) {
 			profile.setDateOfBirth(dateOfBirth);
+		} else {
+			throw new IllegalArgumentException("The date of birth cannot be empty");
 		}
 
 		profileRepository.save(profile);
