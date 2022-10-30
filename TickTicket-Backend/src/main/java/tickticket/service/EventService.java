@@ -11,7 +11,6 @@ import tickticket.model.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -202,8 +201,26 @@ public class EventService {
 		return events;
 	}
 
+	public List<UUID> queryUserListEvent(UUID organizerId, UUID eventId){
+		Event event = getEvent(eventId);
+		if(event.getOrganizer().getId() == organizerId){
+			List<UUID> userIds = new ArrayList<>();
+			List<Ticket> userTickets = ticketRepository.findTicketsByEvent(getEvent(eventId));
+			if(userTickets.isEmpty()){
+				throw new IllegalArgumentException("There are no users registered for this event.");
+			}
+			else{
+				for(Ticket ticket : userTickets){
+					userIds.add(ticket.getUser().getId());
+				}
+				return userIds;
+			}
+		}
+		else{
+			throw new IllegalArgumentException("You are not the organizer of this event.");
+		}
+	}
 	public List<Event> getAllEvents(){
 		return eventRepository.findAll();
 	}
-
 }
