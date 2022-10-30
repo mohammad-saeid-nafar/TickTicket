@@ -25,16 +25,16 @@ Feature: Show upcoming events of user
 
     Examples:
       | organizerId  | eventId | numUser   | userIds  |
-      | 4            | 6       | 6         | [1,2]    |
-      | 4            | 7       | 7         | [1,3]    |
+      | 4            | 6       | 2         | [1,2]    |
+      | 4            | 7       | 2         | [1,3]    |
 
   Scenario Outline: Query user list for an event fails
     When the organizer with "<organizerId>" attempts to query the user list for the event with "<eventId>"
     Then the system shall raise the error "<error>"
 
     Examples:
-      | organizerId  | eventId | error                                          |
-      | 3            | 6       | "You are not the organizer of this event.      |
-      | 4            | 5       | "There are no users registered for this event. |
+      | organizerId  | eventId | error                                         |
+      | 3            | 6       | You are not the organizer of this event.      |
+      | 4            | 5       | There are no users registered for this event. |
 
 
