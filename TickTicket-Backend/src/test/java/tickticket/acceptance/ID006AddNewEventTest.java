@@ -24,16 +24,12 @@ import static org.mockito.Mockito.*;
 import tickticket.controller.Conversion;
 import tickticket.dao.*;
 import tickticket.dto.EventDTO;
-import tickticket.dto.EventScheduleDTO;
 import tickticket.dto.EventTypeDTO;
 import tickticket.model.*;
 import tickticket.service.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ID006AddNewEventTest {
-
-    @Mock
-    private TicketRepository ticketRepository;
 
     @Mock
     private EventRepository eventRepository;
@@ -50,9 +46,6 @@ public class ID006AddNewEventTest {
     @Mock
     private EventTypeService eventTypeService;
 
-    @Mock
-    private TicketService ticketService;
-
     @InjectMocks
     private EventService eventService;
 
@@ -61,14 +54,14 @@ public class ID006AddNewEventTest {
     private static final UUID ORGANIZER_ID = UUID.randomUUID();
     private static final String ORGANIZER_USERNAME = "johnDoe";
     private static final String ORGANIZER_PASSWORD = "myP@assword1";
-    private static final LocalDate ORGANIZER_CREATED = LocalDate.of(2022, 07, 12);
+    private static final LocalDate ORGANIZER_CREATED = LocalDate.of(2022, 7, 12);
 
     // Data for user
     private User user;
     private static final UUID USER_ID = UUID.randomUUID();
     private static final String USER_USERNAME = "bruceJ2";
     private static final String USER_PASSWORD = "BrUcE_@214";
-    private static final LocalDate USER_CREATED = LocalDate.of(2022, 10, 03);
+    private static final LocalDate USER_CREATED = LocalDate.of(2022, 10, 3);
 
     // Data for organizer profile
     private Profile organizerProfile;
@@ -79,7 +72,7 @@ public class ID006AddNewEventTest {
     private static final String ORGANIZER_PHONE_NUMBER = "4385663241";
     private static final String ORGANIZER_ADDRESS = "120 Street 1";
     private static final String ORGANIZER_PROFILE_PICTURE = "img1.jpg";
-    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 02, 22);
+    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 2, 22);
 
     // Data for user profile
     private Profile userProfile;
@@ -90,7 +83,7 @@ public class ID006AddNewEventTest {
     private static final String USER_PHONE_NUMBER = "4388665551";
     private static final String USER_ADDRESS = "11 Street 17";
     private static final String USER_PROFILE_PICTURE = "img2.jpg";
-    private static final LocalDate USER_DATE_OF_BIRTH = LocalDate.of(2000, 04, 30);
+    private static final LocalDate USER_DATE_OF_BIRTH = LocalDate.of(2000, 4, 30);
 
     // Data for event type
     private EventType eventType;
@@ -111,19 +104,8 @@ public class ID006AddNewEventTest {
 
     // Data for Event Schedule
     private EventSchedule eventSchedule;
-    private static final UUID EVENT_SCHEDULE_ID = UUID.randomUUID();
-    private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 15, 19, 00);
-    private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 15, 22, 00);
-
-    // Data for Ticket 1
-    private Ticket ticket1;
-    private static final UUID TICKET1_ID = UUID.randomUUID();
-    private static final LocalDateTime BOOKING_DATE_1 = LocalDateTime.of(2022, 10, 05, 19, 00);
-
-    // Data for Ticket 2
-    private Ticket ticket2;
-    private static final UUID TICKET2_ID = UUID.randomUUID();
-    private static final LocalDateTime BOOKING_DATE_2 = LocalDateTime.of(2022, 10, 06, 20, 00);
+    private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 15, 19,0);
+    private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 15, 22, 0);
 
     @BeforeEach
     public void setMockOutput() {
@@ -250,15 +232,13 @@ public class ID006AddNewEventTest {
             }
         });
 
-        lenient().when(eventTypeService.getAllEventTypes(any(List.class))).thenAnswer((InvocationOnMock invocation) -> {
+        lenient().when(eventTypeService.getAllEventTypes(any())).thenAnswer((InvocationOnMock invocation) -> {
             List<EventType> eventTypes = new ArrayList<>();
             EventType eventType1 = new EventType();
             eventType1.setId(EVENT_TYPE_ID);
             eventType1.setName(EVENT_TYPE_NAME);
             eventType1.setDescription(EVENT_TYPE_DESCRIPTION);
             eventTypes.add(eventType1);
-
-            List<UUID> ls = invocation.getArgument(0);
 
             return eventTypes;
         });
@@ -347,8 +327,8 @@ public class ID006AddNewEventTest {
 
         assertNotNull(event);
         assertEquals(event.getName(), "Taylor Swift Tour");
-        assertEquals(event.getEventSchedule().getStartDateTime(), LocalDateTime.of(2022, 12, 01, 20, 00));
-        assertEquals(event.getEventSchedule().getEndDateTime(), LocalDateTime.of(2022, 12, 01, 22, 00));
+        assertEquals(event.getEventSchedule().getStartDateTime(), LocalDateTime.of(2022, 12, 1, 20, 0));
+        assertEquals(event.getEventSchedule().getEndDateTime(), LocalDateTime.of(2022, 12, 1, 22, 0));
         assertEquals(event.getEventTypes().get(0).getName(), EVENT_TYPE_NAME);
         assertEquals(event.getCapacity(), 560);
         assertEquals(event.getCost(), 330);
@@ -403,8 +383,8 @@ public class ID006AddNewEventTest {
         organizer = userService.getUser(ORGANIZER_ID);
 
         EventSchedule newEventSchedule = new EventSchedule();
-        newEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 01, 13, 00));
-        newEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 01, 15, 00));
+        newEventSchedule.setStartDateTime(LocalDateTime.of(2022, 12, 1, 13, 0));
+        newEventSchedule.setEndDateTime(LocalDateTime.of(2022, 12, 1, 15, 0));
 
         Event newEvent = new Event();
         newEvent.setId(UUID.randomUUID());
@@ -417,13 +397,10 @@ public class ID006AddNewEventTest {
         newEvent.setCost(140);
         newEvent.setOrganizer(organizer);
         newEvent.setEventSchedule(newEventSchedule);
-        List<EventType> eventTypes = new ArrayList<>();
 
         try {
 
             eventService.addEventType("Sport", newEvent);
-//    eventType = eventTypeRepository.findEventTypeByName("Sport").orElse(null);
-//    if(eventType == null) newEvent.setEventTypes=null;
 
             eventService.createEvent(Conversion.convertToDTO(event));
         } catch (NullPointerException e) {
