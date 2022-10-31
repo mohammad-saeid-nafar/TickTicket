@@ -230,6 +230,7 @@ public class EventService {
 	//	event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElseThrow(() -> new NullPointerException("Event Type doesn't exist")));
 		if(eventTypeRepository.findEventTypeByName(name).orElse(null)!=null){
 			event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElse(null));
+			eventRepository.save(event);
 		}else{
 			throw new NullPointerException("Event Type doesn't exist");
 		}
