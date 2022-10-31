@@ -64,8 +64,8 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	public boolean deleteUserByUsername(@PathVariable UUID id) {
-		return userService.deleteUser(id);
+	public boolean deleteUserByUsername(@PathVariable UUID id, @RequestParam String password) {
+		return userService.deleteUser(id, password);
 	}
 
 	@GetMapping("/{id}")
@@ -74,8 +74,8 @@ public class UserController {
 	}
 
     @DeleteMapping(value = {"/username/{username}"})
-	public boolean deleteUserByUsername(@PathVariable String username) {
-		return userService.deleteUserByUsername(username);
+	public boolean deleteUserByUsername(@PathVariable String username, @RequestParam String password) {
+		return userService.deleteUserByUsername(username, password);
 	}
 
     @GetMapping(value = {"/username/{username}"})
