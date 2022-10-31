@@ -531,7 +531,7 @@ public class EventServiceTest {
     public void testDeleteEvent(){
         boolean success = false;
         try{
-            success = eventService.deleteEvent(EVENT_ID);
+            success = eventService.deleteEvent(EVENT_ID, eventService.getEvent(EVENT_ID).getOrganizer().getId());
         }catch (Exception e){
             fail();
         }
@@ -542,7 +542,7 @@ public class EventServiceTest {
     public void testDeleteEventNotFound(){
         UUID id = UUID.randomUUID();
         try{
-            eventService.deleteEvent(id);
+            eventService.deleteEvent(id, id);
         }catch (Exception e){
             assertEquals(e.getMessage(), "Event " + id + " not found");
         }
