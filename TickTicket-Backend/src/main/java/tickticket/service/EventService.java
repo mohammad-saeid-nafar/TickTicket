@@ -5,6 +5,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tickticket.dao.EventRepository;
+import tickticket.dao.EventTypeRepository;
 import tickticket.dao.TicketRepository;
 import tickticket.dto.EventDTO;
 import tickticket.model.*;
@@ -24,6 +25,7 @@ public class EventService {
 	private EventTypeService eventTypeService;
 	private EventScheduleService eventScheduleService;
 	private TicketRepository ticketRepository;
+	private EventTypeRepository eventTypeRepository;
 
 	public Event createEvent(EventDTO eventDTO) {
 		String name = eventDTO.getName();
@@ -231,5 +233,15 @@ public class EventService {
 	}
 	public List<Event> getAllEvents(){
 		return eventRepository.findAll();
+	}
+
+	public void addEventType(String name,Event event){
+	//	event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElseThrow(() -> new NullPointerException("Event Type doesn't exist")));
+		if(eventTypeRepository.findEventTypeByName(name).orElse(null)!=null){
+			event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElse(null));
+			eventRepository.save(event);
+		}else{
+			throw new NullPointerException("Event Type doesn't exist");
+		}
 	}
 }
