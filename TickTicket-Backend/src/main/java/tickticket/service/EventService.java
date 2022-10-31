@@ -156,8 +156,17 @@ public class EventService {
 		return event;
 	}
 
-	public boolean deleteEvent(UUID id) {
+	public boolean deleteEvent(UUID id, UUID userId) {
+
 		Event event = getEvent(id);
+		if(event.getOrganizer().getId() != userId) {
+			throw new IllegalArgumentException("The organizer is the only person allowed to delete an event");
+		}
+
+		if(event.getEventSchedule().getStartDateTime().isBefore(LocalDateTime.now())) {
+			throw new IllegalArgumentException("The event has already started. It cannot be deleted");
+		}
+
 		eventRepository.delete(event);
 		return true;
 	}
