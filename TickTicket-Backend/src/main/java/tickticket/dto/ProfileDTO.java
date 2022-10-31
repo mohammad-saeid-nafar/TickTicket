@@ -75,5 +75,4 @@ public class ProfileDTO {
     public List<EventTypeDTO> getInterests(){
         return interests;
     }
-    
 }
