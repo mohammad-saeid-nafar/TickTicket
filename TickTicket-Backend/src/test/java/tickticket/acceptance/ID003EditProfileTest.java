@@ -73,10 +73,12 @@ public class ID003EditProfileTest {
     private static final String EVENT_TYPE2_DESCRIPTION = "Pop is a kind of music";
     private static final int EVENT_TYPE2_AGE_REQUIREMENT = 13;
 
-    private ProfileDTO profile2DTO;
+
 
     @BeforeEach
     public void setMockOutput() {
+        ProfileDTO profile2DTO;
+
         profile2DTO = new ProfileDTO();
         profile2DTO.setUsername("TestUser2");
         profile2DTO.setFirstName(PROFILE2_FIRSTNAME);
@@ -180,7 +182,11 @@ public class ID003EditProfileTest {
         String newPhoneNumber = "4389935031";
 
         Optional<Profile> profileOption = profileRepository.findById(PROFILE_ID);
-        Profile profile = profileOption.get();
+
+        Profile profile = new Profile();
+        if(profileOption.isPresent()){
+            profile  = profileOption.get();
+        }
         ProfileDTO profileDTO = Conversion.convertToDTO(profile);
 
         profileDTO.setPhoneNumber(newPhoneNumber);
@@ -206,7 +212,10 @@ public class ID003EditProfileTest {
         String newProfilePicture = "img2.png";
 
         Optional<Profile> profileOption = profileRepository.findById(PROFILE_ID);
-        Profile profile = profileOption.get();
+        Profile profile = new Profile();
+        if(profileOption.isPresent()){
+            profile  = profileOption.get();
+        }
         ProfileDTO profileDTO = Conversion.convertToDTO(profile);
 
         profileDTO.setPhoneNumber(newPhoneNumber);
@@ -229,11 +238,14 @@ public class ID003EditProfileTest {
         String error = "";
 
         Optional<Profile> profileOption = profileRepository.findById(PROFILE_ID);
-        Profile profile = profileOption.get();
+        Profile profile = new Profile();
+        if(profileOption.isPresent()){
+            profile  = profileOption.get();
+        }
         ProfileDTO profileDTO = Conversion.convertToDTO(profile);
         profileDTO.setFirstName("");
         try {
-            Profile updatedProfile = profileService.updateProfile(profileDTO);
+            profileService.updateProfile(profileDTO);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
@@ -241,7 +253,9 @@ public class ID003EditProfileTest {
 
 
         profileOption = profileRepository.findById(PROFILE_ID);
-        profile = profileOption.get();
+        if(profileOption.isPresent()){
+            profile  = profileOption.get();
+        }
         profileDTO = Conversion.convertToDTO(profile);
         profileDTO.setLastName("");
         try {
@@ -253,7 +267,9 @@ public class ID003EditProfileTest {
 
 
         profileOption = profileRepository.findById(PROFILE_ID);
-        profile = profileOption.get();
+        if(profileOption.isPresent()){
+            profile  = profileOption.get();
+        }
         profileDTO = Conversion.convertToDTO(profile);
         profileDTO.setAddress("");
         try {
@@ -265,7 +281,9 @@ public class ID003EditProfileTest {
 
 
         profileOption = profileRepository.findById(PROFILE_ID);
-        profile = profileOption.get();
+        if(profileOption.isPresent()){
+            profile  = profileOption.get();
+        }
         profileDTO = Conversion.convertToDTO(profile);
         profileDTO.setPhoneNumber("");
         try {

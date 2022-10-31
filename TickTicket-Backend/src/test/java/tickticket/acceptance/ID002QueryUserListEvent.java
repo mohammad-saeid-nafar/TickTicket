@@ -49,8 +49,6 @@ public class ID002QueryUserListEvent {
     private static final String EVENT1_ADDRESS = "123 Ave";
     private static final String EVENT1_EMAIL = "jazz@mail.ca";
     private static final String EVENT1_PHONE_NUMBER = "123456789";
-    private static final LocalDateTime EVENT1_START = LocalDateTime.of(2022, 9, 15, 12, 0);
-    private static final LocalDateTime EVENT1_END = LocalDateTime.of(2022, 9, 15, 23, 59);
 
     private static final UUID EVENT2_ID = UUID.randomUUID();
     private static final String EVENT2_NAME = "Pop";
@@ -60,8 +58,6 @@ public class ID002QueryUserListEvent {
     private static final String EVENT2_ADDRESS = "321 Ave";
     private static final String EVENT2_EMAIL = "pop@mail.ca";
     private static final String EVENT2_PHONE_NUMBER = "987654321";
-    private static final LocalDateTime EVENT2_START = LocalDateTime.of(2022, 10, 15, 12, 0);
-    private static final LocalDateTime EVENT2_END = LocalDateTime.of(2022, 10, 15, 23, 59);
 
     private static final UUID EVENT3_ID = UUID.randomUUID();
     private static final String EVENT3_NAME = "Rock";
@@ -71,8 +67,6 @@ public class ID002QueryUserListEvent {
     private static final String EVENT3_ADDRESS = "321 Ave";
     private static final String EVENT3_EMAIL = "pop@mail.ca";
     private static final String EVENT3_PHONE_NUMBER = "987654321";
-    private static final LocalDateTime EVENT3_START = LocalDateTime.of(2022, 10, 15, 12, 0);
-    private static final LocalDateTime EVENT3_END = LocalDateTime.of(2022, 10, 15, 23, 59);
 
     private static final UUID USER_ID = UUID.randomUUID();
     private static final String USER_USERNAME = "user1";
@@ -215,10 +209,9 @@ public class ID002QueryUserListEvent {
 
     @Test
     public void testQueryUserListEvent2(){
-        List<UUID> userIds = new ArrayList<>();
         String error = "";
         try{
-            userIds = eventService.queryUserListEvent(USER_ID, EVENT2_ID);
+            eventService.queryUserListEvent(USER_ID, EVENT2_ID);
         }catch (IllegalArgumentException e) {
             error=e.getMessage();
         }
