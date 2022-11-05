@@ -362,7 +362,7 @@ public class UserServiceTest {
 	public void deleteUserSuccess() {
 		boolean success = false;
 		try {
-			success = userService.deleteUser(USER_ID);
+			success = userService.deleteUser(USER_ID,USER_PASSWORD);
 		}catch(IllegalArgumentException e) {
 			fail();
 		}
@@ -374,7 +374,7 @@ public class UserServiceTest {
 	public void deleteUserUserNotFound() {
 		UUID id = UUID.randomUUID();
 		try {
-			userService.deleteUser(id);
+			userService.deleteUser(id,USER_PASSWORD);
 		}catch(IllegalArgumentException e) {
 			assertEquals("User " + id + " not found.", e.getMessage());
 		}

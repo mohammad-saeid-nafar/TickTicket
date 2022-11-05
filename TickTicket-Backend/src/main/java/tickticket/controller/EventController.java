@@ -63,7 +63,7 @@ public class EventController {
     @DeleteMapping(value = {"/{id}"})
     public ResponseEntity<?> deleteEvent(@PathVariable("id") UUID id){
         try{
-            eventService.deleteEvent(id);
+            eventService.deleteEvent(id, eventService.getEvent(id).getOrganizer().getId());
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

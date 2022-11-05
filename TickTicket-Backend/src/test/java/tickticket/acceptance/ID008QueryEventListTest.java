@@ -1,4 +1,4 @@
-package tickticket.service;
+package tickticket.acceptance;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,9 @@ import tickticket.model.Event;
 import tickticket.model.EventSchedule;
 import tickticket.model.EventType;
 import tickticket.model.User;
+import tickticket.service.EventService;
+import tickticket.service.EventTypeService;
+import tickticket.service.UserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +35,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+public class ID008QueryEventListTest {
 
     @Mock
     private EventRepository eventRepository;
@@ -64,8 +67,8 @@ public class EventServiceTest {
     private static final String EVENT_EMAIL = "testevent@mail.ca";
     private static final String EVENT_PHONE_NUMBER = "12345678";
 
-    private static final LocalDateTime EVENT_START = LocalDateTime.of(2023, 10, 2, 12, 0);
-    private static final LocalDateTime EVENT_END = LocalDateTime.of(2023, 10, 2, 23, 59);
+    private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 2, 12, 0);
+    private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 2, 23, 59);
 
     private static final UUID ORGANIZER_ID = UUID.randomUUID();
     private static final String ORGANIZER_USERNAME = "Organizer";
@@ -259,297 +262,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testCreateEvent(){
-        Event event = null;
-
-        try{
-            event = eventService.createEvent(eventDTO);
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-            fail();
-        }
-
-        assertNotNull(event);
-        assertEquals(event.getName(), EVENT_NAME);
-        assertEquals(event.getDescription(), EVENT_DESCRIPTION);
-        assertEquals(event.getCapacity(), EVENT_CAPACITY);
-        assertEquals(event.getCost(), EVENT_COST);
-        assertEquals(event.getAddress(), EVENT_ADDRESS);
-        assertEquals(event.getEmail(), EVENT_EMAIL);
-        assertEquals(event.getPhoneNumber(), EVENT_PHONE_NUMBER);
-
-        assertEquals(event.getOrganizer().getId(), ORGANIZER_ID);
-        assertEquals(event.getOrganizer().getUsername(), ORGANIZER_USERNAME);
-        assertEquals(event.getOrganizer().getPassword(), ORGANIZER_PASSWORD);
-        assertEquals(event.getOrganizer().getCreated(), ORGANIZER_CREATED);
-
-        assertEquals(event.getEventTypes().size(), 2);
-
-        assertEquals(event.getEventTypes().get(0).getName(), EVENT_TYPE1_NAME);
-        assertEquals(event.getEventTypes().get(0).getDescription(), EVENT_TYPE1_DESCRIPTION);
-        assertEquals(event.getEventTypes().get(0).getAgeRequirement(), EVENT_TYPE1_AGE);
-
-        assertEquals(event.getEventTypes().get(1).getName(), EVENT_TYPE2_NAME);
-        assertEquals(event.getEventTypes().get(1).getDescription(), EVENT_TYPE2_DESCRIPTION);
-        assertEquals(event.getEventTypes().get(1).getAgeRequirement(), EVENT_TYPE2_AGE);
-
-    }
-
-
-    @Test
-    public void testCreateEventNullName() {
-        eventDTO.setName(null);
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Name cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventBlankName() {
-        eventDTO.setName("");
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Name cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventNullAddress() {
-        eventDTO.setAddress(null);
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Address cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventBlankAddress() {
-        eventDTO.setAddress("");
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Address cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventNullEmail() {
-        eventDTO.setEmail(null);
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Email cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventBlankEmail() {
-        eventDTO.setEmail("");
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Email cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventNullPhoneNumber() {
-        eventDTO.setPhoneNumber(null);
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Phone number cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventBlankPhoneNumber() {
-        eventDTO.setPhoneNumber("");
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Phone number cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventZeroCapacity() {
-        eventDTO.setCapacity(0);
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Capacity cannot be blank or 0");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventNullCost() {
-        eventDTO.setCost(null);
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Cost cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventNullStart() {
-        eventDTO.setStart(null);
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Start of event schedule cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testCreateEventNullEnd() {
-        eventDTO.setEnd(null);
-
-        try {
-            eventService.createEvent(eventDTO);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "End of event schedule cannot be blank");
-        }
-
-    }
-
-    @Test
-    public void testUpdateEvent() {
-        User newOrganizer = new User();
-        newOrganizer.setId(UUID.randomUUID());
-        newOrganizer.setUsername("New organizer");
-        newOrganizer.setPassword("NewPass123");
-        newOrganizer.setCreated(LocalDate.now());
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-
-        List<EventType> newEventTypes = new ArrayList<>();
-        newEventTypes.add(eventType1);
-
-        Event event = null;
-        String newName = "New name";
-        String newDescription = "New description";
-        String newAddress = "123 New Ave";
-        String newEmail = "newemail@mail.ca";
-        String newPhoneNumber = "987654321";
-        int newCapacity = 200;
-        double newCost = 200.0;
-
-        eventDTO.setName(newName);
-        eventDTO.setDescription(newDescription);
-        eventDTO.setAddress(newAddress);
-        eventDTO.setEmail(newEmail);
-        eventDTO.setPhoneNumber(newPhoneNumber);
-        eventDTO.setCapacity(newCapacity);
-        eventDTO.setCost(newCost);
-        eventDTO.setOrganizerId(newOrganizer.getId());
-        eventDTO.setEventTypeIds(List.of(EVENT_TYPE_ID));
-
-        try {
-            event = eventService.updateEvent(eventDTO);
-        } catch (Exception e) {
-            fail();
-        }
-
-        assertNotNull(event);
-        assertEquals(event.getId(), EVENT_ID);
-        assertEquals(event.getName(), newName);
-        assertEquals(event.getDescription(), newDescription);
-        assertEquals(event.getCapacity(), newCapacity);
-        assertEquals(event.getCost(), newCost);
-        assertEquals(event.getAddress(), newAddress);
-        assertEquals(event.getEmail(), newEmail);
-        assertEquals(event.getPhoneNumber(), newPhoneNumber);
-
-        assertEquals(event.getOrganizer().getId(), newOrganizer.getId());
-        assertEquals(event.getOrganizer().getUsername(), newOrganizer.getUsername());
-        assertEquals(event.getOrganizer().getPassword(), newOrganizer.getPassword());
-        assertEquals(event.getOrganizer().getCreated(), newOrganizer.getCreated());
-
-        assertEquals(event.getEventTypes().size(), 1);
-
-        assertEquals(event.getEventTypes().get(0).getName(), EVENT_TYPE1_NAME);
-        assertEquals(event.getEventTypes().get(0).getDescription(), EVENT_TYPE1_DESCRIPTION);
-        assertEquals(event.getEventTypes().get(0).getAgeRequirement(), EVENT_TYPE1_AGE);
-    }
-
-    @Test
-    public void testUpdateEventNotFound() {
-        User newOrganizer = new User();
-        newOrganizer.setId(UUID.randomUUID());
-        newOrganizer.setUsername("New organizer");
-        newOrganizer.setPassword("NewPass123");
-        newOrganizer.setCreated(LocalDate.of(2022, 10, 2));
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-
-        List<EventType> newEventTypes = new ArrayList<>();
-        newEventTypes.add(eventType1);
-
-        String newName = "New name";
-        String newDescription = "New description";
-        String newAddress = "123 New Ave";
-        String newEmail = "newemail@mail.ca";
-        String newPhoneNumber = "987654321";
-        int newCapacity = 200;
-        double newCost = 200.0;
-        UUID id = UUID.randomUUID();
-
-        try {
-//            eventService.updateEvent(id, newName, newDescription, newCapacity, newCost, newAddress, newEmail, newPhoneNumber, newOrganizer, newEventTypes);
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Event " + id + " not found");
-        }
-
-    }
-
-    @Test
-    public void testDeleteEvent(){
-        boolean success = false;
-        try{
-            success = eventService.deleteEvent(EVENT_ID, ORGANIZER_ID);
-        }catch (Exception e){
-            fail();
-        }
-        assertTrue(success);
-    }
-
-    @Test
-    public void testDeleteEventNotFound(){
-        UUID id = UUID.randomUUID();
-        try{
-            eventService.deleteEvent(id, id);
-        }catch (Exception e){
-            assertEquals(e.getMessage(), "Event " + id + " not found");
-        }
-    }
-
-    @Test
-    public void testGetEventsByName() {
+    public void testGetEventByName() {
 
         List<Event> events = new ArrayList<>();
         try {
@@ -557,80 +270,6 @@ public class EventServiceTest {
         } catch (Exception e) {
             fail();
         }
-
-        assertEquals(events.size(), 1);
-        assertEquals(events.get(0).getId(), EVENT_ID);
-        assertEquals(events.get(0).getName(), EVENT_NAME);
-        assertEquals(events.get(0).getDescription(), EVENT_DESCRIPTION);
-        assertEquals(events.get(0).getCapacity(), EVENT_CAPACITY);
-        assertEquals(events.get(0).getCost(), EVENT_COST);
-        assertEquals(events.get(0).getAddress(), EVENT_ADDRESS);
-        assertEquals(events.get(0).getEmail(), EVENT_EMAIL);
-        assertEquals(events.get(0).getPhoneNumber(), EVENT_PHONE_NUMBER);
-
-        assertEquals(events.get(0).getOrganizer().getId(), ORGANIZER_ID);
-        assertEquals(events.get(0).getOrganizer().getUsername(), ORGANIZER_USERNAME);
-        assertEquals(events.get(0).getOrganizer().getPassword(), ORGANIZER_PASSWORD);
-        assertEquals(events.get(0).getOrganizer().getCreated(), ORGANIZER_CREATED);
-
-        assertEquals(events.get(0).getEventTypes().size(), 2);
-
-        assertEquals(events.get(0).getEventTypes().get(0).getName(), EVENT_TYPE1_NAME);
-        assertEquals(events.get(0).getEventTypes().get(0).getDescription(), EVENT_TYPE1_DESCRIPTION);
-        assertEquals(events.get(0).getEventTypes().get(0).getAgeRequirement(), EVENT_TYPE1_AGE);
-
-    }
-
-
-    @Test
-    public void testGetAllEventsFromType() {
-
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-
-        List<Event> events = new ArrayList<>();
-        try {
-            events = eventService.getAllEventsFromType(eventTypes);
-        } catch (Exception e) {
-            fail();
-        }
-
-        assertEquals(events.size(), 1);
-        assertEquals(events.get(0).getId(), EVENT_ID);
-        assertEquals(events.get(0).getName(), EVENT_NAME);
-        assertEquals(events.get(0).getDescription(), EVENT_DESCRIPTION);
-        assertEquals(events.get(0).getCapacity(), EVENT_CAPACITY);
-        assertEquals(events.get(0).getCost(), EVENT_COST);
-        assertEquals(events.get(0).getAddress(), EVENT_ADDRESS);
-        assertEquals(events.get(0).getEmail(), EVENT_EMAIL);
-        assertEquals(events.get(0).getPhoneNumber(), EVENT_PHONE_NUMBER);
-
-        assertEquals(events.get(0).getOrganizer().getId(), ORGANIZER_ID);
-        assertEquals(events.get(0).getOrganizer().getUsername(), ORGANIZER_USERNAME);
-        assertEquals(events.get(0).getOrganizer().getPassword(), ORGANIZER_PASSWORD);
-        assertEquals(events.get(0).getOrganizer().getCreated(), ORGANIZER_CREATED);
-
-        assertEquals(events.get(0).getEventTypes().size(), 2);
-
-        assertEquals(events.get(0).getEventTypes().get(0).getName(), EVENT_TYPE1_NAME);
-        assertEquals(events.get(0).getEventTypes().get(0).getDescription(), EVENT_TYPE1_DESCRIPTION);
-        assertEquals(events.get(0).getEventTypes().get(0).getAgeRequirement(), EVENT_TYPE1_AGE);
-
-    }
-
-    @Test
-    public void testGetAllEventsFromOrganizer() {
-
-        User organizer = userRepository.findUserByUsername(ORGANIZER_USERNAME).orElse(null);
-        List<Event> events = new ArrayList<>();
-        try {
-            events = eventService.getAllEventsFromOrganizer(organizer);
-        } catch (Exception e) {
-            fail();
-        }
-
         assertEquals(events.size(), 1);
         assertEquals(events.get(0).getId(), EVENT_ID);
         assertEquals(events.get(0).getName(), EVENT_NAME);

@@ -74,14 +74,21 @@ public class UserService {
 	}
 
 	@Transactional
-	public boolean deleteUser(UUID id) {
+	public boolean deleteUser(UUID id, String password) {
+		User user = getUser(id);
+		if(!user.getPassword().equals(password)){
+			throw new IllegalArgumentException("The account cannot be deleted with an incorrect password");
+		}
 		userRepository.deleteById(id);
 		return true;
 	}
 
 	@Transactional
-	public boolean deleteUserByUsername(String username) {
+	public boolean deleteUserByUsername(String username, String password) {
 		User user = getUserByUsername(username);
+		if(!user.getPassword().equals(password)){
+			throw new IllegalArgumentException("The account cannot be deleted with an incorrect password");
+		}
 		userRepository.delete(user);
 		return true;
 	}
