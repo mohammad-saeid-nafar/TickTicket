@@ -1,5 +1,5 @@
 Feature: Edit review
-  As a user, I want to edit a review I wrote
+  As a user, I want to delete a review I wrote
 
   Background:
     Given the following Users exist in the system:
@@ -17,22 +17,20 @@ Feature: Edit review
       | 6   | Amazing | 5       | The quality of the wine was amazing   | 2       | 4       |
       | 7   | Good    | 3       | Wine was good but cheese not as much  | 3       | 4       |
 
-    Scenario: Successfully edit review
-      When the user with id "2" attempts to edit the review with id "6" with the following:
-        | title   | rating  | description    |
-        | Great   | 4       | Wine was great |
-      Then the review with id "6" will updated successfully
+    Scenario: Successfully delete review
+      When the user with id "2" attempts to delete the review with id "6"
+      Then the review with id "6" will be deleted successfully
+      Then the following reviews will exist in the system:
+      Given the following reviews exist in the system:
+        | id  | title   | rating  | description                           | userId  | eventId |
+        | 7   | Good    | 3       | Wine was good but cheese not as much  | 3       | 4       |
 
-    Scenario: Error when attempting to edit review of another user
-      When the user with id "2" attempts to edit the review with id "7" with the following:
-        | title   | rating  | description    |
-        | Great   | 4       | Wine was great |
-      Then the error "You cannot edit another user's review" will be displayed to the user
+    Scenario: Error when attempting to delete review of another user
+      When the user with id "2" attempts to delete the review with id "7"
+      Then the error "You cannot delete another user's review" will be displayed to the user
 
     Scenario: Error when attempting to edit non existent review
-      When the user with id "2" attempts to edit the review with id "404" with the following:
-        | title   | rating  | description    |
-        | Great   | 4       | Wine was great |
+      When the user with id "2" attempts to delete the review with id "404"
       Then the error "Review not found" will be displayed to the user
 
 
