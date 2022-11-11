@@ -1,29 +1,29 @@
+import { Container, Stack } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import EventCard from "../components/EventCard";
 
 const Home = () => {
   const [events, setEvents] = useState([]);
-  const AXIOS = axios.create({
-    baseURL: "https://tickticket-backend.herokuapp.com/api/v1/"
-})
+
   useEffect(() => {
-    AXIOS.get("events")
-      .then((res) => {
-        console.log(res.data)
-        setEvents(res.data);
-      });
+    axios.get("events").then((res) => {
+      setEvents(res.data);
+    });
   }, []);
+
   return (
-    <div>
-      <h1>Home</h1>
-      {events.map((item, i) => {
-        return (
-          <div key={i}>
-            <p>{item?.name}</p>
-          </div>
-        );
-      })}
-    </div>
+    <Container
+      sx={{
+        paddingTop: "5%",
+      }}
+    >
+      <Stack spacing={2}>
+        {events.map((event) => {
+          return <EventCard key={event.id} event={event} />;
+        })}
+      </Stack>
+    </Container>
   );
 };
 export default Home;
