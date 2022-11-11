@@ -1,15 +1,29 @@
-import { Button, ButtonGroup } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Home = () => {
+  const [events, setEvents] = useState([]);
+  const AXIOS = axios.create({
+    baseURL: "https://tickticket-backend.herokuapp.com/api/v1/"
+})
+  useEffect(() => {
+    AXIOS.get("events")
+      .then((res) => {
+        console.log(res.data)
+        setEvents(res.data);
+      });
+  }, []);
   return (
-    <ButtonGroup variant="contained" aria-label="outlined primary button group">
-      <Button href="/signin">Signin</Button>
-      <Button href="/signup">Signup</Button>
-      <Button href="/profile">Profile</Button>
-      <Button href="/events">Events</Button>
-      <Button href="/create_event">Create Event</Button>
-    </ButtonGroup>
+    <div>
+      <h1>Home</h1>
+      {events.map((item, i) => {
+        return (
+          <div key={i}>
+            <p>{item?.name}</p>
+          </div>
+        );
+      })}
+    </div>
   );
 };
-
 export default Home;
