@@ -15,7 +15,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProfileDTO {
     private UUID id;
-    private String username;
     private String firstName;
     private String lastName;
     private String address;
@@ -43,26 +42,21 @@ public class ProfileDTO {
 		return firstName;
 	}
 
-
 	public String getLastName() {
 		return lastName;
 	}
-
 
 	public String getAddress() {
 		return address;
 	}
 
-
 	public String getProfilePicture() {
 		return profilePicture;
 	}
 
-
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
-
 
 	public String getEmail() {
 		return email;
