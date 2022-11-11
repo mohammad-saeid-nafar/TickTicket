@@ -1,35 +1,27 @@
 package tickticket.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
-import tickticket.dao.UserRepository;
 import tickticket.dto.ProfileDTO;
-import tickticket.model.EventType;
 import tickticket.model.Profile;
-import tickticket.model.User;
 
 @Service
 @AllArgsConstructor
 public class ProfileService {
+
 	private ProfileRepository profileRepository;
-	private UserService userService;
-	private UserRepository userRepository;
 	private EventTypeService eventTypeService;
 
 	@Transactional
 	public Profile createProfile(ProfileDTO profileDTO) {
-		String username = profileDTO.getUsername();
 		String firstName = profileDTO.getFirstName();
 		String lastName = profileDTO.getLastName();
 		String address = profileDTO.getAddress();
@@ -38,12 +30,6 @@ public class ProfileService {
 		String profilePicture = profileDTO.getProfilePicture();
 		LocalDate dateOfBirth = profileDTO.getDateOfBirth();
 		List<UUID> interests = profileDTO.getInterestIds();
-
-		User user = userService.getUserByUsername(username);
-
-		if (user.getProfile() != null) {
-			throw new IllegalArgumentException("User already has a profile");
-		}
 
 		Profile profile = new Profile();
 
@@ -82,10 +68,6 @@ public class ProfileService {
 		if (interests != null) {
 			profile.setInterests(eventTypeService.getAllEventTypes(interests));
 		}
-
-		profile = profileRepository.save(profile);
-		user.setProfile(profile);
-		userRepository.save(user);
 
 		return profile;
     }
@@ -144,7 +126,6 @@ public class ProfileService {
 		profileRepository.save(profile);
 		return profile;
 	}
-
 
 	@Transactional
 	public Profile getProfile(UUID id) {

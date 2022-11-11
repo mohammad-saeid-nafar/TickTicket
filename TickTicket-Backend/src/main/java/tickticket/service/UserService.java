@@ -19,6 +19,7 @@ import tickticket.model.User;
 public class UserService {
     
 	private UserRepository userRepository;
+	private ProfileService profileService;
 
 	@Transactional
 	public User login(String username, String password) {
@@ -46,12 +47,13 @@ public class UserService {
 		usernameIsValid(username);
 		passwordIsValid(password);
 
-//		Profile profile = profileService.getProfile(userDTO.getProfileId());
+		Profile profile = null;
+		if(userDTO.getProfile() != null ) profile = profileService.createProfile(userDTO.getProfile());
 
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-//        user.setProfile(profile);
+		user.setProfile(profile);
         user.setCreated(LocalDate.now());
 
 		userRepository.save(user);
