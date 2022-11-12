@@ -6,13 +6,13 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
-//import NavBar from "./pages/NavBar";
+import NavBar from "./pages/NavBar.js";
 
 function App() {
   return (
     <BrowserRouter>
       <div>
-        {/* <NavBar/> */}
+        <NavBar/>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="signin" element={<Signin />} />
