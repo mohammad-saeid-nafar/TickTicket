@@ -6,7 +6,7 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
-import NavBar from "./pages/NavBar.js";
+import NavBar from "./pages/NavBar";
 
 function App() {
   return (

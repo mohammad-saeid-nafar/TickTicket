@@ -1,7 +1,7 @@
 import { Container, Stack } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EventCard from "../components/EventCard.js";
+import EventCard from "../components/EventCard";
 
 const Home = () => {
   const [events, setEvents] = useState([]);
