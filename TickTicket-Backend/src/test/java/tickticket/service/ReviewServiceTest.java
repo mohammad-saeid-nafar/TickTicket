@@ -157,6 +157,8 @@ public class ReviewServiceTest {
                 eventSchedule.setStartDateTime(EVENT_START);
                 eventSchedule.setEndDateTime(EVENT_END);
 
+                User organizer = userService.getUser(USER_ID);
+
                 Event event = new Event();
                 event.setId(EVENT_ID);
                 event.setName(EVENT_NAME);
@@ -167,6 +169,7 @@ public class ReviewServiceTest {
                 event.setCapacity(EVENT_CAPACITY);
                 event.setCost(EVENT_COST);
                 event.setEventSchedule(eventSchedule);
+                event.setOrganizer(organizer);
 
                 return Optional.of(event);
 
@@ -401,7 +404,6 @@ public class ReviewServiceTest {
 
     @Test
     public void testViewReviewsOfUser(){
-        User user = userRepository.findUserByUsername(USER_USERNAME).orElse(null);
         List<Review> reviews = new ArrayList<>();
 
         try{
@@ -430,7 +432,6 @@ public class ReviewServiceTest {
 
     @Test
     public void testViewReviewsOfEvent(){
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         List<Review> reviews = new ArrayList<>();
 
         try{
@@ -456,7 +457,6 @@ public class ReviewServiceTest {
 
     @Test
     public void testGetAverageEventReview(){
-        Event event = eventRepository.findById(EVENT_ID).orElse(null);
         double average = 0.0;
 
         try{

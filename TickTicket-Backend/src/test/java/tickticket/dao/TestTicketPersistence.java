@@ -203,7 +203,7 @@ public class TestTicketPersistence {
 
         assertNotNull(tickets);
         assertEquals(2, tickets.size());
-        assertEquals(testTicket1.getBookingDate(), tickets.get(0).getBookingDate());
-        assertEquals(testTicket2.getBookingDate(), tickets.get(1).getBookingDate());
+        assertEquals(testTicket1.getBookingDate().toString(), tickets.get(0).getBookingDate().toString());
+        assertEquals(testTicket2.getBookingDate().toString(), tickets.get(1).getBookingDate().toString());
     }
 }
