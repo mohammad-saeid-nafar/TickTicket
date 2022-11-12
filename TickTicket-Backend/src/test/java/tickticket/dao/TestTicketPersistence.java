@@ -183,12 +183,12 @@ public class TestTicketPersistence {
         testEvent.setEventSchedule(testEventSchedule);
 
         Ticket testTicket1 = new Ticket();
-        testTicket1.setBookingDate(LocalDateTime.now());
+        testTicket1.setBookingDate(LocalDateTime.of(2022, 1, 1, 12, 0));
         testTicket1.setEvent(testEvent);
         testTicket1.setUser(testUser);
 
         Ticket testTicket2 = new Ticket();
-        testTicket2.setBookingDate(LocalDateTime.now());
+        testTicket2.setBookingDate(LocalDateTime.of(2022, 1, 2, 12, 0));
         testTicket2.setEvent(testEvent);
         testTicket2.setUser(testUser2);
 
@@ -203,7 +203,7 @@ public class TestTicketPersistence {
 
         assertNotNull(tickets);
         assertEquals(2, tickets.size());
-        assertEquals(testTicket1.getBookingDate().toString(), tickets.get(0).getBookingDate().toString());
-        assertEquals(testTicket2.getBookingDate().toString(), tickets.get(1).getBookingDate().toString());
+        assertEquals(testTicket1.getBookingDate(), tickets.get(0).getBookingDate());
+        assertEquals(testTicket2.getBookingDate(), tickets.get(1).getBookingDate());
     }
 }
