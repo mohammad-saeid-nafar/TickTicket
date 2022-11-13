@@ -18,6 +18,16 @@ const Signup = () => {
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [disable, setDisable] = React.useState(true);
+
+  React.useEffect(() => {
+    if (firstName && lastName && email && address && phoneNumber && dob && username && password && confirmPassword){
+      setDisable(false);
+    }
+    else{
+      setDisable(true);
+    }
+  }, [firstName, lastName, email, phoneNumber, address, dob, username, password, confirmPassword]);
 
   const handleFirstNameChange = (event) => {
     setError(false);
@@ -149,7 +159,7 @@ const Signup = () => {
       <TextField type="password" label="password" variant="standard" required="true" onChange={handleConfirmPasswordChange}/>
     </div>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
-      <Button variant='contained' onClick={handleSignUp} color="primary">
+      <Button variant='contained' onClick={handleSignUp} color="primary" disabled={disable}>
         Sign Up
       </Button>
     </div>

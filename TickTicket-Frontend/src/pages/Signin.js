@@ -11,6 +11,16 @@ const Signin = () => {
   const [error, setError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [success, setSuccess] = React.useState(false);
+  const [disable, setDisable] = React.useState(true);
+
+  React.useEffect(() => {
+    if (username && password){
+      setDisable(false);
+    }
+    else{
+      setDisable(true);
+    }
+  }, [username, password]);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -61,7 +71,7 @@ const Signin = () => {
       <TextField type="password" label="password" variant="standard" onChange={handlePasswordChange}/>
     </div>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
-      <Button variant='contained' onClick={handleLogin} color="primary">
+      <Button variant='contained' onClick={handleLogin} color="primary" disabled={disable}>
         Log in
       </Button>
     </div>
