@@ -30,7 +30,7 @@ public class EventService {
 	public Event createEvent(EventDTO eventDTO) {
 		String name = eventDTO.getName();
 		String description = eventDTO.getDescription();
-	    Integer capacity = eventDTO.getCapacity();
+		Integer capacity = eventDTO.getCapacity();
 		Double cost = eventDTO.getCost();
 		String address = eventDTO.getAddress();
 		String email = eventDTO.getEmail();
@@ -38,25 +38,18 @@ public class EventService {
 		UUID organizerId = eventDTO.getOrganizerId();
 		UUID eventScheduleId = eventDTO.getEventScheduleId();
 		List<UUID> eventTypeIds = eventDTO.getEventTypeIds();
-		List<EventType> eventTypes = eventTypeService.getAllEventTypes(eventTypeIds);
-
-		if(eventRepository.findEventByName(name) != null) {
-			throw new IllegalArgumentException("The event already exists");
-		}
 
 		if(name == null || name.equals("")) throw new IllegalArgumentException("Name cannot be blank");
 
-        if(address == null || address.equals("")) throw new IllegalArgumentException("Address cannot be blank");
+		if(address == null || address.equals("")) throw new IllegalArgumentException("Address cannot be blank");
 
 		if(email == null || email.equals("")) throw new IllegalArgumentException("Email cannot be blank");
 
 		if(phoneNumber == null || phoneNumber.equals("")) throw new IllegalArgumentException("Phone number cannot be blank");
 
-        if(capacity == null || capacity == 0) throw new IllegalArgumentException("Capacity cannot be blank or 0");
+		if(capacity == null || capacity == 0) throw new IllegalArgumentException("Capacity cannot be blank or 0");
 
-        if(cost == null ) throw new IllegalArgumentException("Cost cannot be blank");
-
-		if(eventTypes == null || eventTypes.size() == 0) throw new IllegalArgumentException("Event Type doesn't exist");
+		if(cost == null ) throw new IllegalArgumentException("Cost cannot be blank");
 
 		Event newEvent = new Event();
 
@@ -76,15 +69,15 @@ public class EventService {
 			newEvent.setEventSchedule(schedule);
 		}
 
-        newEvent.setName(name);
-        newEvent.setAddress(address);
-        newEvent.setDescription(description);
-        newEvent.setCapacity(capacity);
-        newEvent.setCost(cost);
-        newEvent.setEmail(email);
-        newEvent.setPhoneNumber(phoneNumber);
-        newEvent.setOrganizer(userService.getUser(organizerId));
-        newEvent.setEventTypes(eventTypeService.getAllEventTypes(eventTypeIds));
+		newEvent.setName(name);
+		newEvent.setAddress(address);
+		newEvent.setDescription(description);
+		newEvent.setCapacity(capacity);
+		newEvent.setCost(cost);
+		newEvent.setEmail(email);
+		newEvent.setPhoneNumber(phoneNumber);
+		newEvent.setOrganizer(userService.getUser(organizerId));
+		newEvent.setEventTypes(eventTypeService.getAllEventTypes(eventTypeIds));
 
 		eventRepository.save(newEvent);
 
@@ -133,7 +126,7 @@ public class EventService {
 			EventSchedule schedule = eventScheduleService.getEventSchedule(eventScheduleId);
 			event.setEventSchedule(schedule);
 		}
-		
+
 		if(description != null && !description.equals("")) {
 			event.setDescription(description);
 		}
@@ -142,7 +135,7 @@ public class EventService {
 			event.setCapacity(capacity);
 		}
 
-        if(cost != null && cost != event.getCost()) {
+		if(cost != null && cost != event.getCost()) {
 			event.setCost(cost);
 		}
 
@@ -150,7 +143,7 @@ public class EventService {
 			event.setAddress(address);
 		}
 
-        if(email != null && !email.equals("")) {
+		if(email != null && !email.equals("")) {
 			event.setEmail(email);
 		}
 
@@ -183,13 +176,13 @@ public class EventService {
 				new IllegalArgumentException("Event " + id + " not found"));
 	}
 
-    public List<Event> getEventsByName(String name){
-        return eventRepository.findEventsByName(name);
-    }
+	public List<Event> getEventsByName(String name){
+		return eventRepository.findEventsByName(name);
+	}
 
 	public List<Event> getAllEventsFromType(List<EventType> eventTypes) {
 		return eventRepository.findEventsByEventTypesIn(eventTypes);
-    }
+	}
 
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
@@ -243,7 +236,7 @@ public class EventService {
 	}
 
 	public void addEventType(String name,Event event){
-	//	event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElseThrow(() -> new NullPointerException("Event Type doesn't exist")));
+		//	event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElseThrow(() -> new NullPointerException("Event Type doesn't exist")));
 		if(eventTypeRepository.findEventTypeByName(name).orElse(null)!=null){
 			event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElse(null));
 			eventRepository.save(event);
