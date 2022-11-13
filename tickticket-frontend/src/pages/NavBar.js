@@ -14,6 +14,7 @@ import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 
 const pages = [
   { name: "Events", link: "/events" },
+  { name: "Event Types", link: "/event_types" },
   { name: "Organize Event", link: "/create_event" },
   { name: "Profile", link: "/profile" },
   { name: "Sign up", link: "/signup" },
