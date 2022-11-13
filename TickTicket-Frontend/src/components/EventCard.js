@@ -10,8 +10,10 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Rating from "@mui/material/Rating";
 import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import Review from "./Review";
+import EventRating from "./EventRating";
 
 const EventCard = (props) => {
   const ExpandMore = styled((props) => {
@@ -54,7 +56,16 @@ const EventCard = (props) => {
             <MoreVertIcon />
           </IconButton>
         }
-        title={props.event.name}
+        title={
+          <Box
+            sx={{
+              display: "flex",
+            }}
+          >
+            <Typography>{props.event.name}</Typography>
+            <EventRating reviews={reviews} rating={rating} />
+          </Box>
+        }
         subheader={props.event.address}
       />
       <CardContent>
@@ -63,35 +74,6 @@ const EventCard = (props) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <Box
-          sx={{
-            display: "flex",
-            width: "25%"
-          }}
-        >
-          {reviews.length === 0 ? (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{marginLeft: "3%"}}
-            >
-              No reviews yet
-            </Typography>
-          ) : (
-            <>
-              <Typography
-                sx={{marginLeft: "3%", marginRight: "5px" }}
-                color="text.secondary"
-              >
-                {rating}
-              </Typography>
-              <Rating name="read-only" value={rating} readOnly />
-              <Typography sx={{marginLeft: "5px" }} color="text.secondary">
-                ({reviews.length})
-              </Typography>
-            </>
-          )}
-        </Box>
         <ExpandMore
           expand={expanded}
           disabled={loading || reviews.length === 0}
@@ -103,15 +85,11 @@ const EventCard = (props) => {
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {reviews.map((review) => {
-          return (
-            <CardContent key={review.id}>
-              <Typography paragraph>{review.title}</Typography>
-              <Typography paragraph>{review.description}</Typography>
-              <Typography paragraph>{review.rating}</Typography>
-            </CardContent>
-          );
-        })}
+        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+          {reviews.map((review) => {
+            return <Review key={review.id} review={review} />;
+          })}
+        </List>
       </Collapse>
     </Card>
   );
