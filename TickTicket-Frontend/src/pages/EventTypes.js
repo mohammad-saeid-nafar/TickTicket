@@ -29,6 +29,7 @@ const EventTypes = () => {
     const [refresh, setRefresh] = React.useState(false);
     const [error, setError] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState("");
+    const [success, setSuccess] = React.useState(false);
 
     React.useEffect(() => {
         axios.get("event-types").then((res) => {
@@ -39,6 +40,7 @@ const EventTypes = () => {
     React.useEffect(() => {
         setOpen(false);
         setCreateForm(false);
+        setDisable(true);
     }, [refresh])
 
     React.useEffect(() => {
@@ -55,6 +57,7 @@ const EventTypes = () => {
     };
 
     const handleClickCreateForm = () => {
+        setSuccess(false);
         setCreateForm(true);
     };
 
@@ -97,8 +100,7 @@ const EventTypes = () => {
                 ageRequirement: parseInt(ageRequirement)
               })
               .then(function (response) {
-                // TODO
-                // success message
+                setSuccess(true);
                 setRefresh(true);
               })
               .catch(function (error) {
@@ -193,11 +195,10 @@ const EventTypes = () => {
             </Button>
         </Box>
         </>}
-        {error && <>
-            <Stack sx={{ width: '100%' }} spacing={2}>
-                <Alert severity="error">{errorMessage}</Alert>
-            </Stack>
-        </> }
+        <Stack sx={{ width: '100%' }} spacing={2}>
+            {error && <Alert severity="error">{errorMessage}</Alert>}
+            {success && <Alert severity="success">A new Event Type has been successfully created!</Alert>}
+        </Stack>
         </>
     );
   };
