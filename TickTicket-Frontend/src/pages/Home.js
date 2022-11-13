@@ -1,15 +1,29 @@
-import { Button, ButtonGroup } from "@mui/material";
+import { Container, Stack } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import EventCard from "../components/EventCard";
 
 const Home = () => {
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    axios.get("events").then((res) => {
+      setEvents(res.data);
+    });
+  }, []);
+
   return (
-    <ButtonGroup variant="contained" aria-label="outlined primary button group">
-      <Button href="/signin">Signin</Button>
-      <Button href="/signup">Signup</Button>
-      <Button href="/profile">Profile</Button>
-      <Button href="/events">Events</Button>
-      <Button href="/create_event">Create Event</Button>
-    </ButtonGroup>
+    <Container
+      sx={{
+        paddingTop: "5%",
+      }}
+    >
+      <Stack spacing={2}>
+        {events.map((event) => {
+          return <EventCard key={event.id} event={event} />;
+        })}
+      </Stack>
+    </Container>
   );
 };
-
 export default Home;

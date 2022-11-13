@@ -88,7 +88,7 @@ public class EventDTO {
 
     public EventScheduleDTO getEventSchedule() { return eventSchedule; }
 
-    public List<EventTypeDTO> getEventType(){
+    public List<EventTypeDTO> getEventTypes(){
         return eventTypes;
     }
 }

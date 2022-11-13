@@ -64,8 +64,8 @@ public class EventServiceTest {
     private static final String EVENT_EMAIL = "testevent@mail.ca";
     private static final String EVENT_PHONE_NUMBER = "12345678";
 
-    private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 2, 12, 0);
-    private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 2, 23, 59);
+    private static final LocalDateTime EVENT_START = LocalDateTime.of(2023, 10, 2, 12, 0);
+    private static final LocalDateTime EVENT_END = LocalDateTime.of(2023, 10, 2, 23, 59);
 
     private static final UUID ORGANIZER_ID = UUID.randomUUID();
     private static final String ORGANIZER_USERNAME = "Organizer";
@@ -531,7 +531,7 @@ public class EventServiceTest {
     public void testDeleteEvent(){
         boolean success = false;
         try{
-            success = eventService.deleteEvent(EVENT_ID);
+            success = eventService.deleteEvent(EVENT_ID, ORGANIZER_ID);
         }catch (Exception e){
             fail();
         }
@@ -542,7 +542,7 @@ public class EventServiceTest {
     public void testDeleteEventNotFound(){
         UUID id = UUID.randomUUID();
         try{
-            eventService.deleteEvent(id);
+            eventService.deleteEvent(id, id);
         }catch (Exception e){
             assertEquals(e.getMessage(), "Event " + id + " not found");
         }

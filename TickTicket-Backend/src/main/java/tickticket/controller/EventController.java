@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin(origins = "*")
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/events")
@@ -63,7 +64,7 @@ public class EventController {
     @DeleteMapping(value = {"/{id}"})
     public ResponseEntity<?> deleteEvent(@PathVariable("id") UUID id){
         try{
-            eventService.deleteEvent(id);
+            eventService.deleteEvent(id, eventService.getEvent(id).getOrganizer().getId());
         }catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

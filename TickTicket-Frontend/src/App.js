@@ -6,18 +6,24 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
+import NavBar from "./pages/NavBar";
+import EventTypes from "./pages/EventTypes";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="signin" element={<Signin />} />
-        <Route path="signup" element={<Signup />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="events" element={<Events />} />
-        <Route path="create_event" element={<CreateEvent />} />
-      </Routes>
+      <div>
+        <NavBar/>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="signin" element={<Signin />} />
+            <Route path="signup" element={<Signup />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="events" element={<Events />} />
+            <Route path="event_types" element={<EventTypes />} />
+            <Route path="create_event" element={<CreateEvent />} />
+          </Routes>
+      </div>
     </BrowserRouter>
   );
 }

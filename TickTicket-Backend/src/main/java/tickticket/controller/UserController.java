@@ -7,20 +7,13 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import tickticket.model.User;
 import tickticket.dto.UserDTO;
 import tickticket.service.UserService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -64,8 +57,8 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	public boolean deleteUserByUsername(@PathVariable UUID id) {
-		return userService.deleteUser(id);
+	public boolean deleteUserByUsername(@PathVariable UUID id, @RequestParam String password) {
+		return userService.deleteUser(id, password);
 	}
 
 	@GetMapping("/{id}")
@@ -74,8 +67,8 @@ public class UserController {
 	}
 
     @DeleteMapping(value = {"/username/{username}"})
-	public boolean deleteUserByUsername(@PathVariable String username) {
-		return userService.deleteUserByUsername(username);
+	public boolean deleteUserByUsername(@PathVariable String username, @RequestParam String password) {
+		return userService.deleteUserByUsername(username, password);
 	}
 
     @GetMapping(value = {"/username/{username}"})

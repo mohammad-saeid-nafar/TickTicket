@@ -50,6 +50,10 @@ public class ReviewService {
             throw new IllegalArgumentException("Review already exists");
         }
 
+        if(user.getId().equals(event.getOrganizer().getId())){
+            throw new IllegalArgumentException("You cannot review an event you have organized");
+        }
+
         if(event.getEventSchedule().getStartDateTime().isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("Cannot create a review for a future event");
         }

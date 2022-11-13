@@ -79,7 +79,6 @@ public class ProfileServiceTest {
     @BeforeEach
     public void setMockOutput() {
         profile2DTO = new ProfileDTO();
-        profile2DTO.setUsername("TestUser2");
         profile2DTO.setFirstName(PROFILE2_FIRSTNAME);
         profile2DTO.setLastName(PROFILE2_LASTNAME);
         profile2DTO.setEmail(PROFILE2_EMAIL);

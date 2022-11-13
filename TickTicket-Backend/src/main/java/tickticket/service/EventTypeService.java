@@ -25,7 +25,7 @@ public class EventTypeService {
 
 		if(name==null || name.equals("")) throw new IllegalArgumentException("Name of event type cannot be blank");
         if(description==null || description.equals("")) throw new IllegalArgumentException("Description of event type cannot be blank");
-        if(ageRequirement<=0) throw new IllegalArgumentException("Invalid age requirement");
+        if(ageRequirement<0) throw new IllegalArgumentException("Invalid age requirement");
 
         if(eventTypeRepository.findEventTypeByName(name).isPresent())
             throw new IllegalArgumentException("Event type " + name + " already exists");
