@@ -38,12 +38,10 @@ const Signin = () => {
       })
       .then(function (response) {
         setSuccess(true);
-        alert("signed in");
       })
       .catch(function (error) {
         setError(true);
-        setErrorMessage(error);
-        alert("Wrong username or password, please try again");
+        setErrorMessage("One input was wrongly entered, please check your choices again");
       });
           
     }
