@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
@@ -14,6 +15,9 @@ import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import Review from "./Review";
 import EventRating from "./EventRating";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { Modal } from "@mui/material";
 
 const EventCard = (props) => {
   const ExpandMore = styled((props) => {
@@ -48,13 +52,76 @@ const EventCard = (props) => {
     setExpanded(!expanded);
   };
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const actionsOpen = Boolean(anchorEl);
+  const handleActionsClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleActionsClose = () => {
+    setAnchorEl(null);
+  };
+
+  const [reviewOpen, setReviewOpen] = React.useState(false);
+  const handleReviewOpen = () => {
+    handleActionsClose();
+    setReviewOpen(true);
+  };
+  const handleReviewClose = () => setReviewOpen(false);
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
   return (
     <Card>
       <CardHeader
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
+          <div>
+            <IconButton
+              id="basic-button"
+              aria-controls={actionsOpen ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={actionsOpen ? "true" : undefined}
+              onClick={handleActionsClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={actionsOpen}
+              onClose={handleActionsClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleReviewOpen}>Add Review</MenuItem>
+            </Menu>
+            <Modal
+              open={reviewOpen}
+              onClose={handleReviewClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={modalStyle}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Text in a modal
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                  Duis mollis, est non commodo luctus, nisi erat porttitor
+                  ligula.
+                </Typography>
+              </Box>
+            </Modal>
+          </div>
         }
         title={
           <Box
