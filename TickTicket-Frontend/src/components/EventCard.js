@@ -17,7 +17,7 @@ import Review from "./Review";
 import EventRating from "./EventRating";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Modal } from "@mui/material";
+import { Modal, Rating, TextField, Button } from "@mui/material";
 
 const EventCard = (props) => {
   const ExpandMore = styled((props) => {
@@ -35,18 +35,25 @@ const EventCard = (props) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [rating, setRating] = useState(0);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewDescription, setReviewDescription] = useState("");
 
   useEffect(() => {
+    loadData();
+    // eslint-disable-next-line
+  }, []);
+
+  const loadData = async () => {
     setLoading(true);
-    axios.get(`/reviews/event/${props.event.id}`).then((res) => {
+    await axios.get(`reviews/event/${props.event.id}`).then((res) => {
       setReviews(res.data);
       setLoading(false);
     });
-    axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
+    await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
       setRating(res.data);
     });
-    // eslint-disable-next-line
-  }, []);
+  };
 
   const handleExpandClick = async () => {
     setExpanded(!expanded);
@@ -69,15 +76,26 @@ const EventCard = (props) => {
   const handleReviewClose = () => setReviewOpen(false);
 
   const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    bgcolor: "background.paper",
     boxShadow: 24,
     p: 4,
+  };
+
+  const createReview = async () => {
+    await axios.post(`reviews`, {
+      title: reviewTitle,
+      description: reviewDescription,
+      rating: reviewRating,
+      eventId: props.event.id,
+      userId: "00de8b99-e38c-4cb6-b92c-0b3ec484b83e",
+    });
+    loadData();
+    handleReviewClose();
   };
 
   return (
@@ -111,15 +129,45 @@ const EventCard = (props) => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={modalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Text in a modal
-                </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                  Duis mollis, est non commodo luctus, nisi erat porttitor
-                  ligula.
-                </Typography>
-              </Box>
+              <Card sx={modalStyle}>
+                <Box
+                  component="form"
+                  sx={{
+                    "& .MuiTextField-root": { m: 1, width: "25ch" },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                >
+                  <Typography component="legend">Rating</Typography>
+                  <Rating
+                    value={reviewRating}
+                    onChange={(event, newValue) => {
+                      setReviewRating(newValue);
+                    }}
+                  />
+                  <div>
+                    <TextField
+                      required
+                      id="review-title"
+                      label="Title"
+                      onChange={(event) => setReviewTitle(event.target.value)}
+                    />
+                    <TextField
+                      required
+                      multiline
+                      id="review-description"
+                      label="Description"
+                      helperText="Please provide a description of your experience."
+                      onChange={(event) =>
+                        setReviewDescription(event.target.value)
+                      }
+                    />
+                  </div>
+                  <Button variant="outlined" onClick={createReview}>
+                    Add Review
+                  </Button>
+                </Box>
+              </Card>
             </Modal>
           </div>
         }
