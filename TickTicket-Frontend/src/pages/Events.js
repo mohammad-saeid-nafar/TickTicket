@@ -11,6 +11,10 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+
+//TODO: Make it work with the event types
+//TODO: Set the template date to today
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -147,7 +151,7 @@ const Events = () => {
         } else if(!isNaN(eventAddress)){
             setError(true);
             setErrorMessage("Event Address Must Be A String");
-        } else if(!isNaN(eventPhoneNumber)){
+        } else if(isNaN(eventPhoneNumber)){
             setError(true);
             setErrorMessage("Event Phone Number Must Be A String");
         }
@@ -171,7 +175,7 @@ const Events = () => {
                 organizerId: "827fa1fc-1907-41f3-bc02-3ceb0347aa0c",
                 start: eventStart,
                 end: eventEnd,
-                eventTypes: chosenEventTypes
+                eventTypes: []
             })
                 .then(function (response) {
                     setSuccess(true);
@@ -207,18 +211,39 @@ const Events = () => {
         </Box>
       { createForm &&
           <>
-            <Popper id={popperId} open={open} anchorEl={anchorEl}>
+            <Popper
+                id={popperId}
+                open={open}
+                anchorEl={anchorEl}
+                placement="top"
+                disablePortal={false}
+                modifiers={[
+                    {
+                        name: 'preventOverflow',
+                        enabled: true,
+                        options: {
+                            altAxis: true,
+                            altBoundary: true,
+                            tether: false,
+                            rootBoundary: 'document',
+                            padding: 8,
+                        },
+                    },
+                ]}
+            >
               <Container
                   sx={{
                      paddingTop: "3%",
                      minHeight: "500",
+                     spacing: "3",
                      border: 1, p: 1, bgcolor: 'background.paper'
                   }}
               >
                 <Stack spacing={2}>
 
-                     <Box textAlign='center' >
+                    <Box textAlign='center'>
                           <TextField
+                              fullWidth
                               required
                               id="outlined-required"
                               label="Event Name"
@@ -227,6 +252,7 @@ const Events = () => {
                           />
                           <TextField
                               required
+                              fullWidth
                               id="outlined-required"
                               label="Description"
                               // multiline
@@ -237,6 +263,7 @@ const Events = () => {
                      </Box>
                      <Box textAlign='center' >
                           <TextField
+                              fullWidth
                               required
                               id="outlined-required"
                               label="Capacity"
@@ -244,6 +271,7 @@ const Events = () => {
                               onChange={handleEventCapacityChange}
                           />
                             <TextField
+                                fullWidth
                                 required
                                 id="outlined-required"
                                 label="Cost"
@@ -253,6 +281,7 @@ const Events = () => {
                     </Box>
                     <Box textAlign='center' >
                         <TextField
+                            fullWidth
                             required
                             id="outlined-required"
                             label="Address"
@@ -261,6 +290,7 @@ const Events = () => {
                         />
                         <TextField
                             required
+                            fullWidth
                             id="outlined-required"
                             label="Phone Number"
                             helperText="Phone Number"
@@ -270,11 +300,13 @@ const Events = () => {
                     <Box textAlign='center' >
                         <TextField
                             required
+                            fullWidth
                             id="outlined-required"
                             label="Email"
                             helperText="Email"
                             onChange={handleEventEmailChange}
                         />
+                        <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-helper-label">Event Types</InputLabel>
                         <Select
                             labelId="demo-simple-select-helper-label"
@@ -292,9 +324,11 @@ const Events = () => {
 
                             })}
                         </Select>
+                        </FormControl>
                     </Box>
                      <Box textAlign='center' >
                          <TextField
+                             fullWidth
                              id="datetime-local"
                              label="Start Date and Time"
                              type="datetime-local"
@@ -307,6 +341,7 @@ const Events = () => {
                          />
 
                          <TextField
+                             fullWidth
                              id="datetime-local"
                              label="Start Date and Time"
                              type="datetime-local"
@@ -317,6 +352,7 @@ const Events = () => {
                              }}
                              onChange={handleEventEndChange}
                          />
+
 
                      </Box>
                       <Box textAlign='center'>
