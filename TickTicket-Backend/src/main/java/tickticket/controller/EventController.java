@@ -12,6 +12,7 @@ import tickticket.service.EventService;
 import tickticket.service.EventTypeService;
 import tickticket.service.UserService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -120,6 +121,20 @@ public class EventController {
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
             List<Event> events = eventService.getAllEventsFromType(eventTypes);
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/events-by-date/"})
+    public ResponseEntity<?> getEventsByDate(@RequestParam LocalDate date){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getEventsByDate(date);
             for(Event event : events){
                 eventsDTO.add(Conversion.convertToDTO(event));
             }
