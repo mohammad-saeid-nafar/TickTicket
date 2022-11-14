@@ -19,6 +19,7 @@ const pages = [
   { name: "Profile", link: "/profile" },
   { name: "Sign up", link: "/signup" },
   { name: "Sign in", link: "/signin" },
+  { name: "My events", link: "/my_events" },
 ];
 
 function NavBar() {
