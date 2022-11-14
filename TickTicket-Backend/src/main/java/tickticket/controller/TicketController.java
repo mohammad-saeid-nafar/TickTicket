@@ -1,5 +1,6 @@
 package tickticket.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -55,6 +56,15 @@ public class TicketController {
     @GetMapping("/event/{id}")
     public ResponseEntity<List<TicketDTO>> viewTicketsByEvent(@PathVariable UUID id) {
         List<Ticket> tickets = ticketService.getTicketsByEvent(id);
+        List<TicketDTO> ticketDTOS = tickets.stream()
+                .map(TicketDTO::from)
+                .toList();
+        return ResponseEntity.ok(ticketDTOS);
+    }
+
+    @GetMapping("/date/{date}")
+    public ResponseEntity<List<TicketDTO>> viewTicketsByDate(@PathVariable LocalDate date) {
+        List<Ticket> tickets = ticketService.getTicketsByBookingDate(date);
         List<TicketDTO> ticketDTOS = tickets.stream()
                 .map(TicketDTO::from)
                 .toList();
