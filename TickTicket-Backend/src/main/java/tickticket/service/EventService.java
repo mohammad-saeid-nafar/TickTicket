@@ -181,7 +181,7 @@ public class EventService {
 		return eventRepository.findEventsByName(name);
 	}
 
-	public List<Event> getAllEventsFromType(List<EventType> eventTypes) {
+	public List<Event> getAllEventsFromTypes(List<EventType> eventTypes) {
 		return eventRepository.findEventsByEventTypesIn(eventTypes);
 	}
 
@@ -190,17 +190,17 @@ public class EventService {
 	}
 
 	public List<Event> getEventsByDate(LocalDate curDate){
-		List<Event> events = new ArrayList<>();
-		events = getAllEvents();
+		List<Event> filteredEvents = new ArrayList<>();
+		List<Event> events = getAllEvents();
 
 		for(Event ev : events){
 			LocalDate evDate = ev.getEventSchedule().getStartDateTime().toLocalDate();
 			if(evDate.isEqual(curDate)){
-				events.add(ev);
+				filteredEvents.add(ev);
 			}
 		}
-		if(events.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
-		return events;
+		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
+		return filteredEvents;
 	}
 
 	public List<Event> getUserUpcomingEvents(UUID userId, LocalDateTime currentDateTime){

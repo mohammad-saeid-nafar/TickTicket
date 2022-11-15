@@ -592,7 +592,7 @@ public class EventServiceTest {
 
         List<Event> events = new ArrayList<>();
         try {
-            events = eventService.getAllEventsFromType(eventTypes);
+            events = eventService.getAllEventsFromTypes(eventTypes);
         } catch (Exception e) {
             fail();
         }
