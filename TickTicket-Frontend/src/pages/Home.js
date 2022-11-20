@@ -1,6 +1,6 @@
-import { Container, Stack } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Container, Stack } from "@mui/material";
 import EventCard from "../components/EventCard";
 
 const Home = () => {
@@ -20,7 +20,7 @@ const Home = () => {
     >
       <Stack spacing={2}>
         {events.map((event) => {
-          return <EventCard key={event.id} event={event} addReview={false}/>;
+          return <EventCard key={event.id} event={event} addReview={false} />;
         })}
       </Stack>
     </Container>

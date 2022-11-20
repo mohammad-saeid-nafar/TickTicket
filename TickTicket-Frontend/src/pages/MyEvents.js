@@ -17,12 +17,16 @@ const Home = () => {
   };
 
   useEffect(() => {
-    axios.get("events/upcoming/35f94e94-3f80-4919-b6a8-07a28d855b68").then((res) => {
-      setUpcomingEvents(res.data);
-    });
-    axios.get("events/past/35f94e94-3f80-4919-b6a8-07a28d855b68").then((res) => {
-      setPastEvents(res.data);
-    });
+    axios
+      .get("events/past/35f94e94-3f80-4919-b6a8-07a28d855b68")
+      .then((res) => {
+        setPastEvents(res.data);
+      });
+    axios
+      .get("events/upcoming/35f94e94-3f80-4919-b6a8-07a28d855b68")
+      .then((res) => {
+        setUpcomingEvents(res.data);
+      });
   }, []);
 
   return (
@@ -36,18 +40,18 @@ const Home = () => {
         <Tab label="Upcoming" />
       </Tabs>
       <TabPanel value={tab} index={0}>
-      <Stack spacing={2}>
-        {pastEvents.map((event) => {
-          return <EventCard key={event.id} event={event} addReview={true}/>;
-        })}
-      </Stack>
+        <Stack spacing={2}>
+          {pastEvents.map((event) => {
+            return <EventCard key={event.id} event={event} addReview={true} />;
+          })}
+        </Stack>
       </TabPanel>
       <TabPanel value={tab} index={1}>
-      <Stack spacing={2}>
-        {upcomingEvents.map((event) => {
-          return <EventCard key={event.id} event={event} addReview={false}/>;
-        })}
-      </Stack>
+        <Stack spacing={2}>
+          {upcomingEvents.map((event) => {
+            return <EventCard key={event.id} event={event} addReview={false} />;
+          })}
+        </Stack>
       </TabPanel>
     </Container>
   );
