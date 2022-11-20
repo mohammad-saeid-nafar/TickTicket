@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tickticket.dto.EventDTO;
 import tickticket.dto.EventTypeDTO;
+import tickticket.model.Event;
 import tickticket.model.EventType;
 import tickticket.model.Profile;
 import tickticket.service.EventTypeService;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -64,10 +67,20 @@ public class EventTypeController {
     }
 
     @GetMapping
-    public List<EventTypeDTO> viewAllEventTypes() {
-        return eventTypeService.getAllEventTypes().stream()
-                .map(Conversion::convertToDTO)
-                .toList();
+    public ResponseEntity<?> viewAllEventTypes() {
+//        return eventTypeService.getAllEventTypes().stream()
+//                .map(Conversion::convertToDTO)
+//                .toList();
+        List<EventTypeDTO> eventTypesDTO = new ArrayList<>();
+        try{
+            List<EventType> eventTypes = eventTypeService.getAllEventTypes();
+            for(EventType eventType : eventTypes){
+                eventTypesDTO.add(Conversion.convertToDTO(eventType));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventTypesDTO, HttpStatus.OK);
     }
 
 

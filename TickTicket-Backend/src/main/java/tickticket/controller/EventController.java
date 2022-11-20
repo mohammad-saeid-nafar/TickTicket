@@ -12,6 +12,7 @@ import tickticket.service.EventService;
 import tickticket.service.EventTypeService;
 import tickticket.service.UserService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class EventController {
     }
 
     // TODO Fix this, it's not working
-    @GetMapping(value = {"/view_events_event_types"})
+    @GetMapping(value = {"/event-types"})
     public ResponseEntity<?> getEventsByEventTypes(@RequestParam List<UUID> eventTypesIds){
         List<EventType> eventTypes = new ArrayList<>();
         for(UUID id : eventTypesIds){
@@ -119,7 +120,64 @@ public class EventController {
         }
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
-            List<Event> events = eventService.getAllEventsFromType(eventTypes);
+            List<Event> events = eventService.getAllEventsFromTypes(eventTypes);
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
+//    @GetMapping(value = {"/view_events_event_types"})
+//    public ResponseEntity<?> getEventsByEventTypes(@RequestParam String eventTypeName){
+//        List<EventDTO> eventsDTO = new ArrayList<>();
+//        try{
+//            List<Event> events = eventService.getAllEventsFromType(eventTypeService.getEventTypeByName(eventTypeName));
+//            for(Event event : events){
+//                eventsDTO.add(Conversion.convertToDTO(event));
+//            }
+//        }catch(IllegalArgumentException e){
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+//    }
+
+
+    @GetMapping(value = {"/date"})
+    public ResponseEntity<?> getEventsByDate(@RequestParam String date){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getEventsByDate(LocalDate.parse(date));
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/upcoming/{id}"})
+    public ResponseEntity<?> getUserUpcomingEvents(@PathVariable("id") UUID id){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getUserUpcomingEvents(id, LocalDateTime.now());
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/past/{id}"})
+    public ResponseEntity<?> getUserPastEvents(@PathVariable("id") UUID id){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getUserPastEvents(id, LocalDateTime.now());
             for(Event event : events){
                 eventsDTO.add(Conversion.convertToDTO(event));
             }

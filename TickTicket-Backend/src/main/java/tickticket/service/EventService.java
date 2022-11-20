@@ -1,5 +1,6 @@
 package tickticket.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -180,12 +181,26 @@ public class EventService {
 		return eventRepository.findEventsByName(name);
 	}
 
-	public List<Event> getAllEventsFromType(List<EventType> eventTypes) {
+	public List<Event> getAllEventsFromTypes(List<EventType> eventTypes) {
 		return eventRepository.findEventsByEventTypesIn(eventTypes);
 	}
 
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
+	}
+
+	public List<Event> getEventsByDate(LocalDate curDate){
+		List<Event> filteredEvents = new ArrayList<>();
+		List<Event> events = getAllEvents();
+
+		for(Event ev : events){
+			LocalDate evDate = ev.getEventSchedule().getStartDateTime().toLocalDate();
+			if(evDate.isEqual(curDate)){
+				filteredEvents.add(ev);
+			}
+		}
+		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
+		return filteredEvents;
 	}
 
 	public List<Event> getUserUpcomingEvents(UUID userId, LocalDateTime currentDateTime){

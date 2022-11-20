@@ -1,19 +1,43 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Rating from "@mui/material/Rating";
-import Box from "@mui/material/Box";
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Collapse,
+  IconButton,
+  List,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
+import {
+  ExpandMore as ExpandMoreIcon,
+  MoreVert as MoreVertIcon,
+} from "@mui/icons-material";
+import Review from "./Review";
+import EventRating from "./EventRating";
+import ReviewModal from "./ReviewModal";
 
 const EventCard = (props) => {
+  const [expanded, setExpanded] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [reviewOpen, setReviewOpen] = React.useState(false);
+  const actionsOpen = Boolean(anchorEl);
+
+  useEffect(() => {
+    loadData();
+    console.log(props.event.organizer.id);
+    // eslint-disable-next-line
+  }, []);
+
   const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -25,36 +49,97 @@ const EventCard = (props) => {
     }),
   }));
 
-  const [expanded, setExpanded] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [rating, setRating] = useState(0);
-
-  useEffect(() => {
+  const loadData = async () => {
     setLoading(true);
-    axios.get(`/reviews/event/${props.event.id}`).then((res) => {
+    await axios.get(`reviews/event/${props.event.id}`).then((res) => {
       setReviews(res.data);
       setLoading(false);
     });
-    axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
-      setRating(res.data);
+    await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
+      setRating(Math.round(res.data * 10) / 10);
     });
-    // eslint-disable-next-line
-  }, []);
+  };
 
   const handleExpandClick = async () => {
     setExpanded(!expanded);
+  };
+
+  const handleActionsClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleActionsClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleReviewOpen = () => {
+    handleActionsClose();
+    setReviewOpen(true);
+  };
+
+  const handleReviewClose = () => setReviewOpen(false);
+
+  const createReview = async (title, description, rating) => {
+    await axios.post(`reviews`, {
+      title: title,
+      description: description,
+      rating: rating,
+      eventId: props.event.id,
+      userId: localStorage.getItem("userId"),
+    });
+    loadData();
+    handleReviewClose();
   };
 
   return (
     <Card>
       <CardHeader
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
+          <div>
+            {props.addReview &&
+              props.event.organizer.id !== localStorage.getItem("userId") &&
+              reviews.every(
+                (review) => review.user.id !== localStorage.getItem("userId"),
+              ) && (
+                <IconButton
+                  id="basic-button"
+                  aria-controls={actionsOpen ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={actionsOpen ? "true" : undefined}
+                  onClick={handleActionsClick}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              )}
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={actionsOpen}
+              onClose={handleActionsClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleReviewOpen}>Add Review</MenuItem>
+            </Menu>
+            <ReviewModal
+              open={reviewOpen}
+              handleClose={handleReviewClose}
+              handleAction={createReview}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            ></ReviewModal>
+          </div>
         }
-        title={props.event.name}
+        title={
+          <Box
+            sx={{
+              display: "flex",
+            }}
+          >
+            <Typography>{props.event.name}</Typography>
+            <EventRating reviews={reviews} rating={rating} />
+          </Box>
+        }
         subheader={props.event.address}
       />
       <CardContent>
@@ -63,55 +148,26 @@ const EventCard = (props) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <Box
-          sx={{
-            display: "flex",
-            width: "25%"
-          }}
-        >
-          {reviews.length === 0 ? (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{marginLeft: "3%"}}
-            >
-              No reviews yet
-            </Typography>
-          ) : (
-            <>
-              <Typography
-                sx={{marginLeft: "3%", marginRight: "5px" }}
-                color="text.secondary"
-              >
-                {rating}
-              </Typography>
-              <Rating name="read-only" value={rating} readOnly />
-              <Typography sx={{marginLeft: "5px" }} color="text.secondary">
-                ({reviews.length})
-              </Typography>
-            </>
-          )}
-        </Box>
-        <ExpandMore
-          expand={expanded}
-          disabled={loading || reviews.length === 0}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
+        {reviews.length !== 0 && (
+          <ExpandMore
+            expand={expanded}
+            disabled={loading || reviews.length === 0}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </ExpandMore>
+        )}
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {reviews.map((review) => {
-          return (
-            <CardContent key={review.id}>
-              <Typography paragraph>{review.title}</Typography>
-              <Typography paragraph>{review.description}</Typography>
-              <Typography paragraph>{review.rating}</Typography>
-            </CardContent>
-          );
-        })}
+        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+          {reviews.map((review) => {
+            return (
+              <Review key={review.id} review={review} loadData={loadData} />
+            );
+          })}
+        </List>
       </Collapse>
     </Card>
   );

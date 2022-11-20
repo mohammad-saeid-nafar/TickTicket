@@ -5,9 +5,10 @@ import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
-import OrganizeEvent from "./pages/OrganizeEvent";
+import CreateEvent from "./pages/CreateEvent";
 import NavBar from "./pages/NavBar";
 import EventTypes from "./pages/EventTypes";
+import MyEvents from "./pages/MyEvents"
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="events" element={<Events />} />
             <Route path="event_types" element={<EventTypes />} />
-            <Route path="create_event" element={<OrganizeEvent />} />
+            <Route path="create_event" element={<CreateEvent />} />
+            <Route path="my_events" element={<MyEvents />} />
           </Routes>
       </div>
     </BrowserRouter>
