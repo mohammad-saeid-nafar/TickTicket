@@ -103,7 +103,7 @@ const EventCard = (props) => {
       <CardHeader
         action={
           <div>
-            <IconButton
+           { props.addReview && <IconButton
               id="basic-button"
               aria-controls={actionsOpen ? "basic-menu" : undefined}
               aria-haspopup="true"
@@ -111,7 +111,7 @@ const EventCard = (props) => {
               onClick={handleActionsClick}
             >
               <MoreVertIcon />
-            </IconButton>
+            </IconButton>}
             <Menu
               id="basic-menu"
               anchorEl={anchorEl}
@@ -189,7 +189,7 @@ const EventCard = (props) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <ExpandMore
+        {reviews.length !== 0 && <ExpandMore
           expand={expanded}
           disabled={loading || reviews.length === 0}
           onClick={handleExpandClick}
@@ -197,7 +197,7 @@ const EventCard = (props) => {
           aria-label="show more"
         >
           <ExpandMoreIcon />
-        </ExpandMore>
+        </ExpandMore>}
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <List sx={{ width: "100%", bgcolor: "background.paper" }}>

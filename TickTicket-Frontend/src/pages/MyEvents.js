@@ -38,14 +38,14 @@ const Home = () => {
       <TabPanel value={tab} index={0}>
       <Stack spacing={2}>
         {pastEvents.map((event) => {
-          return <EventCard key={event.id} event={event} />;
+          return <EventCard key={event.id} event={event} addReview={true}/>;
         })}
       </Stack>
       </TabPanel>
       <TabPanel value={tab} index={1}>
       <Stack spacing={2}>
         {upcomingEvents.map((event) => {
-          return <EventCard key={event.id} event={event} />;
+          return <EventCard key={event.id} event={event} addReview={false}/>;
         })}
       </Stack>
       </TabPanel>

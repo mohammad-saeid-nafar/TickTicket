@@ -20,7 +20,7 @@ const Home = () => {
     >
       <Stack spacing={2}>
         {events.map((event) => {
-          return <EventCard key={event.id} event={event} />;
+          return <EventCard key={event.id} event={event} addReview={false}/>;
         })}
       </Stack>
     </Container>

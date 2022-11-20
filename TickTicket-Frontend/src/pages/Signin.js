@@ -46,7 +46,9 @@ const Signin = () => {
           password
         }
       })
-      .then(function (response) {
+      .then(res => {
+        localStorage.setItem("userId", res.data.id);
+        window.location.href = "/";
         setSuccess(true);
       })
       .catch(function (error) {
