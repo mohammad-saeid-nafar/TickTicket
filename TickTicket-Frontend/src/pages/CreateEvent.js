@@ -45,7 +45,7 @@
 // };
 // export default CreateEvent;
 
-import {Alert, Button, Container, Stack, TextField} from "@mui/material";
+import {Alert, Button, Chip, Container, Stack, TextField} from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
@@ -174,9 +174,17 @@ const CreateEvent = () => {
         setEventEmail(event.target.value);
     }
 
-    const handleEventTypeChange = (event) => {
-        setError(false);
-        setChosenEventTypes(event.target.value);
+    const handleOnEventTypeclick = (eventType) => {
+        console.log(chosenEventTypes.find(id => id === eventType.id))
+        if(chosenEventTypes.find(id => id === eventType.id) === undefined){
+            chosenEventTypes.push(eventType.id)
+            setChosenEventTypes(chosenEventTypes);
+        }
+        else{
+            chosenEventTypes.splice(1, chosenEventTypes.indexOf(eventType.id))
+            setChosenEventTypes(chosenEventTypes);
+        }
+        console.log(chosenEventTypes)
     }
 
     const handleCreateEvent = React.useCallback(() => {
@@ -233,7 +241,7 @@ const CreateEvent = () => {
                     setErrorMessage(error);
                 });
         }
-    }, [eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail, chosenEventTypes]);
+    }, [eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail]);
 
 
     return (
@@ -287,8 +295,14 @@ const CreateEvent = () => {
                             }}
                         >
                             <Stack spacing={2}>
-
-                                <Box textAlign='center'>
+                                <Box textAlign='left'>
+                                    Select Event Type(s):  
+                                    {eventTypes.map((eventType) => {
+                                        return (
+                                            // <FormControlLabel control={<Checkbox />} label={eventType.name} onClick={() => handleOnEventTypeclick(eventType)}/>
+                                            <Chip label={eventType.name} onClick={() => handleOnEventTypeclick(eventType)}/>
+                                        );
+                                    })}
                                     <TextField
                                         fullWidth
                                         required
@@ -359,7 +373,6 @@ const CreateEvent = () => {
                                             labelId="demo-simple-select-helper-label"
                                             id="demo-simple-select-helper"
                                             label="Event Types"
-                                            onChange={handleEventTypeChange}
                                             displayEmpty
                                             helperText="Event Types"
                                         >

@@ -149,7 +149,7 @@ const Signup = () => {
       <TextField label="Email" variant="standard"  required="true" onChange={handleEmailChange}/>
     </div>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
-      <TextField label="Address" variant="standard" onChange={handleAddressChange}/>
+      <TextField label="Address" variant="standard" required="true" onChange={handleAddressChange}/>
       <TextField label="Phone number" variant="standard" required="true" onChange={handlePhoneNumberChange}/>
       <TextField label="Date of birth" variant="standard" required="true" onChange={handleDobChange}/>
     </div>
