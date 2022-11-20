@@ -1,51 +1,4 @@
-// import * as React from 'react';
-// import axios from "axios";
-// import ToggleButton from '@mui/material/ToggleButton';
-// import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-//
-// const CreateEvent = () => {
-//   const [eventTypes, setEventTypes] = React.useState([]);
-//   const [alignment, setAlignment] = React.useState('web');
-//   const [eventType, setEventType] = React.useState("");
-//
-//   React.useEffect(() => {
-//     axios.get("event-types").then((res) => {
-//         setEventTypes(res.data);
-//     });
-//   }, []);
-//
-//   const handleChange = (
-//     event,
-//     newAlignment,
-//   ) => {
-//     setAlignment(newAlignment);
-//     setEventType(event.target.value);
-//     // Todo remove console log line when eventType gets used
-//     console.log(eventType);
-//   };
-//
-//   return(
-//     <>
-//       <h1>Create Event</h1>
-//       <h2>1. Select Event Type</h2>
-//       <ToggleButtonGroup
-//         color="primary"
-//         value={alignment}
-//         exclusive
-//         onChange={handleChange}
-//       >
-//         {eventTypes.map((eventType) => {
-//           return (
-//             <ToggleButton value={eventType.name}>{eventType.name}</ToggleButton>
-//           );
-//         })}
-//       </ToggleButtonGroup>
-//     </>
-//   );
-// };
-// export default CreateEvent;
-
-import {Alert, Button, Container, Stack, TextField} from "@mui/material";
+import {Alert, Button, Chip, Container, Stack, TextField} from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
@@ -55,15 +8,12 @@ import {Box} from "@mui/system";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckIcon from "@mui/icons-material/Check";
 import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
+
 
 //TODO: Make it work with the event types
 //TODO: Set the template date to today
 
-const CreateEvent = () => {
+const OrganizeEvent = () => {
     const [events, setEvents] = useState([]);
     const [eventTypes, setEventTypes] = React.useState([]);
     const [chosenEventTypes, setChosenEventTypes] = React.useState([]);
@@ -111,11 +61,6 @@ const CreateEvent = () => {
     }, [setDisable, eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail]);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-
-    // const handleClick = (event) => {
-    //     setAnchorEl(anchorEl ? null : event.currentTarget);
-    // };
-
     const open = Boolean(anchorEl);
     const popperId = open ? 'simple-popper' : undefined;
 
@@ -174,9 +119,17 @@ const CreateEvent = () => {
         setEventEmail(event.target.value);
     }
 
-    const handleEventTypeChange = (event) => {
-        setError(false);
-        setChosenEventTypes(event.target.value);
+    const handleOnEventTypeclick = (eventType) => {
+        console.log(chosenEventTypes.find(id => id === eventType.id))
+        if(chosenEventTypes.find(id => id === eventType.id) === undefined){
+            chosenEventTypes.push(eventType.id)
+            setChosenEventTypes(chosenEventTypes);
+        }
+        else{
+            chosenEventTypes.splice(1, chosenEventTypes.indexOf(eventType.id))
+            setChosenEventTypes(chosenEventTypes);
+        }
+        console.log(chosenEventTypes)
     }
 
     const handleCreateEvent = React.useCallback(() => {
@@ -222,7 +175,7 @@ const CreateEvent = () => {
                 organizerId: "827fa1fc-1907-41f3-bc02-3ceb0347aa0c",
                 start: eventStart,
                 end: eventEnd,
-                eventTypes: []
+                eventTypes: chosenEventTypes,
             })
                 .then(function (response) {
                     setSuccess(true);
@@ -233,7 +186,7 @@ const CreateEvent = () => {
                     setErrorMessage(error);
                 });
         }
-    }, [eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail, chosenEventTypes]);
+    }, [eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail]);
 
 
     return (
@@ -287,8 +240,14 @@ const CreateEvent = () => {
                             }}
                         >
                             <Stack spacing={2}>
-
-                                <Box textAlign='center'>
+                                <Box textAlign='left'>
+                                    Select Event Type(s):
+                                    {eventTypes.map((eventType) => {
+                                        return (
+                                            // <FormControlLabel control={<Checkbox />} label={eventType.name} onClick={() => handleOnEventTypeclick(eventType)}/>
+                                            <Chip label={eventType.name} onClick={() => handleOnEventTypeclick(eventType)}/>
+                                        );
+                                    })}
                                     <TextField
                                         fullWidth
                                         required
@@ -353,25 +312,6 @@ const CreateEvent = () => {
                                         helperText="Email"
                                         onChange={handleEventEmailChange}
                                     />
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-simple-select-helper-label">Event Types</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-helper-label"
-                                            id="demo-simple-select-helper"
-                                            label="Event Types"
-                                            onChange={handleEventTypeChange}
-                                            displayEmpty
-                                            helperText="Event Types"
-                                        >
-                                            <MenuItem value="">
-                                                <em>None</em>
-                                            </MenuItem>
-                                            { eventTypes.map((eventType) => {
-                                                return <MenuItem value={eventType.id}>{eventType.name}</MenuItem>
-
-                                            })}
-                                        </Select>
-                                    </FormControl>
                                 </Box>
                                 <Box textAlign='center' >
                                     <TextField
@@ -424,4 +364,4 @@ const CreateEvent = () => {
     );
 };
 
-export default CreateEvent;
+export default OrganizeEvent;
