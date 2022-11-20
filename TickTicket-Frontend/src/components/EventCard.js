@@ -34,6 +34,7 @@ const EventCard = (props) => {
 
   useEffect(() => {
     loadData();
+    console.log(props.event.organizer.id);
     // eslint-disable-next-line
   }, []);
 
@@ -95,6 +96,7 @@ const EventCard = (props) => {
         action={
           <div>
             {props.addReview &&
+              props.event.organizer.id !== localStorage.getItem("userId") &&
               reviews.every(
                 (review) => review.user.id !== localStorage.getItem("userId"),
               ) && (
