@@ -27,9 +27,10 @@ const ProfileCard = (props) => {
     // const [reviewOpen, setReviewOpen] = React.useState(false);
     const actionsOpen = Boolean(anchorEl);
 
+
     useEffect(() => {
         // loadData();
-        console.log(props.event.organizer.id);
+        console.log(props.event.id);
         // eslint-disable-next-line
     }, []);
 
@@ -80,7 +81,7 @@ const ProfileCard = (props) => {
                 action={
                     <div>
                         {
-                        props.event.organizer.id !== localStorage.getItem("userId")  && (
+                        props.event.id !== localStorage.getItem("userId")  && (
                             <IconButton
                                 id="basic-button"
                                 aria-controls={actionsOpen ? "basic-menu" : undefined}
@@ -117,11 +118,11 @@ const ProfileCard = (props) => {
                             display: "flex",
                         }}
                     >
-                        <Typography>{props.event.name}</Typography>
+                        <Typography>{props.event.username}</Typography>
                         {/*<EventRating reviews={reviews} rating={rating} />*/}
                     </Box>
                 }
-                subheader={props.event.address}
+                subheader={props.event.firstName}
             />
             <CardContent>
                 <Typography variant="body2" color="text.secondary">

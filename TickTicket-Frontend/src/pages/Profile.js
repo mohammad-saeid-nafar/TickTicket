@@ -5,13 +5,14 @@ import { useEffect, useState } from "react";
 import ProfileCard from "../components/ProfileCard";
 
 const Home = () => {
-  const [pastEvents, setPastEvents] = useState([]);
+  const [user, setUser] = useState([]);
 
   useEffect(() => {
     axios
-        .get("events/past/" + localStorage.getItem("userId"))
+        .get("users/" + localStorage.getItem("userId"))
         .then((res) => {
-          setPastEvents(res.data);
+          setUser(res.data);
+          console.log(res.data)
         });
   }, []);
 
@@ -22,9 +23,10 @@ const Home = () => {
           }}
       >
           <Stack spacing={2}>
-            {pastEvents.map((event) => {
-              return <ProfileCard key={event.id} event={event} addReview={true} />;
-            })}
+            {/*{user.map((event) => {*/}
+            {/*    console.log("idddd " + user.username);*/}
+              return <ProfileCard key={user.id} event={user} />;
+            {/*})}*/}
           </Stack>
       </Container>
   );
