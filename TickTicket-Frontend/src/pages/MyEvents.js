@@ -18,15 +18,15 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("events/past/35f94e94-3f80-4919-b6a8-07a28d855b68")
-      .then((res) => {
-        setPastEvents(res.data);
-      });
+        .get("events/past/" + localStorage.getItem("userId"))
+        .then((res) => {
+          setPastEvents(res.data);
+        });
     axios
-      .get("events/upcoming/35f94e94-3f80-4919-b6a8-07a28d855b68")
-      .then((res) => {
-        setUpcomingEvents(res.data);
-      });
+        .get("events/upcoming/" + localStorage.getItem("userId"))
+        .then((res) => {
+          setUpcomingEvents(res.data);
+        });
   }, []);
 
   return (
