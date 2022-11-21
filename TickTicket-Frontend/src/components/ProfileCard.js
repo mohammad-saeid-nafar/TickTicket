@@ -13,6 +13,7 @@ import {
 import {
     MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
+import axios from "axios";
 
 const ProfileCard = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -21,14 +22,15 @@ const ProfileCard = (props) => {
 
 
     useEffect(() => {
-        console.log("userIdddd: " + props.key);
-        console.log("userIdddd: " + props.event.id);
+        console.log("userId: " + props.event.id);
     }, []);
 
 
     const handleActionsClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
+
 
     return (
         <Card>
@@ -47,15 +49,14 @@ const ProfileCard = (props) => {
                                 <MoreVertIcon />
                             </IconButton>
                         )}
-                        {/*<Button*/}
-                        {/*    onClick={() => {*/}
-                        {/*        // setEdit(true);*/}
-                        {/*        this.setState({ editing: true });*/}
-
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    Edit*/}
-                        {/*</Button>*/}
+                        <Button
+                            onClick={() => {
+                                // setEdit(true);
+                                this.setState({ editing: true });
+                            }}
+                        >
+                            Edit
+                        </Button>
                     </div>
                 }
                 title={
@@ -76,8 +77,6 @@ const ProfileCard = (props) => {
                     {"Phone Number: " + props.event.profile.phoneNumber} <br />
                     {"Adress: " + props.event.profile.address} <br />
                     {"Date Of Birth: " + props.event.profile.dateOfBirth}
-
-
                 </Typography>
             </CardContent>
         </Card>
