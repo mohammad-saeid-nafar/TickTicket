@@ -1,79 +1,34 @@
 import React from "react";
-import {  useEffect } from "react";
+import { useEffect } from "react";
 // import axios from "axios";
-// import { styled } from "@mui/material/styles";
 import {
     Box,
     Card,
-    // CardActions,
     CardContent,
     CardHeader,
     IconButton,
     Typography,
+    // Button
 } from "@mui/material";
 import {
-    // ExpandMore as ExpandMoreIcon,
     MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
 
 const ProfileCard = (props) => {
-    // props.
-    // props.
-    // const [expanded, setExpanded] = useState(false);
-    // const [reviews, setReviews] = useState([]);
-    // const [loading, setLoading] = useState(false);
-    // const [rating, setRating] = useState(0);
     const [anchorEl, setAnchorEl] = React.useState(null);
-    // const [reviewOpen, setReviewOpen] = React.useState(false);
     const actionsOpen = Boolean(anchorEl);
+    // const [edit, setEdit] = useState(false);
 
 
     useEffect(() => {
-        // loadData();
-        console.log(props.event.id);
-        // eslint-disable-next-line
+        console.log("userIdddd: " + props.key);
+        console.log("userIdddd: " + props.event.id);
     }, []);
 
-    // const ExpandMore = styled((props) => {
-    //     const { expand, ...other } = props;
-    //     return <IconButton {...other} />;
-    // })(({ theme, expand }) => ({
-    //     transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-    //     marginLeft: "auto",
-    //     transition: theme.transitions.create("transform", {
-    //         duration: theme.transitions.duration.shortest,
-    //     }),
-    // }));
-
-    // const handleExpandClick = async () => {
-    //     setExpanded(!expanded);
-    // };
 
     const handleActionsClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-    // const handleActionsClose = () => {
-    //     setAnchorEl(null);
-    // };
-
-    // const ehandleRviewOpen = () => {
-    //     handleActionsClose();
-    //     setReviewOpen(true);
-    // };
-
-    // const handleReviewClose = () => setReviewOpen(false);
-    //
-    // const viewcreateRe = async (title, description, rating) => {
-    //     await axios.post(`reviews`, {
-    //         title: title,
-    //         description: description,
-    //         rating: rating,
-    //         eventId: props.event.id,
-    //         userId: localStorage.getItem("userId"),
-    //     });
-    //     loadData();
-    //     handleReviewClose();
-    // };
 
     return (
         <Card>
@@ -92,24 +47,15 @@ const ProfileCard = (props) => {
                                 <MoreVertIcon />
                             </IconButton>
                         )}
-                        {/*<Menu*/}
-                        {/*    id="basic-menu"*/}
-                        {/*    anchorEl={anchorEl}*/}
-                        {/*    open={actionsOpen}*/}
-                        {/*    onClose={handleActionsClose}*/}
-                        {/*    MenuListProps={{*/}
-                        {/*        "aria-labelledby": "basic-button",*/}
+                        {/*<Button*/}
+                        {/*    onClick={() => {*/}
+                        {/*        // setEdit(true);*/}
+                        {/*        this.setState({ editing: true });*/}
+
                         {/*    }}*/}
                         {/*>*/}
-                        {/*    <MenuItem onClick={handleReviewOpen}>Add Review</MenuItem>*/}
-                        {/*</Menu>*/}
-                        {/*<ReviewModal*/}
-                        {/*    open={reviewOpen}*/}
-                        {/*    handleClose={handleReviewClose}*/}
-                        {/*    handleAction={createReview}*/}
-                        {/*    aria-labelledby="modal-modal-title"*/}
-                        {/*    aria-describedby="modal-modal-description"*/}
-                        {/*></ReviewModal>*/}
+                        {/*    Edit*/}
+                        {/*</Button>*/}
                     </div>
                 }
                 title={
@@ -119,29 +65,21 @@ const ProfileCard = (props) => {
                         }}
                     >
                         <Typography>{props.event.username}</Typography>
-                        {/*<EventRating reviews={reviews} rating={rating} />*/}
                     </Box>
                 }
-                subheader={props.event.firstName}
+                subheader={props.event.profile.firstName + " " + props.event.profile.lastName}
+
             />
             <CardContent>
                 <Typography variant="body2" color="text.secondary">
-                    {props.event.description}
+                    {"Email: " + props.event.profile.email} <br />
+                    {"Phone Number: " + props.event.profile.phoneNumber} <br />
+                    {"Adress: " + props.event.profile.address} <br />
+                    {"Date Of Birth: " + props.event.profile.dateOfBirth}
+
+
                 </Typography>
             </CardContent>
-            {/*<CardActions disableSpacing>*/}
-            {/*    {reviews.length !== 0 && (*/}
-            {/*        // <ExpandMore*/}
-            {/*        //     expand={expanded}*/}
-            {/*        //     disabled={loading || reviews.length === 0}*/}
-            {/*        //     onClick={handleExpandClick}*/}
-            {/*        //     aria-expanded={expanded}*/}
-            {/*        //     aria-label="show more"*/}
-            {/*        // >*/}
-            {/*        //     <ExpandMoreIcon />*/}
-            {/*        // </ExpandMore>*/}
-            {/*    )}*/}
-            {/*</CardActions>*/}
         </Card>
     );
 };

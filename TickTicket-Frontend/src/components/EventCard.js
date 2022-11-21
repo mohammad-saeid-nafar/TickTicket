@@ -34,7 +34,7 @@ const EventCard = (props) => {
 
   useEffect(() => {
     loadData();
-    console.log(props.event.user.id);
+    console.log(props.event.organizer.id);
     // eslint-disable-next-line
   }, []);
 
