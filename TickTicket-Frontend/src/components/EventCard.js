@@ -16,6 +16,8 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
@@ -58,6 +60,7 @@ const EventCard = (props) => {
     await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
       setRating(Math.round(res.data * 10) / 10);
     });
+
   };
 
   const handleExpandClick = async () => {
@@ -90,12 +93,17 @@ const EventCard = (props) => {
     handleReviewClose();
   };
 
+  const deleteEvent = async () => {
+    await axios.delete(`events/${props.event.id}`);
+    props.loadData();
+  }
+
   return (
     <Card>
       <CardHeader
         action={
           <div>
-            {props.addReview &&
+            {(props.addReview &&
               props.event.organizer.id !== localStorage.getItem("userId") &&
               reviews.every(
                 (review) => review.user.id !== localStorage.getItem("userId"),
@@ -109,7 +117,20 @@ const EventCard = (props) => {
                 >
                   <MoreVertIcon />
                 </IconButton>
-              )}
+              )) || ((props.event.organizer.id === localStorage.getItem("userId") && (
+                <>
+                  <IconButton
+                      size="large"
+                      color="inherit"
+                      onClick={handleReviewOpen}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton size="large" color="inherit" onClick={deleteEvent}>
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+            )))}
             <Menu
               id="basic-menu"
               anchorEl={anchorEl}

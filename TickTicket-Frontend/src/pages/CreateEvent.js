@@ -13,7 +13,7 @@ import Popper from '@mui/material/Popper';
 //TODO: Make it work with the event types
 //TODO: Set the template date to today
 
-const OrganizeEvent = () => {
+const CreateEvent = () => {
     const [events, setEvents] = useState([]);
     const [eventTypes, setEventTypes] = React.useState([]);
     const [chosenEventTypes, setChosenEventTypes] = React.useState([]);
@@ -35,16 +35,19 @@ const OrganizeEvent = () => {
     const [success, setSuccess] = React.useState(false);
 
     useEffect(() => {
-        axios.get("events/organizer/Rico").then((res) => {
+        loadData();
+        // eslint-disable-next-line
+    }, []);
+
+    const loadData= async()=>{
+        await axios.get(`events/organizer/${localStorage.getItem("username")}`).then((res) => {
             setEvents(res.data);
         });
-    }, [refresh]);
 
-    useEffect(() => {
         axios.get("event-types").then((res) => {
             setEventTypes(res.data);
         });
-    }, [refresh]);
+    }
 
     useEffect(() => {
         setCreateForm(false);
@@ -172,7 +175,7 @@ const OrganizeEvent = () => {
                 address: eventAddress,
                 email: eventEmail,
                 phoneNumber: eventPhoneNumber,
-                organizerId: "827fa1fc-1907-41f3-bc02-3ceb0347aa0c",
+                organizerId: localStorage.getItem("userId"),
                 start: eventStart,
                 end: eventEnd,
                 eventTypes: chosenEventTypes,
@@ -180,6 +183,7 @@ const OrganizeEvent = () => {
                 .then(function (response) {
                     setSuccess(true);
                     setRefresh(true);
+                    loadData();
                 })
                 .catch(function (error) {
                     setError(true);
@@ -187,7 +191,6 @@ const OrganizeEvent = () => {
                 });
         }
     }, [eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail]);
-
 
     return (
         <>
@@ -199,7 +202,7 @@ const OrganizeEvent = () => {
             >
                 <Stack spacing={2}>
                     {events.map((event) => {
-                        return <EventCard key={event.id} event={event} />;
+                        return <EventCard key={event.id} event={event} loadData={loadData}/>;
                     })}
                 </Stack>
             </Container>
@@ -364,4 +367,4 @@ const OrganizeEvent = () => {
     );
 };
 
-export default OrganizeEvent;
+export default CreateEvent;

@@ -48,6 +48,7 @@ const Signin = () => {
       })
       .then(res => {
         localStorage.setItem("userId", res.data.id);
+        localStorage.setItem("username", res.data.username);
         window.location.href = "/";
         setSuccess(true);
       })
