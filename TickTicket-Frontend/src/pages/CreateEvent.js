@@ -1,4 +1,4 @@
-import {Alert, Button, Chip, Container, Stack, TextField} from "@mui/material";
+import {Alert, Button, ButtonGroup, Container, Stack, TextField} from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
@@ -34,18 +34,16 @@ const CreateEvent = () => {
     const [errorMessage, setErrorMessage] = React.useState("");
     const [success, setSuccess] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         loadData();
-        // eslint-disable-next-line
+        axios.get("event-types").then((res) => {
+            setEventTypes(res.data);
+        });
     }, []);
 
     const loadData= async()=>{
         await axios.get(`events/organizer/${localStorage.getItem("username")}`).then((res) => {
             setEvents(res.data);
-        });
-
-        axios.get("event-types").then((res) => {
-            setEventTypes(res.data);
         });
     }
 
@@ -71,6 +69,7 @@ const CreateEvent = () => {
         setSuccess(false);
         setCreateForm(true);
         setAnchorEl(anchorEl ? null : e.currentTarget);
+        setChosenEventTypes([]);
     };
 
     const handleCancelCreateForm = () => {
@@ -123,7 +122,6 @@ const CreateEvent = () => {
     }
 
     const handleOnEventTypeclick = (eventType) => {
-        console.log(chosenEventTypes.find(id => id === eventType.id))
         if(chosenEventTypes.find(id => id === eventType.id) === undefined){
             chosenEventTypes.push(eventType.id)
             setChosenEventTypes(chosenEventTypes);
@@ -132,7 +130,6 @@ const CreateEvent = () => {
             chosenEventTypes.splice(1, chosenEventTypes.indexOf(eventType.id))
             setChosenEventTypes(chosenEventTypes);
         }
-        console.log(chosenEventTypes)
     }
 
     const handleCreateEvent = React.useCallback(() => {
@@ -186,11 +183,12 @@ const CreateEvent = () => {
                     loadData();
                 })
                 .catch(function (error) {
+                    console.log(error);
                     setError(true);
                     setErrorMessage(error);
                 });
         }
-    }, [eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail]);
+    }, [eventName, eventDescription, eventCapacity, eventCost, eventAddress, eventPhoneNumber, eventStart, eventEnd, eventEmail, chosenEventTypes]);
 
     return (
         <>
@@ -248,7 +246,9 @@ const CreateEvent = () => {
                                     {eventTypes.map((eventType) => {
                                         return (
                                             // <FormControlLabel control={<Checkbox />} label={eventType.name} onClick={() => handleOnEventTypeclick(eventType)}/>
-                                            <Chip label={eventType.name} onClick={() => handleOnEventTypeclick(eventType)}/>
+                                            <ButtonGroup variant="outlined" aria-label="outlined button group">
+                                                <Button onClick={() => handleOnEventTypeclick(eventType)}>{eventType.name} </Button>
+                                            </ButtonGroup>
                                         );
                                     })}
                                     <TextField
