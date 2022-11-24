@@ -97,6 +97,20 @@ public class EventController {
         return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
     }
 
+    @GetMapping(value = {"/cost"})
+    public ResponseEntity<?> getEventsByCostRange(@RequestParam double minCost, @RequestParam double maxCost){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getEventsByCostRange(minCost, maxCost);
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
     @GetMapping(value = {"/organizer/{username}"})
     public ResponseEntity<?> getEventsByOrganizer(@PathVariable("username") String username){
         List<EventDTO> eventsDTO = new ArrayList<>();

@@ -250,6 +250,10 @@ public class EventService {
 		return eventRepository.findAll();
 	}
 
+	public List<Event> getEventsByCostRange(double minCost, double maxCost){
+		return eventRepository.findEventsByCostBetween(minCost, maxCost);
+	}
+
 	public void addEventType(String name,Event event){
 		//	event.getEventTypes().add(eventTypeRepository.findEventTypeByName(name).orElseThrow(() -> new NullPointerException("Event Type doesn't exist")));
 		if(eventTypeRepository.findEventTypeByName(name).orElse(null)!=null){

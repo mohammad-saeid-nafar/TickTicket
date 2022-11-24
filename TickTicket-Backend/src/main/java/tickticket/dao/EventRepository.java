@@ -17,6 +17,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     // TODO check if this works, you might be looking for the one right under which gets all the events with a certain event-type
     List<Event> findEventsByEventTypesIn(List<EventType> eventTypes);
     List<Event> findEventsByEventTypesContains(EventType eventType);
-    List <Event> findEventsByName(String name);
+    List<Event> findEventsByName(String name);
+    List<Event> findEventsByCostBetween(double minCost, double maxCost);
 
 }
