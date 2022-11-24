@@ -167,6 +167,9 @@ const EventCard = (props) => {
         <Typography variant="body2" color="text.secondary">
           {props.event.description}
         </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Cost: {props.event.cost}$
+        </Typography>
       </CardContent>
       <CardActions disableSpacing>
         {reviews.length !== 0 && (
