@@ -1,11 +1,14 @@
 package tickticket.acceptance;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
+import tickticket.dao.ReviewRepository;
 import tickticket.model.*;
 import tickticket.service.EventService;
 import tickticket.service.EventTypeService;
@@ -14,9 +17,7 @@ import tickticket.service.UserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,9 @@ public class ID029CreateReviewTests {
 
     @Mock
     private EventService eventService;
+
+    @Mock
+    private ReviewRepository reviewRepository;
 
     @InjectMocks
     private ReviewService reviewService;
@@ -86,51 +90,50 @@ public class ID029CreateReviewTests {
     public void setMockOutput() {
 
         lenient().when(userService.getUser(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if(invocation.getArgument(0).equals(USER1_ID)){
+            if (invocation.getArgument(0).equals(USER1_ID)) {
                 User user = new User();
                 user.setId(USER1_ID);
                 user.setUsername(USER1_USERNAME);
                 user.setPassword(USER1_PASSWORD);
                 user.setCreated(USER1_CREATED);
                 return user;
-            }else if(invocation.getArgument(0).equals(USER2_ID)){
+            } else if (invocation.getArgument(0).equals(USER2_ID)) {
                 User user = new User();
                 user.setId(USER2_ID);
                 user.setUsername(USER2_USERNAME);
                 user.setPassword(USER2_PASSWORD);
                 user.setCreated(USER2_CREATED);
                 return user;
-            }else if (invocation.getArgument(0).equals(USER3_ID)){
+            } else if (invocation.getArgument(0).equals(USER3_ID)) {
                 User user = new User();
                 user.setId(USER3_ID);
                 user.setUsername(USER3_USERNAME);
                 user.setPassword(USER3_PASSWORD);
                 user.setCreated(USER3_CREATED);
                 return user;
-            }else{
+            } else {
                 return null;
             }
-
         });
 
-        lenient().when(eventTypeService.getEventType(any(UUID.class))).thenAnswer((InvocationOnMock invocation) ->{
-            if(invocation.getArgument((0)).equals(EVENT_TYPE1_ID)){
+        lenient().when(eventTypeService.getEventType(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument((0)).equals(EVENT_TYPE1_ID)) {
                 EventType eventType = new EventType();
                 eventType.setId(EVENT_TYPE1_ID);
                 eventType.setName(EVENT_TYPE1_NAME);
                 return eventType;
-            }else if(invocation.getArgument((0)).equals(EVENT_TYPE2_ID)){
+            } else if (invocation.getArgument((0)).equals(EVENT_TYPE2_ID)) {
                 EventType eventType = new EventType();
                 eventType.setId(EVENT_TYPE2_ID);
                 eventType.setName(EVENT_TYPE2_NAME);
                 return eventType;
-            }else{
+            } else {
                 return null;
             }
         });
 
         lenient().when(eventService.getEvent(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if(invocation.getArgument(0).equals(EVENT1_ID)) {
+            if (invocation.getArgument(0).equals(EVENT1_ID)) {
                 EventSchedule eventSchedule = new EventSchedule();
                 eventSchedule.setStartDateTime(EVENT1_START);
                 eventSchedule.setEndDateTime(EVENT1_END);
@@ -147,13 +150,35 @@ public class ID029CreateReviewTests {
                 event.setOrganizer(userService.getUser(USER1_ID));
                 event.setEventSchedule(eventSchedule);
                 event.setEventTypes(Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE1_ID)));
+                return event;
 
-            }else if(invocation.getArgument(0).equals(EVENT2_ID)) {
+            } else if (invocation.getArgument(0).equals(EVENT2_ID)) {
+                EventSchedule eventSchedule = new EventSchedule();
+                eventSchedule.setStartDateTime(EVENT2_START);
+                eventSchedule.setEndDateTime(EVENT2_END);
 
-            }else{
+                Event event = new Event();
+                event.setId(EVENT2_ID);
+                event.setName(EVENT2_NAME);
+                event.setDescription(EVENT2_DESCRIPTION);
+                event.setAddress(EVENT2_ADDRESS);
+                event.setEmail(EVENT2_EMAIL);
+                event.setPhoneNumber(EVENT2_PHONE_NUMBER);
+                event.setCapacity(EVENT2_CAPACITY);
+                event.setCost(EVENT2_COST);
+                event.setOrganizer(userService.getUser(USER2_ID));
+                event.setEventSchedule(eventSchedule);
+                event.setEventTypes(Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE2_ID)));
+
+                return event;
+            } else {
                 return null;
             }
-
-            });
+        });
+        Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
+        lenient().when(reviewRepository.save(any(Review.class))).thenAnswer(returnParameterAsAnswer);
     }
+
+    @Test
+    
 }
