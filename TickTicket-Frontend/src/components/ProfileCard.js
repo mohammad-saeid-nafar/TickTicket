@@ -20,6 +20,7 @@ const ProfileCard = (props) => {
 
     useEffect(() => {
         console.log("userId: " + props.event.id);
+        // eslint-disable-next-line
     }, []);
 
 

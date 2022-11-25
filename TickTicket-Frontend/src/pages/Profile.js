@@ -17,25 +17,38 @@ const Home = () => {
 
   useEffect(() => {
       console.log("user id from local storage is null? " + localStorage.getItem("userId") === "");
-      loadData();
+      // loadData();
+      setLoading(true);
+      axios
+          .get("users/" + localStorage.getItem("userId"))
+          .then((res) => {
+              setUser(res.data);
+              setUserId(localStorage.getItem("userId"));
+              console.log(res.data);
+              console.log(user);
+              console.log("user is null? " + user == null);
+              console.log("userID: " + user.id);
+              console.log(userId);
+          });
+      setLoading(false);
       // eslint-disable-next-line
   }, []);
 
-    const loadData = async () => {
-        setLoading(true);
-        await axios
-            .get("users/" + localStorage.getItem("userId"))
-            .then((res) => {
-                setUser(res.data);
-                setUserId(localStorage.getItem("userId"));
-                // console.log(res.data);
-                console.log(user);
-                console.log("user is null? " + user == null);
-                console.log("userID: " + user.id);
-                console.log(userId);
-            });
-        setLoading(false);
-    }
+    // const loadData = async () => {
+    //     setLoading(true);
+    //     await axios
+    //         .get("users/" + localStorage.getItem("userId"))
+    //         .then((res) => {
+    //             setUser(res.data);
+    //             setUserId(localStorage.getItem("userId"));
+    //             // console.log(res.data);
+    //             console.log(user);
+    //             console.log("user is null? " + user == null);
+    //             console.log("userID: " + user.id);
+    //             console.log(userId);
+    //         });
+    //     setLoading(false);
+    // }
 
     const handleDelete = React.useCallback(() => {
         console.log("Delete button was pressed");
