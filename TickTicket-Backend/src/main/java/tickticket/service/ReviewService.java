@@ -23,6 +23,7 @@ public class ReviewService {
     private ReviewRepository reviewRepository;
     private UserService userService;
     private EventService eventService;
+    private TicketService ticketService;
 
     @Transactional
     public Review createReview(ReviewDTO reviewDTO) {
@@ -32,6 +33,12 @@ public class ReviewService {
 
         User user = userService.getUser(reviewDTO.getUserId());
         Event event = eventService.getEvent(reviewDTO.getEventId());
+
+        if(event == null) throw new IllegalArgumentException("Event "+reviewDTO.getEvent().getId()+" not found");
+
+        if(!ticketService.existsByEventAndUser(event, user)){
+            throw new IllegalArgumentException("You did not buy a ticket for this event");
+        }
 
         if(title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Review must have a title");

@@ -8,18 +8,20 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import tickticket.controller.Conversion;
 import tickticket.dao.ReviewRepository;
+import tickticket.dto.EventDTO;
+import tickticket.dto.ReviewDTO;
 import tickticket.model.*;
-import tickticket.service.EventService;
-import tickticket.service.EventTypeService;
-import tickticket.service.ReviewService;
-import tickticket.service.UserService;
+import tickticket.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
@@ -33,10 +35,13 @@ public class ID029CreateReviewTests {
     private EventTypeService eventTypeService;
 
     @Mock
-    private EventService eventService;
+    private TicketService ticketService;
 
     @Mock
     private ReviewRepository reviewRepository;
+
+    @Mock
+    private EventService eventService;
 
     @InjectMocks
     private ReviewService reviewService;
@@ -83,8 +88,6 @@ public class ID029CreateReviewTests {
 
     private static final UUID EVENT_TYPE2_ID = UUID.randomUUID();
     private static final String EVENT_TYPE2_NAME = "Music";
-
-    private static final LocalDateTime TICKET_BOOKING_DATE_TIME = LocalDateTime.of(2022,10,10,15,0);
 
     @BeforeEach
     public void setMockOutput() {
@@ -175,10 +178,70 @@ public class ID029CreateReviewTests {
                 return null;
             }
         });
+
+        lenient().when(ticketService.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if(((Event) invocation.getArgument(0)).getId().equals(EVENT1_ID)
+            && (((User) invocation.getArgument(1)).getId().equals(USER2_ID))){
+                return true;
+            }else{
+                return false;
+            }
+        });
+
         Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
         lenient().when(reviewRepository.save(any(Review.class))).thenAnswer(returnParameterAsAnswer);
     }
 
     @Test
+    public void createReviewSuccess(){
+        String title = "Good";
+        int rating = 4;
+        String description = "Good Event";
+        ReviewDTO reviewDTO = new ReviewDTO(title,rating, description, Conversion.convertToDTO(userService.getUser(USER2_ID)), Conversion.convertToDTO(eventService.getEvent(EVENT1_ID)));
+        reviewDTO.setUserId(USER2_ID);
+        reviewDTO.setEventId(EVENT1_ID);
+        try{
+            Review review = reviewService.createReview(reviewDTO);
+            assertEquals(USER2_ID, review.getUser().getId());
+            assertEquals(title, review.getTitle());
+            assertEquals(rating, review.getRating());
+            assertEquals(description, review.getDescription());
+            assertEquals(EVENT1_ID, review.getEvent().getId());
+        }catch (IllegalArgumentException e){
+            fail();
+        }
+    }
+
+    @Test
+    public void createReviewEventNoTicket(){
+        String title = "Good";
+        int rating = 4;
+        String description = "Good Event";
+        ReviewDTO reviewDTO = new ReviewDTO(title,rating, description, Conversion.convertToDTO(userService.getUser(USER2_ID)), Conversion.convertToDTO(eventService.getEvent(EVENT2_ID)));
+        reviewDTO.setUserId(USER2_ID);
+        reviewDTO.setEventId(EVENT2_ID);
+        try{
+            reviewService.createReview(reviewDTO);
+        }catch (IllegalArgumentException e){
+            assertEquals("You did not buy a ticket for this event", e.getMessage());
+        }
+    }
+
+    @Test
+    public void createReviewEventNotFound(){
+        String title = "Good";
+        int rating = 4;
+        String description = "Good Event";
+        UUID eventID = UUID.randomUUID();
+        EventDTO nonExistingEvent = new EventDTO();
+        nonExistingEvent.setId(eventID);
+        ReviewDTO reviewDTO = new ReviewDTO(title,rating, description, Conversion.convertToDTO(userService.getUser(USER2_ID)), nonExistingEvent);
+        reviewDTO.setEventId(eventID);
+        try{
+           reviewService.createReview(reviewDTO);
+        }catch (IllegalArgumentException e){
+            assertEquals("Event " + nonExistingEvent.getId() + " not found", e.getMessage());
+        }
+    }
     
 }

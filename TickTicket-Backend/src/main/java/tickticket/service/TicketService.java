@@ -74,4 +74,8 @@ public class TicketService {
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
+
+    public boolean existsByEventAndUser(Event event, User user){
+        return ticketRepository.existsByEventAndUser(event, user);
+    }
 }

@@ -49,6 +49,9 @@ public class ReviewServiceTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private TicketService ticketService;
+
     @InjectMocks
     private ReviewService reviewService;
 
@@ -288,6 +291,8 @@ public class ReviewServiceTest {
                 return Optional.empty();
             }
         });
+
+        lenient().when(ticketService.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> true);
 
     }
 
