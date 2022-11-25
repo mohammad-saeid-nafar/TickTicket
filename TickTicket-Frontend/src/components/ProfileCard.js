@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect } from "react";
-// import axios from "axios";
 import {
     Box,
     Card,
@@ -8,17 +7,15 @@ import {
     CardHeader,
     IconButton,
     Typography,
-    // Button
+    Button
 } from "@mui/material";
 import {
     MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
-import axios from "axios";
 
 const ProfileCard = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const actionsOpen = Boolean(anchorEl);
-    // const [edit, setEdit] = useState(false);
 
 
     useEffect(() => {
@@ -29,8 +26,6 @@ const ProfileCard = (props) => {
     const handleActionsClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-
-
 
     return (
         <Card>
