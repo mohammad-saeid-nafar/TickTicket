@@ -26,7 +26,7 @@ const Home = () => {
       .get("events/upcoming/35f94e94-3f80-4919-b6a8-07a28d855b68")
       .then((res) => {
         setUpcomingEvents(res.data);
-      });
+      } );
   }, []);
 
   return (
