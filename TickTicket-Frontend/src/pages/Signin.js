@@ -54,7 +54,7 @@ const Signin = () => {
       })
       .catch(function (error) {
         setError(true);
-        setErrorMessage("One input was wrongly entered, please check your choices again");
+        setErrorMessage("Wrong username or password, please check your choices again");
       });
           
     }

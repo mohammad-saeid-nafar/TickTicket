@@ -74,10 +74,6 @@ const Signup = () => {
     setConfirmPassword(event.target.value);
   };
 
-  // function sayHello() {
-  //   alert(firstName + lastName + email + address + phoneNumber + dob + username + password + confirmPassword + error);
-  // }
-
   const handleSignUp = React.useCallback(() => {
     if(!isNaN(firstName)){
         setError(true);
