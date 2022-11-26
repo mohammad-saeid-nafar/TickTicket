@@ -23,7 +23,7 @@ function App() {
             <Route path="events" element={<Events />} />
             <Route path="event_types" element={<EventTypes />} />
             <Route path="create_event" element={<CreateEvent />} />
-            <Route path="my_events" element={<MyEvents />} />
+            <Route path="my_tickets" element={<MyEvents />} />
           </Routes>
       </div>
     </BrowserRouter>

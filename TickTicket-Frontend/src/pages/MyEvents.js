@@ -78,7 +78,7 @@ const Home = () => {
           <Stack spacing={2}>
             {upcomingEvents.map((event) => {
               return (
-                <EventCard key={event.id} event={event} addReview={false} />
+                <EventCard key={event.id} event={event} addReview={false} refresh={loadData}/>
               );
             })}
           </Stack>

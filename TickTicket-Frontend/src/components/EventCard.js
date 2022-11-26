@@ -60,12 +60,16 @@ const EventCard = (props) => {
     await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
       setRating(Math.round(res.data * 10) / 10);
     });
+    loadTickets();
+  };
+
+  const loadTickets = async () => {
     await axios
       .get(`tickets/user/${localStorage.getItem("userId")}`)
       .then((res) => {
         setUserTickets(res.data);
       });
-  };
+  }
 
   const handleExpandClick = async () => {
     setExpanded(!expanded);
@@ -144,10 +148,14 @@ const EventCard = (props) => {
       eventId: props.event.id,
       userId: localStorage.getItem("userId"),
     });
+    loadTickets();
+    if(props.refresh) props.refresh();
   };
 
   const cancelTicket = async () => {
     await axios.delete(`tickets/event/${props.event.id}/user/${localStorage.getItem("userId")}`);
+    loadTickets();
+    if(props.refresh) props.refresh();
   };
 
   const hasTicket = () => {
