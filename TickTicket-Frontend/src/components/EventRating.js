@@ -44,7 +44,7 @@ const EventRating = (props) => {
           >
             View reviews
           </Link>
-          <ReviewsModal reviews={props.reviews} open={reviewsOpen} onClose={handleReviewsClose} loadData={props.loadData}/>
+          <ReviewsModal reviews={props.reviews} open={reviewsOpen} onClose={handleReviewsClose} loadData={props.loadData} rating={props.rating}/>
         </>
       )}
     </>

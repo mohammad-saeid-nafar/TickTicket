@@ -62,4 +62,10 @@ public class TicketController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/event/{eventId}/user/{userId}")
+    public ResponseEntity<Void> deleteTicketByEventAndUser(@PathVariable UUID eventId, @PathVariable UUID userId) {
+        ticketService.deleteTicketByEventAndUser(eventId, userId);
+        return ResponseEntity.ok().build();
+    }
+
 }

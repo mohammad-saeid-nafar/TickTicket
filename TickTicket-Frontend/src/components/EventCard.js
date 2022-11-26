@@ -4,8 +4,10 @@ import axios from "axios";
 import { styled } from "@mui/material/styles";
 import {
   Box,
+  Button,
   Card,
   CardActions,
+  CardContent,
   CardHeader,
   Collapse,
   IconButton,
@@ -33,6 +35,8 @@ const EventCard = (props) => {
   const [errorMessage, setErrorMessage] = React.useState("");
   const [success, setSuccess] = React.useState(false);
 
+  const [userTickets, setUserTickets] = useState([]);
+
   useEffect(() => {
     loadData();
     // eslint-disable-next-line
@@ -56,6 +60,11 @@ const EventCard = (props) => {
     await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
       setRating(Math.round(res.data * 10) / 10);
     });
+    await axios
+      .get(`tickets/user/${localStorage.getItem("userId")}`)
+      .then((res) => {
+        setUserTickets(res.data);
+      });
   };
 
   const handleExpandClick = async () => {
@@ -130,6 +139,31 @@ const EventCard = (props) => {
     props.loadData();
   };
 
+  const createTicket = async () => {
+    await axios.post(`tickets`, {
+      eventId: props.event.id,
+      userId: localStorage.getItem("userId"),
+    });
+  };
+
+  const cancelTicket = async () => {
+    await axios.delete(`tickets/event/${props.event.id}/user/${localStorage.getItem("userId")}`);
+  };
+
+  const hasTicket = () => {
+    return userTickets.some((ticket) => ticket.eventId === props.event.id);
+  };
+
+  const dateIsNotValid = () => {
+    const currentDate = new Date();
+    const eventStart = new Date(props.event.eventSchedule.start);
+    return eventStart < currentDate;
+  };
+
+  const createDisabled = () => {
+    return props.event.organizer.id === localStorage.getItem("userId") || dateIsNotValid();
+  }
+
   return (
     <Card>
       <CardHeader
@@ -202,48 +236,59 @@ const EventCard = (props) => {
         subheader={props.event.description}
       />
       <CardActions disableSpacing>
-        {reviews.length !== 0 && (
-          <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon />
-          </ExpandMore>
-        )}
+        <ExpandMore
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </ExpandMore>
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Box sx={{ p: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            Cost: {props.event.cost}$
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Capacity: {props.event.capacity}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Start: {props.event.eventSchedule.start.split("T")[0]}{" "}
-            {props.event.eventSchedule.start.split("T")[1]}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            End: {props.event.eventSchedule.end.split("T")[0]}{" "}
-            {props.event.eventSchedule.end.split("T")[1]}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Address: {props.event.address}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Phone Number: {props.event.phoneNumber}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Email: {props.event.email}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Organizer: {props.event.organizer.profile.firstName}{" "}
-            {props.event.organizer.profile.lastName}
-          </Typography>
-        </Box>
-      </Collapse>
+      <CardContent
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Box sx={{ p: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Cost: {props.event.cost}$
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Capacity: {props.event.capacity}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Start: {props.event.eventSchedule.start.split("T")[0]}{" "}
+              {props.event.eventSchedule.start.split("T")[1]}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              End: {props.event.eventSchedule.end.split("T")[0]}{" "}
+              {props.event.eventSchedule.end.split("T")[1]}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Address: {props.event.address}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Phone Number: {props.event.phoneNumber}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Email: {props.event.email}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Organizer: {props.event.organizer.profile.firstName}{" "}
+              {props.event.organizer.profile.lastName} ({props.event.organizer.username})
+            </Typography>
+          </Box>
+        </Collapse>
+        {hasTicket() ? (
+          <Button onClick={cancelTicket} disabled={dateIsNotValid()}>Cancel Ticket</Button>
+        ) : (
+          <Button onClick={createTicket} disabled={createDisabled()}>Get Ticket</Button>
+        )}
+      </CardContent>
     </Card>
   );
 };

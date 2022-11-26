@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Stack } from "@mui/material";
+import { Box, Container, Stack, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
@@ -16,26 +16,28 @@ const Home = () => {
     setTab(newValue);
   };
 
-  useEffect(() => {
-    axios
-        .get(`events/past/${localStorage.getItem("userId")}`)
-        .then((res) => {
-          setPastEvents(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-          setPastEvents([]);
-        });
-    axios
-        .get(`events/upcoming/${localStorage.getItem("userId")}`)
-        .then((res) => {
-          setUpcomingEvents(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-          setUpcomingEvents([]);
-        });
-  }, []);
+  useEffect(() => loadData, []);
+
+  const loadData = async () => {
+    await axios
+      .get(`events/past/${localStorage.getItem("userId")}`)
+      .then((res) => {
+        setPastEvents(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        setPastEvents([]);
+      });
+    await axios
+      .get(`events/upcoming/${localStorage.getItem("userId")}`)
+      .then((res) => {
+        setUpcomingEvents(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        setUpcomingEvents([]);
+      });
+  };
 
   return (
     <Container
@@ -48,18 +50,52 @@ const Home = () => {
         <Tab label="Upcoming" />
       </Tabs>
       <TabPanel value={tab} index={0}>
-        <Stack spacing={2}>
-          {pastEvents.map((event) => {
-            return <EventCard key={event.id} event={event} addReview={true} />;
-          })}
-        </Stack>
+        {pastEvents.length !== 0 ? (
+          <Stack spacing={2}>
+            {pastEvents.map((event) => {
+              return (
+                <EventCard key={event.id} event={event} addReview={true} />
+              );
+            })}
+          </Stack>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {" "}
+              No tickets to display
+            </Typography>
+          </Box>
+        )}
       </TabPanel>
       <TabPanel value={tab} index={1}>
-        <Stack spacing={2}>
-          {upcomingEvents.map((event) => {
-            return <EventCard key={event.id} event={event} addReview={false} />;
-          })}
-        </Stack>
+        {upcomingEvents.length !== 0 ? (
+          <Stack spacing={2}>
+            {upcomingEvents.map((event) => {
+              return (
+                <EventCard key={event.id} event={event} addReview={false} />
+              );
+            })}
+          </Stack>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {" "}
+              No tickets to display
+            </Typography>
+          </Box>
+        )}
       </TabPanel>
     </Container>
   );

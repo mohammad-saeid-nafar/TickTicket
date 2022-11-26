@@ -53,6 +53,10 @@ public class TicketService {
         ticketRepository.deleteById(id);
     }
 
+    public void deleteTicketByEventAndUser(UUID eventId, UUID userId) {
+        ticketRepository.deleteTicketByEventAndUser(eventService.getEvent(eventId), userService.getUser(userId));
+    }
+
     public boolean existsByEventAndUser(UUID eventId, UUID userId) {
         return ticketRepository.existsByEventAndUser(eventService.getEvent(eventId), userService.getUser(userId));
     }
