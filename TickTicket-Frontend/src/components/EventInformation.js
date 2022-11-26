@@ -10,7 +10,7 @@ const EventInformation = (props) => {
 
     const [eventTypes, setEventTypes] = React.useState([]);
     const [chosenEventTypes, setChosenEventTypes] = React.useState([]);
-    const [eventName, setEventName] = useState("");
+    const [eventName, setEventName] = useState("props.event.name");
     const [eventDescription, setEventDescription] = useState("");
     const [eventCapacity, setEventCapacity] = useState("");
     const [eventCost, setEventCost] = useState("");
@@ -46,6 +46,7 @@ const EventInformation = (props) => {
     }
 
     const handleCancelCreate = () => {
+        console.log(props.eventName);
         setEventName("");
         setEventDescription("");
         setEventCapacity("");
@@ -83,7 +84,7 @@ const EventInformation = (props) => {
                         fullWidth
                         required
                         id="outlined-required"
-                        label="Event Name"
+                        label={eventName ? eventName : eventName}
                         helperText="Event Name"
                         value = {eventName}
                         onChange={(event) => setEventName(event.target.value)}
@@ -191,7 +192,7 @@ const EventInformation = (props) => {
                         color="success"
                         disabled={disable}>
                         <CheckIcon />
-                        Create
+                        {props.event ? "Edit Event" : "Create Event"}
                     </Button>
                 </Box>
             </Stack>
