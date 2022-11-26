@@ -7,18 +7,17 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 
 const EventInformation = (props) => {
-
     const [eventTypes, setEventTypes] = React.useState([]);
     const [chosenEventTypes, setChosenEventTypes] = React.useState([]);
-    const [eventName, setEventName] = useState("props.event.name");
-    const [eventDescription, setEventDescription] = useState("");
-    const [eventCapacity, setEventCapacity] = useState("");
-    const [eventCost, setEventCost] = useState("");
-    const [eventStart, setEventStart] = useState("");
-    const [eventEnd, setEventEnd] = useState("");
-    const [eventAddress, setEventAddress] = useState("");
-    const [eventPhoneNumber, setEventPhoneNumber] = useState("");
-    const [eventEmail, setEventEmail] = useState("");
+    const [eventName, setEventName] = useState(props.event ? props.event.name : "");
+    const [eventDescription, setEventDescription] = useState(props.event ? props.event.description : "");
+    const [eventCapacity, setEventCapacity] = useState(props.event ? props.event.capacity : "");
+    const [eventCost, setEventCost] = useState(props.event ? props.event.cost : "");
+    const [eventStart, setEventStart] = useState(props.event ? props.event.start : "");
+    const [eventEnd, setEventEnd] = useState(props.event ? props.event.end : "");
+    const [eventAddress, setEventAddress] = useState(props.event ? props.event.address : "");
+    const [eventPhoneNumber, setEventPhoneNumber] = useState(props.event ? props.event.phoneNumber : "");
+    const [eventEmail, setEventEmail] = useState(props.event ? props.event.email : "");
     const [disable, setDisable] = React.useState(true);
 
     useEffect(() => {
@@ -26,7 +25,7 @@ const EventInformation = (props) => {
             setEventTypes(res.data);
         });
 
-        if(eventName && eventDescription && eventCapacity && eventCost && eventStart && eventEnd && eventAddress && eventPhoneNumber && eventEmail){
+        if(eventName!=="" && eventDescription!==""  && eventCapacity!==""  && eventCost!==""  && eventStart!==""  && eventEnd!==""  && eventAddress!==""  && eventPhoneNumber!==""  && eventEmail!=="" ){
             setDisable(false);
         }
         else{
@@ -61,6 +60,8 @@ const EventInformation = (props) => {
 
     return(
         <Container
+            aria-labelledby="event-information-title"
+            aria-describedby="event-information-description"
             sx={{
                 paddingTop: "3%",
                 minHeight: "500",
@@ -84,7 +85,7 @@ const EventInformation = (props) => {
                         fullWidth
                         required
                         id="outlined-required"
-                        label={eventName ? eventName : eventName}
+                        label="Event Name"
                         helperText="Event Name"
                         value = {eventName}
                         onChange={(event) => setEventName(event.target.value)}

@@ -36,6 +36,10 @@ const EventCard = (props) => {
   const [editOpen, setEditOpen] = React.useState(false);
   const actionsOpen = Boolean(anchorEl);
 
+  const [error, setError] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [success, setSuccess] = React.useState(false);
+
   useEffect(() => {
     loadData();
     // eslint-disable-next-line
@@ -115,6 +119,13 @@ const EventCard = (props) => {
       phoneNumber: eventPhoneNumber,
       email: eventEmail,
       eventTypes: chosenEventTypes,
+    }) .then(function (response) {
+      setSuccess(true);
+      // handlePageChange( 1);
+      loadData();
+    }).catch(function (error) {
+      setError(true);
+      setErrorMessage(error.response.data.message);
     });
     props.loadData();
     handleEditClose();
@@ -159,20 +170,18 @@ const EventCard = (props) => {
                 </>
             )))}
             <Modal
+                class
                 open={editOpen}
                 onClose={handleEditClose}>
-                <EventInformation>
+                <EventInformation
+                  aria-labelledby="event-information-title"
+                  aria-describedby="event-information-description"
                   handleAction={handleEditEvent}
                   event={props.event}
-                  {/*eventName={props.event.name}*/}
-                  {/*eventDescription={props.event.description}*/}
-                  {/*eventCapacity={props.event.capacity}*/}
-                  {/*eventCost={props.event.cost}*/}
-                  {/*eventStart={props.event.start}*/}
-                  {/*eventEnd={props.event.end}*/}
-                  {/*eventAddress={props.event.address}*/}
-                  {/*eventPhoneNumber={props.event.phoneNumber}*/}
-                  {/*eventEmail={props.event.email}*/}
+                  error={error}
+                  errorMessage={errorMessage}
+                  success={success}
+                  >
                 </EventInformation>
             </Modal>
             <Menu
