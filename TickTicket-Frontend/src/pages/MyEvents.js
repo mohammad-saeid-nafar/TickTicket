@@ -18,14 +18,22 @@ const Home = () => {
 
   useEffect(() => {
     axios
-        .get("events/past/" + localStorage.getItem("userId"))
+        .get(`events/past/${localStorage.getItem("userId")}`)
         .then((res) => {
           setPastEvents(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          setPastEvents([]);
         });
     axios
-        .get("events/upcoming/" + localStorage.getItem("userId"))
+        .get(`events/upcoming/${localStorage.getItem("userId")}`)
         .then((res) => {
           setUpcomingEvents(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          setUpcomingEvents([]);
         });
   }, []);
 
