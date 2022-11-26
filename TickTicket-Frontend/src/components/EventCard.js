@@ -12,7 +12,7 @@ import {
   IconButton,
   List,
   Menu,
-  MenuItem,
+  MenuItem, Modal,
   Typography,
 } from "@mui/material";
 import {
@@ -24,6 +24,7 @@ import {
 import Review from "./Review";
 import EventRating from "./EventRating";
 import ReviewModal from "./ReviewModal";
+import EventInformation from "./EventInformation";
 
 const EventCard = (props) => {
   const [expanded, setExpanded] = useState(false);
@@ -32,11 +33,15 @@ const EventCard = (props) => {
   const [rating, setRating] = useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [reviewOpen, setReviewOpen] = React.useState(false);
+  const [editOpen, setEditOpen] = React.useState(false);
   const actionsOpen = Boolean(anchorEl);
+
+  const [error, setError] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [success, setSuccess] = React.useState(false);
 
   useEffect(() => {
     loadData();
-    console.log(props.event.organizer.id);
     // eslint-disable-next-line
   }, []);
 
@@ -81,6 +86,14 @@ const EventCard = (props) => {
 
   const handleReviewClose = () => setReviewOpen(false);
 
+  const handleEditOpen = () => {
+    handleActionsClose();
+    setEditOpen(true);
+    console.log("set true");
+  };
+
+  const handleEditClose = () => setEditOpen(false);
+
   const createReview = async (title, description, rating) => {
     await axios.post(`reviews`, {
       title: title,
@@ -92,6 +105,31 @@ const EventCard = (props) => {
     loadData();
     handleReviewClose();
   };
+
+  const handleEditEvent = async (eventName, eventDescription, eventCapacity, eventCost, eventStart, eventEnd, eventAddress, eventPhoneNumber, eventEmail, chosenEventTypes) => {
+    await axios.patch(`events`, {
+      id: props.event.id,
+      name: eventName,
+      description: eventDescription,
+      capacity: eventCapacity,
+      cost: eventCost,
+      start: eventStart,
+      end: eventEnd,
+      address: eventAddress,
+      phoneNumber: eventPhoneNumber,
+      email: eventEmail,
+      eventTypes: chosenEventTypes,
+    }) .then(function (response) {
+      setSuccess(true);
+      // handlePageChange( 1);
+      loadData();
+    }).catch(function (error) {
+      setError(true);
+      setErrorMessage(error.response.data.message);
+    });
+    props.loadData();
+    handleEditClose();
+  }
 
   const deleteEvent = async () => {
     await axios.delete(`events/${props.event.id}`);
@@ -122,7 +160,7 @@ const EventCard = (props) => {
                   <IconButton
                       size="large"
                       color="inherit"
-                      onClick={handleReviewOpen}
+                      onClick={handleEditOpen}
                   >
                     <EditIcon />
                   </IconButton>
@@ -131,6 +169,21 @@ const EventCard = (props) => {
                   </IconButton>
                 </>
             )))}
+            <Modal
+                class
+                open={editOpen}
+                onClose={handleEditClose}>
+                <EventInformation
+                  aria-labelledby="event-information-title"
+                  aria-describedby="event-information-description"
+                  handleAction={handleEditEvent}
+                  event={props.event}
+                  error={error}
+                  errorMessage={errorMessage}
+                  success={success}
+                  >
+                </EventInformation>
+            </Modal>
             <Menu
               id="basic-menu"
               anchorEl={anchorEl}
