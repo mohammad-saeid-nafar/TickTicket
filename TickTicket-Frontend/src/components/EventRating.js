@@ -1,8 +1,19 @@
 import React from "react";
-import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import { Rating, Typography, Link } from "@mui/material";
+import ReviewsModal from "./ReviewsModal";
 
 const EventRating = (props) => {
+  const [reviewsOpen, setReviewsOpen] = useState(false);
+
+  const handleReviewOpen = () => {
+    setReviewsOpen(true);
+  };
+
+  const handleReviewsClose = () => {
+    console.log(reviewsOpen)
+    setReviewsOpen(false)};
+
   return (
     <>
       {props.reviews.length === 0 ? (
@@ -25,6 +36,15 @@ const EventRating = (props) => {
           <Typography sx={{ marginLeft: "5px" }} color="text.secondary">
             ({props.reviews.length})
           </Typography>
+          <Link
+            sx={{ marginLeft: "5px" }}
+            component="button"
+            variant="body2"
+            onClick={handleReviewOpen}
+          >
+            View reviews
+          </Link>
+          <ReviewsModal reviews={props.reviews} open={reviewsOpen} onClose={handleReviewsClose} loadData={props.loadData}/>
         </>
       )}
     </>

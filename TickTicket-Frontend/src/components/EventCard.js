@@ -6,37 +6,28 @@ import {
   Box,
   Card,
   CardActions,
-  CardContent,
   CardHeader,
   Collapse,
   IconButton,
-  List,
-  Menu,
-  MenuItem,
   Typography,
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
-  MoreVert as MoreVertIcon,
+  RateReview as RateReviewIcon,
 } from "@mui/icons-material";
-import Review from "./Review";
 import EventRating from "./EventRating";
 import ReviewModal from "./ReviewModal";
 
 const EventCard = (props) => {
   const [expanded, setExpanded] = useState(false);
   const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [rating, setRating] = useState(0);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [reviewOpen, setReviewOpen] = React.useState(false);
-  const actionsOpen = Boolean(anchorEl);
 
   useEffect(() => {
     loadData();
-    console.log(props.event.organizer.id);
     // eslint-disable-next-line
   }, []);
 
@@ -52,30 +43,19 @@ const EventCard = (props) => {
   }));
 
   const loadData = async () => {
-    setLoading(true);
     await axios.get(`reviews/event/${props.event.id}`).then((res) => {
       setReviews(res.data);
-      setLoading(false);
     });
     await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
       setRating(Math.round(res.data * 10) / 10);
     });
-
   };
 
   const handleExpandClick = async () => {
     setExpanded(!expanded);
   };
 
-  const handleActionsClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleActionsClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleReviewOpen = () => {
-    handleActionsClose();
     setReviewOpen(true);
   };
 
@@ -96,52 +76,43 @@ const EventCard = (props) => {
   const deleteEvent = async () => {
     await axios.delete(`events/${props.event.id}`);
     props.loadData();
-  }
+  };
 
   return (
     <Card>
       <CardHeader
         action={
           <div>
-            {(props.addReview &&
-              props.event.organizer.id !== localStorage.getItem("userId") &&
-              reviews.every(
-                (review) => review.user.id !== localStorage.getItem("userId"),
-              ) && (
+            {props.addReview && (
+              <IconButton
+                id="basic-button"
+                aria-haspopup="true"
+                onClick={handleReviewOpen}
+                disabled={
+                  props.event.organizer.id === localStorage.getItem("userId") ||
+                  reviews.some(
+                    (review) =>
+                      review.user.id === localStorage.getItem("userId"),
+                  )
+                }
+              >
+                <RateReviewIcon />
+              </IconButton>
+            )}
+            {props.event.organizer.id === localStorage.getItem("userId") && (
+              <>
                 <IconButton
-                  id="basic-button"
-                  aria-controls={actionsOpen ? "basic-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={actionsOpen ? "true" : undefined}
-                  onClick={handleActionsClick}
+                  size="large"
+                  color="inherit"
+                  onClick={handleReviewOpen}
                 >
-                  <MoreVertIcon />
+                  <EditIcon />
                 </IconButton>
-              )) || ((props.event.organizer.id === localStorage.getItem("userId") && (
-                <>
-                  <IconButton
-                      size="large"
-                      color="inherit"
-                      onClick={handleReviewOpen}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton size="large" color="inherit" onClick={deleteEvent}>
-                    <DeleteIcon />
-                  </IconButton>
-                </>
-            )))}
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={actionsOpen}
-              onClose={handleActionsClose}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
-            >
-              <MenuItem onClick={handleReviewOpen}>Add Review</MenuItem>
-            </Menu>
+                <IconButton size="large" color="inherit" onClick={deleteEvent}>
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
             <ReviewModal
               open={reviewOpen}
               handleClose={handleReviewClose}
@@ -158,24 +129,19 @@ const EventCard = (props) => {
             }}
           >
             <Typography>{props.event.name}</Typography>
-            <EventRating reviews={reviews} rating={rating} />
+            <EventRating
+              reviews={reviews}
+              rating={rating}
+              loadData={loadData}
+            />
           </Box>
         }
-        subheader={props.event.address}
+        subheader={props.event.description}
       />
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          {props.event.description}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Cost: {props.event.cost}$
-        </Typography>
-      </CardContent>
       <CardActions disableSpacing>
         {reviews.length !== 0 && (
           <ExpandMore
             expand={expanded}
-            disabled={loading || reviews.length === 0}
             onClick={handleExpandClick}
             aria-expanded={expanded}
             aria-label="show more"
@@ -184,14 +150,36 @@ const EventCard = (props) => {
           </ExpandMore>
         )}
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-          {reviews.map((review) => {
-            return (
-              <Review key={review.id} review={review} loadData={loadData} />
-            );
-          })}
-        </List>
+      <Collapse in={expanded} timeout="auto" unmountOnExit >
+      <Box sx={{ p: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          Cost: {props.event.cost}$
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Capacity: {props.event.capacity}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Start: {props.event.eventSchedule.start.split("T")[0]}{" "}
+          {props.event.eventSchedule.start.split("T")[1]}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          End: {props.event.eventSchedule.end.split("T")[0]}{" "}
+          {props.event.eventSchedule.end.split("T")[1]}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Address: {props.event.address}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Phone Number: {props.event.phoneNumber}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Email: {props.event.email}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Organizer: {props.event.organizer.profile.firstName}{" "}
+          {props.event.organizer.profile.lastName}
+        </Typography>
+      </Box>
       </Collapse>
     </Card>
   );
