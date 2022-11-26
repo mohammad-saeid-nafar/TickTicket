@@ -25,7 +25,7 @@ Feature: Get reviews for event
 
   Scenario: Error when attempting to view reviews when there are no reviews in the system
     When the user with id "2" attempts to view all the reviews
-    Then the error "There are no reviews" will be displayed to the user
+    Then the no reviews will be displayed to the user
 
 
 

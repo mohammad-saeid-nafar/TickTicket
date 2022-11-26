@@ -28,12 +28,12 @@ Feature: Get reviews for event
     Scenario: Error when attempting to view reviews for an event that has not started yet
       Given that the current date and time is "2022-11-05 12:00"
       When the user with id "2" attempts to view the reviews for the event with id "5"
-      Then the error "Event has not started yet" will be displayed to the user
+      Then no reviews will be displayed to the user
 
     Scenario: Error when attempting to view reviews for an event that has no reviews
       Given that the current date and time is "2022-12-10 12:00"
       When the user with id "2" attempts to view the reviews for the event with id "5"
-      Then the error "Event has no reviews" will be displayed to the user
+      Then no reviews will be displayed to the user
 
 
 

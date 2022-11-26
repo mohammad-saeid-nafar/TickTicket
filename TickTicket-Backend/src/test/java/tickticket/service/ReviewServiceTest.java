@@ -369,7 +369,7 @@ public class ReviewServiceTest {
         reviewDTO.setTitle(newTitle);
         reviewDTO.setDescription(newDescription);
         reviewDTO.setRating(newRating);
-
+        reviewDTO.setUserId(null);
         Review review = null;
         try{
             review = reviewService.editReview(reviewDTO);

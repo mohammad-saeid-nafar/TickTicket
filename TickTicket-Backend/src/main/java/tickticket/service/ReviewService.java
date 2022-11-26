@@ -84,6 +84,10 @@ public class ReviewService {
 
         Review review = getReviewById(id);
 
+        if(reviewDTO.getUserId() != null && !review.getUser().getId().equals(reviewDTO.getUserId())) {
+            throw new IllegalArgumentException("You cannot edit another user's review");
+        }
+
         if (newTitle!= null && !newTitle.isEmpty()) {
             review.setTitle(newTitle);
         }

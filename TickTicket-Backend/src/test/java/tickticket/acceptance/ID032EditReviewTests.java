@@ -10,15 +10,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import tickticket.controller.Conversion;
 import tickticket.dao.ReviewRepository;
-import tickticket.dto.EventDTO;
 import tickticket.dto.ReviewDTO;
 import tickticket.model.*;
 import tickticket.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -26,16 +24,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-public class ID029CreateReviewTests {
+public class ID032EditReviewTests {
 
     @Mock
     private UserService userService;
 
     @Mock
     private EventTypeService eventTypeService;
-
-    @Mock
-    private TicketService ticketService;
 
     @Mock
     private ReviewRepository reviewRepository;
@@ -88,6 +83,16 @@ public class ID029CreateReviewTests {
 
     private static final UUID EVENT_TYPE2_ID = UUID.randomUUID();
     private static final String EVENT_TYPE2_NAME = "Music";
+
+    private static final UUID REVIEW1_ID = UUID.randomUUID();
+    private static final String REVIEW1_TITLE = "Amazing";
+    private static final int REVIEW1_RATING = 5;
+    private static final String REVIEW1_DESCRIPTION = "The quality of the wine was amazing";
+
+    private static final UUID REVIEW2_ID = UUID.randomUUID();
+    private static final String REVIEW2_TITLE = "Good";
+    private static final int REVIEW2_RATING = 3;
+    private static final String REVIEW2_DESCRIPTION = "Wine was good but cheese not as much";
 
     @BeforeEach
     public void setMockOutput() {
@@ -179,63 +184,81 @@ public class ID029CreateReviewTests {
             }
         });
 
-        lenient().when(ticketService.existsByEventAndUser(any(Event.class), any(User.class))).thenAnswer((InvocationOnMock invocation) -> ((Event) invocation.getArgument(0)).getId().equals(EVENT1_ID)
-                && (((User) invocation.getArgument(1)).getId().equals(USER2_ID)));
+        lenient().when(reviewRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if(invocation.getArgument(0).equals(REVIEW1_ID)) {
+                Review review1 = new Review();
+                review1.setId(REVIEW1_ID);
+                review1.setTitle(REVIEW1_TITLE);
+                review1.setRating(REVIEW1_RATING);
+                review1.setDescription(REVIEW1_DESCRIPTION);
+                review1.setEvent(eventService.getEvent(EVENT1_ID));
+                review1.setUser(userService.getUser(USER2_ID));
+
+                return Optional.of(review1);
+            }
+            else if(invocation.getArgument(0).equals(REVIEW2_ID)) {
+                Review review2 = new Review();
+                review2.setId(REVIEW2_ID);
+                review2.setTitle(REVIEW2_TITLE);
+                review2.setRating(REVIEW2_RATING);
+                review2.setDescription(REVIEW2_DESCRIPTION);
+                review2.setEvent(eventService.getEvent(EVENT2_ID));
+                review2.setUser(userService.getUser(USER3_ID));
+
+                return Optional.of(review2);
+            } else {
+                return Optional.empty();
+            }
+
+        });
 
         Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
         lenient().when(reviewRepository.save(any(Review.class))).thenAnswer(returnParameterAsAnswer);
     }
 
     @Test
-    public void createReviewSuccess(){
-        String title = "Good";
-        int rating = 4;
-        String description = "Good Event";
-        ReviewDTO reviewDTO = new ReviewDTO(title,rating, description, Conversion.convertToDTO(userService.getUser(USER2_ID)), Conversion.convertToDTO(eventService.getEvent(EVENT1_ID)));
-        reviewDTO.setUserId(USER2_ID);
-        reviewDTO.setEventId(EVENT1_ID);
+    public void editReviewSuccess(){
+        ReviewDTO reviewDTO = Conversion.convertToDTO(reviewRepository.findById(REVIEW1_ID).get());
+        reviewDTO.setTitle("Great");
+        reviewDTO.setRating(4);
+        reviewDTO.setDescription("Wine was great");
+
         try{
-            Review review = reviewService.createReview(reviewDTO);
-            assertEquals(USER2_ID, review.getUser().getId());
-            assertEquals(title, review.getTitle());
-            assertEquals(rating, review.getRating());
-            assertEquals(description, review.getDescription());
-            assertEquals(EVENT1_ID, review.getEvent().getId());
+            Review review = reviewService.editReview(reviewDTO);
+            assertEquals(reviewDTO.getTitle(), review.getTitle());
+            assertEquals(reviewDTO.getRating(), review.getRating());
+            assertEquals(reviewDTO.getDescription(), review.getDescription());
+            assertEquals(reviewDTO.getEvent().getId(), review.getEvent().getId());
+            assertEquals(reviewDTO.getUser().getId(), review.getUser().getId());
         }catch (IllegalArgumentException e){
             fail();
         }
     }
 
     @Test
-    public void createReviewEventNoTicket(){
-        String title = "Good";
-        int rating = 4;
-        String description = "Good Event";
-        ReviewDTO reviewDTO = new ReviewDTO(title,rating, description, Conversion.convertToDTO(userService.getUser(USER2_ID)), Conversion.convertToDTO(eventService.getEvent(EVENT2_ID)));
+    public void editReviewWrongUser(){
+        ReviewDTO reviewDTO = Conversion.convertToDTO(reviewRepository.findById(REVIEW2_ID).get());
+        reviewDTO.setTitle("Great");
+        reviewDTO.setRating(4);
+        reviewDTO.setDescription("Wine was great");
         reviewDTO.setUserId(USER2_ID);
-        reviewDTO.setEventId(EVENT2_ID);
+
         try{
-            reviewService.createReview(reviewDTO);
+            reviewService.editReview(reviewDTO);
         }catch (IllegalArgumentException e){
-            assertEquals("You did not buy a ticket for this event", e.getMessage());
+            assertEquals("You cannot edit another user's review", e.getMessage());
         }
     }
 
     @Test
-    public void createReviewEventNotFound(){
-        String title = "Good";
-        int rating = 4;
-        String description = "Good Event";
-        UUID eventID = UUID.randomUUID();
-        EventDTO nonExistingEvent = new EventDTO();
-        nonExistingEvent.setId(eventID);
-        ReviewDTO reviewDTO = new ReviewDTO(title,rating, description, Conversion.convertToDTO(userService.getUser(USER2_ID)), nonExistingEvent);
-        reviewDTO.setEventId(eventID);
+    public void editNonExistentReview(){
+        UUID id = UUID.randomUUID();
+        ReviewDTO reviewDTO = new ReviewDTO();
+        reviewDTO.setId(id);
         try{
-           reviewService.createReview(reviewDTO);
+            reviewService.editReview(reviewDTO);
         }catch (IllegalArgumentException e){
-            assertEquals("Event " + nonExistingEvent.getId() + " not found", e.getMessage());
+            assertEquals("Review " + id + " not found", e.getMessage());
         }
     }
-    
 }
