@@ -181,15 +181,28 @@ public class EventService {
 		return eventRepository.findEventsByName(name);
 	}
 
-	public List<Event> getAllEventsFromTypes(List<EventType> eventTypes) {
-		return eventRepository.findEventsByEventTypesIn(eventTypes);
+	public List<Event> getAllEventsFromType(String eventTypeName) {
+		List<Event> filteredEvents = new ArrayList<>();
+		List<Event> events = getAllEvents();
+
+		for(Event ev : events){
+			List<EventType> evTypes = ev.getEventTypes();
+			for (EventType evType : evTypes){
+				if(evType.getName().equals(eventTypeName)){
+					filteredEvents.add(ev);
+				}
+			}
+
+		}
+		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
+		return filteredEvents;
 	}
 
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
 	}
-	
-	public List<Event> getEventsByDate(LocalDate curDate){
+
+	public List<Event> getAllEventsByDate(LocalDate curDate){
 		List<Event> filteredEvents = new ArrayList<>();
 		List<Event> events = getAllEvents();
 
@@ -202,6 +215,10 @@ public class EventService {
 		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
 		return filteredEvents;
 	}
+	public List<Event> getAllEventsByAddress(String address){
+		return eventRepository.findEventsByAddress(address);
+	}
+
 
 	public List<Event> getUserUpcomingEvents(UUID userId, LocalDateTime currentDateTime){
 		List<Ticket> userTickets = ticketRepository.findTicketsByUser(userService.getUser(userId));
@@ -246,17 +263,8 @@ public class EventService {
 			throw new IllegalArgumentException("You are not the organizer of this event.");
 		}
 	}
-
-	public List<Event> getEventsWithCapacityRange(int minCapacity, int maxCapacity){
-		return eventRepository.findEventsByCapacityBetween(minCapacity, maxCapacity);
-	}
-
 	public List<Event> getAllEvents(){
 		return eventRepository.findAll();
-	}
-
-	public List<Event> getEventsByCostRange(double minCost, double maxCost){
-		return eventRepository.findEventsByCostBetween(minCost, maxCost);
 	}
 
 	public void addEventType(String name,Event event){

@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import tickticket.model.Event;
-import tickticket.model.EventSchedule;
 import tickticket.model.EventType;
 import tickticket.model.User;
 
@@ -18,13 +17,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     // TODO check if this works, you might be looking for the one right under which gets all the events with a certain event-type
     List<Event> findEventsByEventTypesIn(List<EventType> eventTypes);
     List<Event> findEventsByEventTypesContains(EventType eventType);
-    List<Event> findEventsByName(String name);
-    List<Event> findEventsByCostBetween(double minCost, double maxCost);
-    List<Event> findEventsByCapacityBetween(int minCapacity, int maxCapacity);
-    List<Event> findEventsByEventScheduleId(UUID uuid);
-    List<Event> findEventsByAddress(String address);
-
-
+    List <Event> findEventsByName(String name);
+    List <Event> findEventsByAddress(String address);
 
 
 }
