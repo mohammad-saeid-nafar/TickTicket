@@ -76,6 +76,7 @@ const ProfileCard = (props) => {
         }).then(res => {
             setSuccess(true);
             setSuccessMessage("Profile Updated successfully, please refresh to view your updated information");
+            setEdit(false);
         }).catch(function (error) {
             setError(true);
             setErrorMessage("Wrong inputs, profile was not updated.");

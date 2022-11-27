@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-public class ID014FilterEventsByArea {
+public class ID012FilterEventsByArea {
 
     @Mock
     private EventTypeService eventTypeService;
