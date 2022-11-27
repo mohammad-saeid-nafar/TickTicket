@@ -2,6 +2,7 @@ import React from "react";
 import { styled } from '@mui/material/styles';
 import { Box, Slider, Paper, Stack, Button, Typography, TextField, Select, MenuItem} from "@mui/material";
 // import DatePicker from "react-datepicker"
+import axios from "axios";
 
 const Filter = (props) => {
   const [costRange, setCostRange] = React.useState([0, 500]);
@@ -22,8 +23,8 @@ const Filter = (props) => {
     setArea(newValue);
   };
 
-  const handleDropDown = (_, newValue) => {
-    setEventType(newValue);
+  const handleDropDown = (event) => {
+    setEventType(event.target.value);
   };
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -38,6 +39,13 @@ const Filter = (props) => {
     setCostRange([0, 500]);
     props.clearFilter();
   }
+  const [eventTypes, setEventTypes] = React.useState([]);
+
+  React.useEffect(() => {
+    axios.get("event-types").then((res) => {
+        setEventTypes(res.data);
+    });
+}, []);
 
   return (
     <Box width="100%">
@@ -87,11 +95,14 @@ const Filter = (props) => {
             id="demo-simple-select"
             style={{ width: 240}}
             label="Age"
+            value={eventType}
             onChange={handleDropDown}
         >
-        <MenuItem value={10}>Ten</MenuItem>
-        <MenuItem value={20}>Twenty</MenuItem>
-        <MenuItem value={30}>Thirty</MenuItem>
+          {eventTypes.map((eventType) => {
+            return (
+              <MenuItem value={eventType.id}>{eventType.name}</MenuItem>
+            )
+          })}
         </Select></div>
           <Button variant="outlined" onClick={() => props.filterByEventType(eventType)}>Find events</Button>
         </Item>
