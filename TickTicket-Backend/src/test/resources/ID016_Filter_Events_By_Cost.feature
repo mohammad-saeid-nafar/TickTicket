@@ -1,7 +1,7 @@
-Feature: Filter Events By Type
+Feature: Filter Events By Cost Range
 
   As a user
-  I would like to filter events by cost
+  I would like to filter events given a cost range 
   To view them in an organized way
 
   Background: 
@@ -10,8 +10,8 @@ Feature: Filter Events By Type
       | 1           | aly1      | Aly1235!   | 2022-10-01    |
       | 2           | aly2      | Aly1233!   | 2022-10-03    |
 
-    Scenario: Successfully view events when none are existant 
-    When the user attempts to view the events by cost
+    Scenario: Successfully view events when none are existent 
+    When the user attempts to view the events by a cost range between <x> and <y>
     Then the number of events displayed shall be "0"
     Then there shall be no generated list
 
@@ -19,7 +19,7 @@ Feature: Filter Events By Type
     Given the following events exist in the system: 
       | id          | name              | description                 | capacity   | cost   | address            | email            | phoneNumber  | Type   |
       | 1           | Wine and Cheese   | Graduation Wine and Cheese  | 80         |  20    |  2620 rue Stanley  |  aly1@gmail.com  | 514-888-8888 | Other  |
-    When the user attempts to view the filtered events by cost
+    When the user attempts to view the filtered events by a cost range between <10> and <50>
     Then the number of events displayed shall be "1"
     Then the following list of Events are generated:
       | id          | name              | description                 | capacity   | cost   |  address           | email            | phoneNumber  |
@@ -31,10 +31,10 @@ Feature: Filter Events By Type
       | 1           | Wine and Cheese    | Graduation Wine and Cheese          | 80         |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Other       |
       | 2           | OSM Concert        | Classical Music Concert             | 450        |  35    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Classical   |
       | 3           | Graduation Ceremony| Graduation Ceremony for 2024 class  | 130        |  80    |  McGill Lower Field |  aly2@gmail.com  | 514-777-7777 | Other       |  
-    When the user attempts to view the filtered events by cost
-    Then the number of events displayed shall be "3"
+    When the user attempts to view the filtered events by a cost range between <10> and <50>
+    Then the number of events displayed shall be "2"
     Then the following list of Events are generated:
       | id          | name               | description                         | capacity   | cost   | address             | email            | phoneNumber  | Type        |
       | 1           | Wine and Cheese    | Graduation Wine and Cheese          | 80         |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Other       |
       | 2           | OSM Concert        | Classical Music Concert             | 450        |  35    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Classical   |
-      | 3           | Graduation Ceremony| Graduation Ceremony for 2024 class  | 130        |  80    |  McGill Lower Field |  aly2@gmail.com  | 514-777-7777 | Other       |
+      
