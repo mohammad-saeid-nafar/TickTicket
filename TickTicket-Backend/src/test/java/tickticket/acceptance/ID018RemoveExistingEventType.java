@@ -91,7 +91,6 @@ public class ID018RemoveExistingEventType {
     private static final String EVENT_PHONE_NUMBER = ORGANIZER_PHONE_NUMBER;
 
     // Data for Event Schedule
-    private EventSchedule eventSchedule;
     private static final LocalDateTime EVENT_START = LocalDateTime.of(2022, 10, 15, 19,0);
     private static final LocalDateTime EVENT_END = LocalDateTime.of(2022, 10, 15, 22, 0);
 
@@ -175,7 +174,7 @@ public class ID018RemoveExistingEventType {
 
                 User organizer = userService.getUser(ORGANIZER_ID);
 
-                eventSchedule = new EventSchedule();
+                EventSchedule eventSchedule = new EventSchedule();
                 eventSchedule.setStartDateTime(EVENT_START);
                 eventSchedule.setEndDateTime(EVENT_END);
 
