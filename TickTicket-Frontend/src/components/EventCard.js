@@ -13,6 +13,7 @@ import {
   IconButton,
   Modal,
   Typography,
+  Tooltip
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
@@ -144,12 +145,16 @@ const EventCard = (props) => {
   };
 
   const createTicket = async () => {
+    if(localStorage.getItem("userId")) {
     await axios.post(`tickets`, {
       eventId: props.event.id,
       userId: localStorage.getItem("userId"),
     });
     loadTickets();
     if(props.refresh) props.refresh();
+  }else{
+    window.location.href = "/signin";
+  }
   };
 
   const cancelTicket = async () => {
@@ -170,6 +175,14 @@ const EventCard = (props) => {
 
   const createDisabled = () => {
     return props.event.organizer.id === localStorage.getItem("userId") || dateIsNotValid();
+  }
+
+  const getCreateTooltip = () => {
+    if(props.event.organizer.id === localStorage.getItem("userId")) {
+      return "Cannot book ticket for an event you organized";
+    }else{
+      return "Cannot book ticket for a past event";
+    }
   }
 
   return (
@@ -250,7 +263,9 @@ const EventCard = (props) => {
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <ExpandMoreIcon />
+          <Tooltip title="More information">
+            <ExpandMoreIcon />
+          </Tooltip>
         </ExpandMore>
       </CardActions>
       <CardContent
@@ -292,9 +307,17 @@ const EventCard = (props) => {
           </Box>
         </Collapse>
         {hasTicket() ? (
-          <Button onClick={cancelTicket} disabled={dateIsNotValid()}>Cancel Ticket</Button>
+          <Tooltip title={dateIsNotValid() ? "Cannot cancel ticket for a past event" : "Cancel Ticket"}>
+            <span>
+              <Button onClick={cancelTicket} variant={expanded ? "contained": "outlined"} disabled={dateIsNotValid()}>Cancel Ticket</Button>
+            </span>
+          </Tooltip>
         ) : (
-          <Button onClick={createTicket} disabled={createDisabled()}>Get Ticket</Button>
+          <Tooltip title={createDisabled() ? getCreateTooltip() : "Book Ticket"}>
+            <span>
+              <Button onClick={createTicket} variant={expanded ? "contained": "outlined"} disabled={createDisabled()}>Get Ticket</Button>
+            </span>
+          </Tooltip>
         )}
       </CardContent>
     </Card>
