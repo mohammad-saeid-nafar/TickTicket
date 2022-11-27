@@ -37,6 +37,9 @@ const Filter = (props) => {
 
   const clearFilters = () => {
     setCostRange([0, 500]);
+    setDate("")
+    setArea("");
+    setEventType("")
     props.clearFilter();
   }
   const [eventTypes, setEventTypes] = React.useState([]);

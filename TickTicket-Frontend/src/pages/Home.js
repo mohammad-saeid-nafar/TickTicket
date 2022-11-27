@@ -24,7 +24,7 @@ const Home = () => {
   }
 
   const filterByDate = (date) => {
-    axios.get(`events/`).then((res) => {
+    axios.get(`events/date?date=${date}`).then((res) => {
       setEvents(res.data)
     });
   }
@@ -36,7 +36,7 @@ const Home = () => {
   }
 
   const filterByEventType = (eventType) => {
-    axios.get(`events/`).then((res) => {
+    axios.get(`events/event-type?eventTypeName=${eventType}`).then((res) => {
       setEvents(res.data)
     });
   }
