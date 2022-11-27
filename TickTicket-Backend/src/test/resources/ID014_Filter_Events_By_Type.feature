@@ -18,23 +18,20 @@ Feature: Filter Events By Type
   Scenario: Successfully view filtered events when 1 exists
     Given the following events exist in the system: 
       | id          | name              | description                 | capacity   | cost   | address            | email            | phoneNumber  | Type   |
-      | 1           | Wine and Cheese   | Graduation Wine and Cheese  | 80         |  20    |  2620 rue Stanley  |  aly1@gmail.com  | 514-888-8888 | Other  |
-    When the user attempts to view the filtered events by type
+      | 1           | Wine and Cheese   | Graduation Wine and Cheese  | 80         |  20    |  2620 rue Stanley  |  aly1@gmail.com  | 514-888-8888 | Food  |
+    When the user attempts to view the filtered events by type <type> "Food"
     Then the number of events displayed shall be "1"
     Then the following list of Events are generated:
-      | id          | name              | description                 | capacity   | cost   |  address           | email            | phoneNumber  |
-      | 1           | Wine and Cheese   | Graduation Wine and Cheese  | 80         |  20    |  2620 rue Stanley  |  aly1@gmail.com  | 514-888-8888 |
+      | id          | name              | description                 | capacity   | cost   | address            | email            | phoneNumber  | Type   |
+      | 1           | Wine and Cheese   | Graduation Wine and Cheese  | 80         |  20    |  2620 rue Stanley  |  aly1@gmail.com  | 514-888-8888 | Food  |
 
-  Scenario: Successfully view events when 3 exists
+  Scenario: Successfully view events when 2 exist
     Given the following events exist in the system: 
       | id          | name               | description                         | capacity   | cost   | address             | email            | phoneNumber  | Type        |
-      | 1           | Wine and Cheese    | Graduation Wine and Cheese          | 80         |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Other       |
-      | 2           | OSM Concert        | Classical Mucisc Concert            | 450        |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Classical   |
-      | 3           | Graduation Ceremony| Graduation Ceremony for 2024 class  | 130        |  80    |  McGill Lower Field |  aly2@gmail.com  | 514-777-7777 | Other       |  
-    When the user attempts to view the filtered events by type
+      | 1           | Wine and Cheese    | Graduation Wine and Cheese          | 80         |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Food        |
+      | 2           | Pop                | Pop              Concert            | 450        |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Music       |
+    When the user attempts to view the filtered events by type <type> "Music"
     Then the number of events displayed shall be "3"
     Then the following list of Events are generated:
       | id          | name               | description                         | capacity   | cost   | address             | email            | phoneNumber  | Type        |
-      | 2           | OSM Concert        | Classical Mucisc Concert            | 450        |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Classical   |
-      | 1           | Wine and Cheese    | Graduation Wine and Cheese          | 80         |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Other       |
-      | 3           | Graduation Ceremony| Graduation Ceremony for 2024 class  | 130        |  80    |  McGill Lower Field |  aly2@gmail.com  | 514-777-7777 | Other       |
+      | 2           | OSM Concert        | Classical Mucisc Concert            | 450        |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Music   |
