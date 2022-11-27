@@ -12,8 +12,8 @@ Background:
       | 02   | 02 | Bruce Jil | 11 Street 17 | 2000-04-30  |    img2.jpg    | bruce_j@gmail.com | 438 866 5551 |
     Given the following Event Type exists in the system:
       | id |    name    | description |   ageRequirement   |
-      | 01 | Pop Music  |    Music    | No age requirement |
-      | 02 | targetName | description | 14                 | 
+      | 01 | Pop Music  |    Music    | 0 |
+      | 02 | Party | Big Crowd | 18                 |
     Given the following events exist in the system:
       | id |         name       | description | capacity | cost |   address   |     email   | phoneNumber  |    type   |
       | 01 | Justin Bieber Tour |  Music Tour |    600   |  250 | True Square | johndoe@gmail.comm | 438 566 3241 | Pop Music |
@@ -29,15 +29,8 @@ Background:
 
       | id |    name    | description |   ageRequirement   |
       | 01 | Pop Music  |    Music    | No age requirement |
-      
 
-  Scenario Outline: Attempting to remove an event type that was created by another user
-  When "bruceJ2" attempts to remove the event type "targetName"
-  And "bruceJ2" is not the creator of this event type
-  Then the event type "targetName" is not removed from the system
-  And the error message "You are not the creator of this event type" is displayed
-
-  Scenario Outline: Attempting to remove an event type that is in use
-  When "johnDoe" attempts to remove the event type "Pop Musice"
+  Scenario: Attempting to remove an event type that is in use
+  When "johnDoe" attempts to remove the event type "Pop Music"
   Then the event type "Pop Music" is not removed from the system
   And the error message "This event type is in use" is displayed
