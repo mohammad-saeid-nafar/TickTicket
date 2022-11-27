@@ -1,5 +1,6 @@
 package tickticket.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -69,6 +70,13 @@ public class TicketService {
 
     public List<Ticket> getTicketsByUser(UUID userId) {
         return ticketRepository.findTicketsByUser(userService.getUser(userId));
+    }
+
+    public List<Ticket> getTicketsByBookingDate(LocalDate date) {
+        List<Ticket> tickets = getAllTickets();
+        return tickets.stream()
+                .filter(ticket -> ticket.getBookingDate().toLocalDate().equals(date))
+                .toList();
     }
 
     public List<Ticket> getTicketsByEvent(UUID eventId) {

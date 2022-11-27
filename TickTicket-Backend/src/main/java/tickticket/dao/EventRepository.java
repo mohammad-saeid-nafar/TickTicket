@@ -19,5 +19,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findEventsByEventTypesContains(EventType eventType);
     List<Event> findEventsByName(String name);
     List<Event> findEventsByCostBetween(double minCost, double maxCost);
+    List<Event> findEventsByCapacityBetween(int minCapacity, int maxCapacity);
 
 }

@@ -246,6 +246,11 @@ public class EventService {
 			throw new IllegalArgumentException("You are not the organizer of this event.");
 		}
 	}
+
+	public List<Event> getEventsWithCapacityRange(int minCapacity, int maxCapacity){
+		return eventRepository.findEventsByCapacityBetween(minCapacity, maxCapacity);
+	}
+
 	public List<Event> getAllEvents(){
 		return eventRepository.findAll();
 	}

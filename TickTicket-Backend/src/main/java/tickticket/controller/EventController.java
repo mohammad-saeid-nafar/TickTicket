@@ -125,6 +125,20 @@ public class EventController {
         return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
     }
 
+    @GetMapping(value = {"/capacity/{min}/{max}"})
+    public ResponseEntity<?> getEventsByCapacityRange(@PathVariable("min") int min, @PathVariable("max") int max){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getEventsWithCapacityRange(min, max);
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
     // TODO Fix this, it's not working
     @GetMapping(value = {"/event-types"})
     public ResponseEntity<?> getEventsByEventTypes(@RequestParam List<UUID> eventTypesIds){
