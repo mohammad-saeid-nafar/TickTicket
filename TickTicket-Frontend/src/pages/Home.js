@@ -23,15 +23,32 @@ const Home = () => {
     });
   }
 
+  const filterByDate = (date) => {
+    axios.get(`events/`).then((res) => {
+      setEvents(res.data)
+    });
+  }
+
+  const filterByArea = (area) => {
+    axios.get(`events/address?address=${area}`).then((res) => {
+      setEvents(res.data)
+    });
+  }
+
+  const filterByEventType = (eventType) => {
+    axios.get(`events/`).then((res) => {
+      setEvents(res.data)
+    });
+  }
+
   return (
     <Container
       sx={{
         paddingTop: "5%",
-        paddingBottom: "5%",
       }}
     >
       <Stack spacing={2}>
-      <Filter filterByCost={filterByCost} clearFilter={loadData}></Filter>
+      <Filter filterByCost={filterByCost} filterByDate={filterByDate} filterByArea={filterByArea} filterByEventType={filterByEventType} clearFilter={loadData}></Filter>
         {events.map((event) => {
           return <EventCard key={event.id} event={event} addReview={false} />;
         })}
