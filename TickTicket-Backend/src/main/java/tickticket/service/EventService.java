@@ -193,7 +193,7 @@ public class EventService {
 			}
 
 		}
-		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
+//		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
 		return filteredEvents;
 	}
 
@@ -211,7 +211,7 @@ public class EventService {
 				filteredEvents.add(ev);
 			}
 		}
-		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
+//		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
 		return filteredEvents;
 	}
 
