@@ -585,14 +585,9 @@ public class EventServiceTest {
     @Test
     public void testGetAllEventsFromType() {
 
-        EventType eventType1 = eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null);
-
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventType1);
-
         List<Event> events = new ArrayList<>();
         try {
-            events = eventService.getAllEventsFromTypes(eventTypes);
+            events = eventService.getAllEventsFromType(EVENT_TYPE1_NAME);
         } catch (Exception e) {
             fail();
         }

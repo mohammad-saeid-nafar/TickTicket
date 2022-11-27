@@ -131,8 +131,7 @@ public class ID014FilterEventsByType {
             }
         });
 
-        lenient().when(eventRepository.findEventsByEventTypesIn(any())).thenAnswer((InvocationOnMock invocation) -> {
-            if (((List<EventType>) invocation.getArgument((0))).get(0).getId().equals(EVENT_TYPE1_ID)) {
+        lenient().when(eventService.getAllEvents()).thenAnswer((InvocationOnMock invocation) -> {
                 EventSchedule eventSchedule = new EventSchedule();
                 eventSchedule.setStartDateTime(EVENT1_START);
                 eventSchedule.setEndDateTime(EVENT1_END);
@@ -148,12 +147,7 @@ public class ID014FilterEventsByType {
                 event.setOrganizer(userService.getUser(USER1_ID));
                 event.setEventSchedule(eventSchedule);
                 event.setEventTypes(Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE1_ID)));
-                List<Event> events = new ArrayList<>();
-                events.add(event);
-                return events;
 
-            }
-            else if (((List<EventType>) invocation.getArgument((0))).get(0).getId().equals(EVENT_TYPE2_ID)) {
                 EventSchedule eventSchedule2 = new EventSchedule();
                 eventSchedule2.setStartDateTime(EVENT2_START);
                 eventSchedule2.setEndDateTime(EVENT2_END);
@@ -172,11 +166,9 @@ public class ID014FilterEventsByType {
                 event2.setEventTypes(Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE2_ID)));
 
                 List<Event> events = new ArrayList<>();
+                events.add(event);
                 events.add(event2);
                 return events;
-            } else {
-                return null;
-            }
         });
     }
 
@@ -184,10 +176,8 @@ public class ID014FilterEventsByType {
     public void filterEventsByType1(){
 
         List<Event> events = new ArrayList<>();
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventTypeService.getEventType(EVENT_TYPE1_ID));
         try{
-            events = eventService.getAllEventsFromTypes(eventTypes);
+            events = eventService.getAllEventsFromType(EVENT_TYPE1_NAME);
         }catch (IllegalArgumentException e){
             fail();
         }
@@ -205,10 +195,8 @@ public class ID014FilterEventsByType {
     public void filterEventsByType2(){
 
         List<Event> events = new ArrayList<>();
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(eventTypeService.getEventType(EVENT_TYPE2_ID));
         try{
-            events = eventService.getAllEventsFromTypes(eventTypes);
+            events = eventService.getAllEventsFromType(EVENT_TYPE2_NAME);
         }catch (IllegalArgumentException e){
             fail();
         }
