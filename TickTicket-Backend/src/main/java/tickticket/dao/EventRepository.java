@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import tickticket.model.Event;
+import tickticket.model.EventSchedule;
 import tickticket.model.EventType;
 import tickticket.model.User;
 
@@ -20,5 +21,10 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findEventsByName(String name);
     List<Event> findEventsByCostBetween(double minCost, double maxCost);
     List<Event> findEventsByCapacityBetween(int minCapacity, int maxCapacity);
+    List<Event> findEventsByEventScheduleId(UUID uuid);
+    List<Event> findEventsByAddress(String address);
+
+
+
 
 }

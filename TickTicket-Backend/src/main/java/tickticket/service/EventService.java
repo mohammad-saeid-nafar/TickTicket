@@ -188,7 +188,7 @@ public class EventService {
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
 	}
-
+	
 	public List<Event> getEventsByDate(LocalDate curDate){
 		List<Event> filteredEvents = new ArrayList<>();
 		List<Event> events = getAllEvents();
