@@ -1,7 +1,5 @@
 package tickticket.acceptance;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import tickticket.controller.Conversion;
 import tickticket.dao.*;
-import tickticket.dto.EventDTO;
 import tickticket.dto.EventTypeDTO;
 import tickticket.model.*;
 import tickticket.service.*;
