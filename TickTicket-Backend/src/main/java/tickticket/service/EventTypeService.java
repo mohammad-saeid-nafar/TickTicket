@@ -4,10 +4,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tickticket.dao.EventRepository;
 import tickticket.dao.EventTypeRepository;
 import tickticket.dto.EventTypeDTO;
+import tickticket.model.Event;
 import tickticket.model.EventType;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +21,7 @@ import java.util.UUID;
 public class EventTypeService {
 
     private EventTypeRepository eventTypeRepository;
+    private EventRepository eventRepository;
 
     @Transactional
     public EventType createEventType(EventTypeDTO eventTypeDTO){
@@ -70,6 +76,9 @@ public class EventTypeService {
     @Transactional
     public boolean deleteEventType(UUID id) {
         EventType eventType = getEventType(id);
+        if(!eventRepository.findEventsByEventTypesIn(Collections.singletonList(eventType)).isEmpty()){
+            throw new IllegalArgumentException("This event type is in use");
+        }
         eventTypeRepository.delete(eventType);
         return true;
     }

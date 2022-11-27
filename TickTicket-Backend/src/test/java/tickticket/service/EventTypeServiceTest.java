@@ -11,6 +11,8 @@ import org.mockito.stubbing.Answer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+
+import tickticket.dao.EventRepository;
 import tickticket.dao.EventTypeRepository;
 import tickticket.dto.EventTypeDTO;
 import tickticket.model.EventType;
@@ -35,6 +37,9 @@ public class EventTypeServiceTest {
     private static final int EVENT_TYPE1_AGE = 18;
 
     private EventTypeDTO eventTypeDTO;
+
+    @Mock
+    private EventRepository eventRepository;
 
     @InjectMocks
     private EventTypeService eventTypeService;
@@ -68,6 +73,9 @@ public class EventTypeServiceTest {
             eventTypes.add(eventTypeRepository.findEventTypeByName(EVENT_TYPE1_NAME).orElse(null));
             return eventTypes;
         });
+
+        lenient().when(eventRepository.findEventsByEventTypesIn(any())).thenAnswer((InvocationOnMock invocation) -> new ArrayList<>());
+
 
         Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
         lenient().when(eventTypeRepository.save(any(EventType.class))).thenAnswer(returnParameterAsAnswer);
