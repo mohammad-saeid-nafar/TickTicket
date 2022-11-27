@@ -1,6 +1,6 @@
 import React from "react";
 import { styled } from '@mui/material/styles';
-import { Box, Slider, Paper, Stack, Button, Typography, TextField, Select, MenuItem, DatePicker} from "@mui/material";
+import { Box, Slider, Paper, Stack, Button, Typography, TextField, Select, MenuItem} from "@mui/material";
 // import DatePicker from "react-datepicker"
 import axios from "axios";
 
@@ -66,7 +66,7 @@ const Filter = (props) => {
         </Item>
         <Item>
         Date
-        {/* <TextField
+        <TextField
             id="first-name"
             label="Date"
             margin="normal"
@@ -74,15 +74,7 @@ const Filter = (props) => {
             onChange={handleDateChange}
             height="100"
             style={{width: 240}}
-        /> */}
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Basic example"
-            value={date}
-            onChange={handleDateChange}
-            renderInput={(params) => <TextField {...params} />}
-          />
-          </LocalizationProvider>
+        />
           <Button variant="outlined" onClick={() => props.filterByDate(date)}>Find events</Button>
         </Item>
         <Item>
