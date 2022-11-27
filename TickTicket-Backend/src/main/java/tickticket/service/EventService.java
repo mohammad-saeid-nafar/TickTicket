@@ -180,16 +180,28 @@ public class EventService {
 	public List<Event> getEventsByName(String name){
 		return eventRepository.findEventsByName(name);
 	}
+	public List<Event> getAllEventsFromType(String eventTypeName) {
+		List<Event> filteredEvents = new ArrayList<>();
+		List<Event> events = getAllEvents();
 
-	public List<Event> getAllEventsFromTypes(List<EventType> eventTypes) {
-		return eventRepository.findEventsByEventTypesIn(eventTypes);
+		for(Event ev : events){
+			List<EventType> evTypes = ev.getEventTypes();
+			for (EventType evType : evTypes){
+				if(evType.getName().equals(eventTypeName)){
+					filteredEvents.add(ev);
+				}
+			}
+
+		}
+		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
+		return filteredEvents;
 	}
 
 	public List<Event> getAllEventsFromOrganizer(User organizer) {
 		return eventRepository.findEventsByOrganizer(organizer);
 	}
-	
-	public List<Event> getEventsByDate(LocalDate curDate){
+
+	public List<Event> getAllEventsByDate(LocalDate curDate){
 		List<Event> filteredEvents = new ArrayList<>();
 		List<Event> events = getAllEvents();
 
@@ -201,6 +213,10 @@ public class EventService {
 		}
 		if(filteredEvents.isEmpty()) throw new IllegalArgumentException("There are no events with the given date.");
 		return filteredEvents;
+	}
+
+	public List<Event> getAllEventsByAddress(String address){
+		return eventRepository.findEventsByAddress(address);
 	}
 
 	public List<Event> getUserUpcomingEvents(UUID userId, LocalDateTime currentDateTime){
