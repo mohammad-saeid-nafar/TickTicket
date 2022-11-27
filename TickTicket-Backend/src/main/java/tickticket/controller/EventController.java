@@ -111,16 +111,11 @@ public class EventController {
         return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
     }
 
-    // TODO Fix this, it's not working
-    @GetMapping(value = {"/event-types"})
-    public ResponseEntity<?> getEventsByEventTypes(@RequestParam List<UUID> eventTypesIds){
-        List<EventType> eventTypes = new ArrayList<>();
-        for(UUID id : eventTypesIds){
-            eventTypes.add(eventTypeService.getEventType(id));
-        }
+    @GetMapping(value = {"/event-type"})
+    public ResponseEntity<?> getEventsByEventTypes(@RequestParam String eventTypeName){
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
-            List<Event> events = eventService.getAllEventsFromTypes(eventTypes);
+            List<Event> events = eventService.getAllEventsFromType(eventTypeName);
             for(Event event : events){
                 eventsDTO.add(Conversion.convertToDTO(event));
             }
@@ -130,26 +125,26 @@ public class EventController {
         return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
     }
 
-//    @GetMapping(value = {"/view_events_event_types"})
-//    public ResponseEntity<?> getEventsByEventTypes(@RequestParam String eventTypeName){
-//        List<EventDTO> eventsDTO = new ArrayList<>();
-//        try{
-//            List<Event> events = eventService.getAllEventsFromType(eventTypeService.getEventTypeByName(eventTypeName));
-//            for(Event event : events){
-//                eventsDTO.add(Conversion.convertToDTO(event));
-//            }
-//        }catch(IllegalArgumentException e){
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
-//    }
-
 
     @GetMapping(value = {"/date"})
     public ResponseEntity<?> getEventsByDate(@RequestParam String date){
         List<EventDTO> eventsDTO = new ArrayList<>();
         try{
-            List<Event> events = eventService.getEventsByDate(LocalDate.parse(date));
+            List<Event> events = eventService.getAllEventsByDate(LocalDate.parse(date));
+            for(Event event : events){
+                eventsDTO.add(Conversion.convertToDTO(event));
+            }
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(eventsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/address"})
+    public ResponseEntity<?> getEventsByAddress(@RequestParam String address){
+        List<EventDTO> eventsDTO = new ArrayList<>();
+        try{
+            List<Event> events = eventService.getAllEventsByAddress(address);
             for(Event event : events){
                 eventsDTO.add(Conversion.convertToDTO(event));
             }

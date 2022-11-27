@@ -30,7 +30,7 @@ const Home = () => {
   }
 
   const filterByArea = (area) => {
-    axios.get(`events/`).then((res) => {
+    axios.get(`events/address?address=${area}`).then((res) => {
       setEvents(res.data)
     });
   }

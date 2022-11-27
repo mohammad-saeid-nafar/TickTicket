@@ -18,5 +18,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findEventsByEventTypesIn(List<EventType> eventTypes);
     List<Event> findEventsByEventTypesContains(EventType eventType);
     List <Event> findEventsByName(String name);
+    List <Event> findEventsByAddress(String address);
+
 
 }
