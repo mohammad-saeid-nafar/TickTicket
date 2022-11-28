@@ -1,54 +1,64 @@
 import React from "react";
-import { styled } from '@mui/material/styles';
-import { Box, Slider, Paper, Stack, Button, Typography, TextField, Select, MenuItem} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import {
+  Box,
+  Slider,
+  Paper,
+  Stack,
+  Button,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+} from "@mui/material";
 // import DatePicker from "react-datepicker"
 import axios from "axios";
 
 const Filter = (props) => {
   const [costRange, setCostRange] = React.useState([0, 500]);
   const [date, setDate] = React.useState();
-  const [area, setArea] = React.useState();
+  const [area, setArea] = React.useState("");
   const [eventType, setEventType] = React.useState();
-
 
   const handleCostChange = (_, newValue) => {
     setCostRange(newValue);
   };
 
-  const handleDateChange = (_, newValue) => {
-    setDate(newValue);
+  const handleDateChange = (event) => {
+    setDate(event.target.value);
   };
 
-  const handleAreaChange = (_, newValue) => {
-    setArea(newValue);
+  const handleAreaChange = (event) => {
+    setArea(event.target.value);
   };
 
-  const handleDropDown = (event) => {
+  const handleDropdown = (event) => {
+    console.log(event.target.value);
     setEventType(event.target.value);
   };
 
   const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
-    textAlign: 'center',
+    textAlign: "center",
     color: theme.palette.text.secondary,
-    width: '100%',
-    }));
+    width: "100%",
+  }));
 
   const clearFilters = () => {
     setCostRange([0, 500]);
-    setDate("")
+    setDate("");
     setArea("");
-    setEventType("")
+    setEventType("");
     props.clearFilter();
-  }
+  };
   const [eventTypes, setEventTypes] = React.useState([]);
 
   React.useEffect(() => {
     axios.get("event-types").then((res) => {
-        setEventTypes(res.data);
+      setEventTypes(res.data);
     });
-}, []);
+  }, []);
 
   return (
     <Box width="100%">
@@ -65,51 +75,69 @@ const Filter = (props) => {
             onChange={handleCostChange}
             valueLabelDisplay="auto"
           />
-          <Button variant="outlined" onClick={() => props.filterByCost(costRange)}>Find events</Button>
+          <Button
+            variant="outlined"
+            onClick={() => props.filterByCost(costRange)}
+          >
+            Find events
+          </Button>
         </Item>
         <Item>
-        Date
-        <TextField
-            id="first-name"
+          Date
+          <TextField
+            id="date-filter"
             label="Date"
             margin="normal"
             value={date}
             onChange={handleDateChange}
             height="100"
-            style={{width: 240}}
-        />
-          <Button variant="outlined" onClick={() => props.filterByDate(date)}>Find events</Button>
+            style={{ width: 240 }}
+          />
+          <Button variant="outlined" onClick={() => props.filterByDate(date)}>
+            Find events
+          </Button>
         </Item>
         <Item>
-        Area
-        <TextField
-            id="first-namee"
+          <Typography>Area</Typography>
+          <TextField
+            id="area-filter"
             label="Area"
             margin="normal"
+            defaultValue={""}
+            value={area}
             onChange={handleAreaChange}
-            style={{width: 240}}
-            />
-          <Button variant="outlined" onClick={() => props.filterByArea(area)}>Find events</Button>
+            style={{ width: 240 }}
+          />
+          <Button variant="outlined" onClick={() => props.filterByArea(area)}>
+            Find events
+          </Button>
         </Item>
         <Item>
-        Event Type
-        <div><Select
+        <Typography>Event Type</Typography>
+          <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            style={{ width: 240}}
+            style={{ width: 240, marginTop: 15, marginBottom: 5 }}
             label="Age"
             value={eventType}
-            onChange={handleDropDown}
-        >
-          {eventTypes.map((eventType) => {
-            return (
-              <MenuItem value={eventType.id}>{eventType.name}</MenuItem>
-            )
-          })}
-        </Select></div>
-          <Button variant="outlined" onClick={() => props.filterByEventType(eventType)}>Find events</Button>
+            onChange={handleDropdown}
+          >
+            {eventTypes.map((eventType) => {
+              return (
+                <MenuItem key={eventType.id} value={eventType.name}>{eventType.name}</MenuItem>
+              );
+            })}
+          </Select>
+          <Button
+            variant="outlined"
+            onClick={() => props.filterByEventType(eventType)}
+          >
+            Find events
+          </Button>
         </Item>
-        <Button variant="outlined" onClick={clearFilters}>Clear filters</Button>
+        <Button variant="outlined" onClick={clearFilters}>
+          Clear filters
+        </Button>
       </Stack>
     </Box>
   );

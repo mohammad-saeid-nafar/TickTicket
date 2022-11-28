@@ -61,7 +61,7 @@ const EventCard = (props) => {
     await axios.get(`reviews/event/${props.event.id}/average`).then((res) => {
       setRating(Math.round(res.data * 10) / 10);
     });
-    loadTickets();
+    localStorage.getItem("userId") && loadTickets();
   };
 
   const loadTickets = async () => {
@@ -174,7 +174,7 @@ const EventCard = (props) => {
   };
 
   const createDisabled = () => {
-    return props.event.organizer.id === localStorage.getItem("userId") || dateIsNotValid();
+    return !localStorage.getItem("userId") || props.event.organizer.id === localStorage.getItem("userId") || dateIsNotValid();
   }
 
   const getCreateTooltip = () => {
