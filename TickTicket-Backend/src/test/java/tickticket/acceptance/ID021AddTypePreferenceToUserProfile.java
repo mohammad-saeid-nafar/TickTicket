@@ -3,42 +3,36 @@ package tickticket.acceptance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-import tickticket.dao.EventTypeRepository;
 import tickticket.dao.ProfileRepository;
 import tickticket.dto.ProfileDTO;
-import tickticket.model.Event;
 import tickticket.model.EventType;
 import tickticket.model.Profile;
-import tickticket.model.User;
+import tickticket.service.EventTypeService;
 import tickticket.service.ProfileService;
-import tickticket.service.UserService;
 
 import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 public class ID021AddTypePreferenceToUserProfile {
 
     @Mock
-    private UserService userService;
-
-    @Mock
-    private ProfileService profileService;
-
-    @Mock
     private ProfileRepository profileRepository;
 
     @Mock
-    private EventTypeRepository eventTypeRepository;
+    private EventTypeService eventTypeService;
+
+    @InjectMocks
+    private ProfileService profileService;
 
     // Data for User
     private static final UUID USER_ID = UUID.randomUUID();
@@ -73,11 +67,6 @@ public class ID021AddTypePreferenceToUserProfile {
 
     @BeforeEach
     public void setUp() {
-        List<UUID> eventIDs = new ArrayList<>();
-        eventIDs.add(TYPE_ID_1);
-        eventIDs.add(TYPE_ID_2);
-        eventIDs.add(TYPE_ID_3);
-
 
         lenient().when(profileRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
             Profile profile = new Profile();
@@ -90,62 +79,42 @@ public class ID021AddTypePreferenceToUserProfile {
             profile.setDateOfBirth(BIRTH_DATE);
             profile.setProfilePicture(PICTURE);
 
-            return profile;
+            return Optional.of(profile);
 
         });
 
-        lenient().when(eventTypeRepository.findAllById(eventIDs)).thenAnswer((InvocationOnMock invocation) -> {
-            List<EventType> eventTypes = new ArrayList<>();
-            EventType eventType1 = new EventType();
-            eventType1.setId(TYPE_ID_1);
-            eventType1.setName(TYPE_NAME_1);
-            eventType1.setDescription(TYPE_DESCRIPTION_1);
-            eventTypes.add(eventType1);
-
-            EventType eventType2 = new EventType();
-            eventType2.setId(TYPE_ID_2);
-            eventType2.setName(TYPE_NAME_2);
-            eventType2.setDescription(TYPE_DESCRIPTION_2);
-            eventTypes.add(eventType2);
-
-            EventType eventType3 = new EventType();
-            eventType3.setId(TYPE_ID_3);
-            eventType3.setName(TYPE_NAME_3);
-            eventType3.setDescription(TYPE_DESCRIPTION_3);
-            eventTypes.add(eventType3);
-
-            return eventTypes;
-        });
-
-
-
-            lenient().when(eventTypeRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if (invocation.getArgument(0).equals(TYPE_ID_1)) {
-
+        lenient().when(eventTypeService.getAllEventTypes(any())).thenAnswer((InvocationOnMock invocation) -> {
+            if(((List) invocation.getArgument(0)).size() == 1){
+                List<EventType> eventTypes = new ArrayList<>();
                 EventType eventType1 = new EventType();
                 eventType1.setId(TYPE_ID_1);
                 eventType1.setName(TYPE_NAME_1);
                 eventType1.setDescription(TYPE_DESCRIPTION_1);
+                eventTypes.add(eventType1);
+                return eventTypes;
+            } else if(((List) invocation.getArgument(0)).size() == 3) {
+                List<EventType> eventTypes = new ArrayList<>();
+                EventType eventType1 = new EventType();
+                eventType1.setId(TYPE_ID_1);
+                eventType1.setName(TYPE_NAME_1);
+                eventType1.setDescription(TYPE_DESCRIPTION_1);
+                eventTypes.add(eventType1);
 
-                return Optional.of(eventType1);
-
-            }else if(invocation.getArgument(0).equals(TYPE_ID_2)){
                 EventType eventType2 = new EventType();
                 eventType2.setId(TYPE_ID_2);
                 eventType2.setName(TYPE_NAME_2);
                 eventType2.setDescription(TYPE_DESCRIPTION_2);
+                eventTypes.add(eventType2);
 
-                return Optional.of(eventType2);
-            }else if(invocation.getArgument(0).equals(TYPE_ID_3)){
-                EventType eventType2 = new EventType();
-                eventType2.setId(TYPE_ID_3);
-                eventType2.setName(TYPE_NAME_3);
-                eventType2.setDescription(TYPE_DESCRIPTION_3);
+                EventType eventType3 = new EventType();
+                eventType3.setId(TYPE_ID_3);
+                eventType3.setName(TYPE_NAME_3);
+                eventType3.setDescription(TYPE_DESCRIPTION_3);
+                eventTypes.add(eventType3);
 
-                return Optional.of(eventType2);
-            }
-            else {
-                return Optional.empty();
+                return eventTypes;
+            }else{
+                return new ArrayList<>();
             }
         });
         Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
@@ -157,105 +126,52 @@ public class ID021AddTypePreferenceToUserProfile {
     @Test
     public void testAdd1TypePreferenceToUserProfile() {
 
-        Profile profile = null;
-
-        EventType eventType1 = new EventType();
-        eventType1.setId(TYPE_ID_1);
-        eventType1.setName(TYPE_NAME_1);
-        eventType1.setDescription(TYPE_DESCRIPTION_1);
-
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setId(PROFILE_ID);
-        profileDTO.setFirstName(FIRST_NAME);
-        profileDTO.setLastName(LAST_NAME);
-        profileDTO.setEmail(EMAIL);
-        profileDTO.setPhoneNumber(PHONE_NUMBER);
-        profileDTO.setAddress(ADDRESS);
-        profileDTO.setProfilePicture(PICTURE);
-        profileDTO.setDateOfBirth(BIRTH_DATE);
-        ArrayList<EventType> interests = new ArrayList<>();
-        interests.add(eventType1);
+        profileDTO.setInterestIds(Collections.singletonList(TYPE_ID_1));
 
         try{
-            profile = profileService.addEventTypePreference(profileDTO);
+            Profile profile = profileService.addEventTypePreference(profileDTO);
+            assertNotNull(profile);
+            assertEquals(1, profile.getInterests().size());
+            assertEquals(TYPE_ID_1, profile.getInterests().get(0).getId());
         }catch(Exception e){
             fail();
         }
-
-        assertNotNull(profile);
-        assertEquals(interests, profile.getInterests());
 
     }
 
     @Test
-    public void testAdd3TypsePreferenceToUserProfile() {
-
-        Profile profile = null;
-
-        EventType eventType1 = new EventType();
-        eventType1.setId(TYPE_ID_1);
-        eventType1.setName(TYPE_NAME_1);
-        eventType1.setDescription(TYPE_DESCRIPTION_1);
-
-        EventType eventType2 = new EventType();
-        eventType2.setId(TYPE_ID_2);
-        eventType2.setName(TYPE_NAME_2);
-        eventType2.setDescription(TYPE_DESCRIPTION_2);
-
-        EventType eventType3 = new EventType();
-        eventType3.setId(TYPE_ID_3);
-        eventType3.setName(TYPE_NAME_3);
-        eventType3.setDescription(TYPE_DESCRIPTION_3);
+    public void testAdd3TypePreferenceToUserProfile() {
 
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setId(PROFILE_ID);
-        profileDTO.setFirstName(FIRST_NAME);
-        profileDTO.setLastName(LAST_NAME);
-        profileDTO.setEmail(EMAIL);
-        profileDTO.setPhoneNumber(PHONE_NUMBER);
-        profileDTO.setAddress(ADDRESS);
-        profileDTO.setProfilePicture(PICTURE);
-        profileDTO.setDateOfBirth(BIRTH_DATE);
-        ArrayList<EventType> interests = new ArrayList<>();
-        interests.add(eventType1);
-        interests.add(eventType2);
-        interests.add(eventType3);
+        profileDTO.setInterestIds(Arrays.asList(TYPE_ID_1, TYPE_ID_2, TYPE_ID_3));
 
         try{
-            profile = profileService.addEventTypePreference(profileDTO);
+            Profile profile = profileService.addEventTypePreference(profileDTO);
+            assertNotNull(profile);
+            assertEquals(3, profile.getInterests().size());
+            assertEquals(TYPE_ID_1, profile.getInterests().get(0).getId());
+            assertEquals(TYPE_ID_2, profile.getInterests().get(1).getId());
+            assertEquals(TYPE_ID_3, profile.getInterests().get(2).getId());
         }catch(Exception e){
             fail();
         }
-
-        assertNotNull(profile);
-        assertEquals(interests, profile.getInterests());
-
     }
 
     @Test
     public void testNoPreferences(){
-        Profile profile = null;
-
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setId(PROFILE_ID);
-        profileDTO.setFirstName(FIRST_NAME);
-        profileDTO.setLastName(LAST_NAME);
-        profileDTO.setEmail(EMAIL);
-        profileDTO.setPhoneNumber(PHONE_NUMBER);
-        profileDTO.setAddress(ADDRESS);
-        profileDTO.setProfilePicture(PICTURE);
-        profileDTO.setDateOfBirth(BIRTH_DATE);
-        ArrayList<EventType> interests = new ArrayList<>();
-
+        profileDTO.setInterestIds(new ArrayList<>());
         try{
-            profile = profileService.addEventTypePreference(profileDTO);
+            Profile profile = profileService.addEventTypePreference(profileDTO);
+            assertNotNull(profile);
+            assertEquals(0, profile.getInterests().size());
         }catch(Exception e){
             fail();
         }
-
-        assertNotNull(profile);
-        assertEquals(interests, profile.getInterests());
-        assertEquals(0, profile.getInterests().size());
     }
 
 

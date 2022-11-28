@@ -131,10 +131,11 @@ public class ProfileService {
 	@Transactional
 	public Profile addEventTypePreference(ProfileDTO profileDTO){
 		Profile profile = getProfile(profileDTO.getId());
-		List<UUID> interests = profileDTO.getInterestIds();
-		List<EventType> eventTypes = eventTypeService.getAllEventTypes(interests);
-		profile.setInterests(eventTypes);
-		profileRepository.save(profile);
+		if(profileDTO.getInterestIds() != null){
+			List<EventType> eventTypes = eventTypeService.getAllEventTypes(profileDTO.getInterestIds());
+			profile.setInterests(eventTypes);
+			profileRepository.save(profile);
+		}
 		return profile;
 	}
 
