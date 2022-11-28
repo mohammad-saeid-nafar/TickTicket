@@ -74,7 +74,6 @@ const CreateEvent = () => {
 
   return (
     <>
-      <h1>Events</h1>
       <Container
         sx={{
           paddingTop: "3%",

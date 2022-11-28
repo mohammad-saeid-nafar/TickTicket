@@ -48,6 +48,7 @@ const Home = () => {
     <Container
       sx={{
         paddingTop: "5%",
+        paddingBottom: "5%",
       }}
     >
       <Stack spacing={2}>
