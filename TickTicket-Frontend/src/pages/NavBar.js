@@ -44,14 +44,11 @@ function NavBar() {
 
   const pages = isSignedIn
     ? [
-        { name: "Events", link: "/events" },
         { name: "Event Types", link: "/event_types" },
         { name: "Organize Event", link: "/create_event" },
         { name: "My Tickets", link: "/my_tickets" },
       ]
     : [
-        { name: "Events", link: "/events" },
-        { name: "Event Types", link: "/event_types" },
         { name: "Organize Event", link: "/signin" },
       ];
 

@@ -174,7 +174,7 @@ const EventCard = (props) => {
   };
 
   const createDisabled = () => {
-    return !localStorage.getItem("userId") || props.event.organizer.id === localStorage.getItem("userId") || dateIsNotValid();
+    return props.event.organizer.id === localStorage.getItem("userId") || dateIsNotValid();
   }
 
   const getCreateTooltip = () => {
