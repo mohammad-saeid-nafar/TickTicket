@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tickticket.dao.ProfileRepository;
 import tickticket.dto.ProfileDTO;
+import tickticket.model.EventType;
 import tickticket.model.Profile;
 
 @Service
@@ -123,6 +124,16 @@ public class ProfileService {
 			throw new IllegalArgumentException("The date of birth cannot be empty");
 		}
 
+		profileRepository.save(profile);
+		return profile;
+	}
+
+	@Transactional
+	public Profile addEventTypePreference(ProfileDTO profileDTO){
+		Profile profile = getProfile(profileDTO.getId());
+		List<UUID> interests = profileDTO.getInterestIds();
+		List<EventType> eventTypes = eventTypeService.getAllEventTypes(interests);
+		profile.setInterests(eventTypes);
 		profileRepository.save(profile);
 		return profile;
 	}
