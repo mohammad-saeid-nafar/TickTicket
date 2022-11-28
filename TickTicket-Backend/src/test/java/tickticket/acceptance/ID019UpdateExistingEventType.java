@@ -217,15 +217,30 @@ public class ID019UpdateExistingEventType {
     }
 
     @Test
-    public void testUpdateEventTypeWrongUser(){
-        EventTypeDTO evTypeDTO = Conversion.convertToDTO(eventTypeRepository.findById(EVENT_TYPE1_ID).get());
-        evTypeDTO.setName("newName");
-        evTypeDTO.setDescription("nice event type");
-        evTypeDTO.setAgeRequirement(21);
-        try{
-            eventTypeService.deleteEventType(EVENT_TYPE1_ID);
-        }catch (IllegalArgumentException e){
-            assertEquals("This event type is in use", e.getMessage());
+    public void testUpdateEventTypeInvalidNameFail() {
+
+        EventTypeDTO newEventType = new EventTypeDTO();
+        newEventType.setId(EVENT_TYPE1_ID);
+        newEventType.setName("");
+
+        try {
+            eventTypeService.updateEventType(newEventType);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Event type "+newEventType.getName()+" already exists", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUpdateEventTypeInvalidAgeFail() {
+
+        EventTypeDTO newEventType = new EventTypeDTO();
+        newEventType.setId(EVENT_TYPE1_ID);
+        newEventType.setAgeRequirement(-1);
+
+        try {
+            eventTypeService.updateEventType(newEventType);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid age requirement", e.getMessage());
         }
     }
 

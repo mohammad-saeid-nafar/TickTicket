@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import org.mockito.stubbing.Answer;
 import tickticket.controller.Conversion;
 import tickticket.dao.*;
 import tickticket.dto.*;
@@ -29,14 +30,17 @@ public class ID020AssignExistingEventTypeToEvent {
     @Mock
     private EventRepository eventRepository;
 
-    @Mock
-    private EventTypeRepository eventTypeRepository;
+//    @Mock
+//    private EventTypeRepository eventTypeRepository;
 
     @Mock
     private UserService userService;
 
     @InjectMocks
     private EventService eventService;
+
+    @Mock
+    private EventTypeService eventTypeService;
 
     // Data for organizer
     private static final UUID ORGANIZER_ID = UUID.randomUUID();
@@ -76,10 +80,10 @@ public class ID020AssignExistingEventTypeToEvent {
     private static final String EVENT_TYPE1_DESCRIPTION = "Music";
     private static final int EVENT_TYPE1_AGE_REQUIREMENT = 0;
 
-    private static final UUID EVENT_TYPE2_ID = UUID.randomUUID();
-    private static final String EVENT_TYPE2_NAME = "Party";
-    private static final String EVENT_TYPE2_DESCRIPTION = "Big Crowd";
-    private static final int EVENT_TYPE2_AGE_REQUIREMENT = 18;
+//    private static final UUID EVENT_TYPE2_ID = UUID.randomUUID();
+//    private static final String EVENT_TYPE2_NAME = "Party";
+//    private static final String EVENT_TYPE2_DESCRIPTION = "Big Crowd";
+//    private static final int EVENT_TYPE2_AGE_REQUIREMENT = 18;
 
     // Data for Event
     private static final UUID EVENT_ID = UUID.randomUUID();
@@ -97,7 +101,24 @@ public class ID020AssignExistingEventTypeToEvent {
 
     @BeforeEach
     public void setMockOutput() {
+        lenient().when(eventTypeService.getEventType(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument(0).equals(EVENT_TYPE1_ID)) {
 
+                EventType eventType1 = new EventType();
+                eventType1.setId(EVENT_TYPE1_ID);
+                eventType1.setName(EVENT_TYPE1_NAME);
+                eventType1.setDescription(EVENT_TYPE1_DESCRIPTION);
+                eventType1.setAgeRequirement(EVENT_TYPE1_AGE_REQUIREMENT);
+
+                return eventType1;
+
+            }
+            else {
+                return null;
+            }
+        });
+
+        lenient().when(eventTypeService.getAllEventTypes(any())).thenAnswer((InvocationOnMock invocation) -> Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE1_ID)));
         lenient().when(userService.getUser(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
             if (invocation.getArgument(0).equals(ORGANIZER_ID)) {
                 Profile organizerProfile = new Profile();
@@ -144,25 +165,25 @@ public class ID020AssignExistingEventTypeToEvent {
 
         });
 
-        lenient().when(eventTypeRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
-            if (invocation.getArgument(0).equals(EVENT_TYPE1_ID)) {
-
-                EventType eventType1 = new EventType();
-                eventType1.setId(EVENT_TYPE1_ID);
-                eventType1.setName(EVENT_TYPE1_NAME);
-                eventType1.setDescription(EVENT_TYPE1_DESCRIPTION);
-                eventType1.setAgeRequirement(EVENT_TYPE1_AGE_REQUIREMENT);
-
-                return Optional.of(eventType1);
-
-            }else if(invocation.getArgument(0).equals(EVENT_TYPE2_ID)){
-                EventType eventType2 = new EventType();
-                eventType2.setId(EVENT_TYPE2_ID);
-                eventType2.setName(EVENT_TYPE2_NAME);
-                eventType2.setDescription(EVENT_TYPE2_DESCRIPTION);
-                eventType2.setAgeRequirement(EVENT_TYPE2_AGE_REQUIREMENT);
-
-                return Optional.of(eventType2);
+        lenient().when(eventRepository.findById(any(UUID.class))).thenAnswer((InvocationOnMock invocation) -> {
+            if (invocation.getArgument(0).equals(EVENT_ID)) {
+                EventSchedule eventSchedule = new EventSchedule();
+                eventSchedule.setStartDateTime(EVENT_START);
+                eventSchedule.setEndDateTime(EVENT_END);
+                Event event = new Event();
+                event.setId(EVENT_ID);
+                event.setName(EVENT_NAME);
+                event.setDescription(EVENT_DESCRIPTION);
+                event.setAddress(EVENT_ADDRESS);
+                event.setEmail(EVENT_EMAIL);
+                event.setPhoneNumber(EVENT_PHONE_NUMBER);
+                event.setCapacity(EVENT_CAPACITY);
+                event.setCost(EVENT_COST);
+                event.setOrganizer(userService.getUser(USER_ID));
+                event.setEventSchedule(eventSchedule);
+                event.setEventTypes(Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE1_ID)));
+//                return event;
+                return Optional.of(event);
             }
             else {
                 return Optional.empty();
@@ -190,7 +211,7 @@ public class ID020AssignExistingEventTypeToEvent {
                 event.setCost(EVENT_COST);
                 event.setOrganizer(organizer);
                 event.setEventSchedule(eventSchedule);
-                event.setEventTypes(Collections.singletonList(eventTypeRepository.findById(EVENT_TYPE1_ID).get()));
+                event.setEventTypes(Collections.singletonList(eventTypeService.getEventType(EVENT_TYPE1_ID)));
 
                 return Collections.singletonList(event);
             }else{
@@ -198,8 +219,8 @@ public class ID020AssignExistingEventTypeToEvent {
             }
         });
 
-        lenient().doNothing().when(eventTypeRepository).delete(any(EventType.class));
-    }
+        Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> invocation.getArgument(0);
+        lenient().when(eventRepository.save(any(Event.class))).thenAnswer(returnParameterAsAnswer);    }
 
 
     @Test
@@ -210,12 +231,10 @@ public class ID020AssignExistingEventTypeToEvent {
         eventDTO.setEventTypeIds(evTypes);
         try{
             Event event = eventService.updateEvent(eventDTO);
-            assertEquals(eventDTO.getEventTypes(), event.getEventTypes());
+            assertEquals(EVENT_TYPE1_ID, event.getEventTypes().get(0).getId());
+
         }catch (Exception e){
             fail();
         }
     }
-
-    @Test
-
 }
