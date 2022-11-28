@@ -284,4 +284,12 @@ public class EventService {
 			throw new NullPointerException("Event Type doesn't exist");
 		}
 	}
+
+	public List<Event> suggestEventsToUser(UUID userId){
+		User user = userService.getUser(userId);
+		if(user.getProfile() == null || user.getProfile().getInterests().isEmpty()){
+			throw new IllegalArgumentException("User has no interests");
+		}
+		return eventRepository.findEventsByEventTypesIn(user.getProfile().getInterests());
+	}
 }
