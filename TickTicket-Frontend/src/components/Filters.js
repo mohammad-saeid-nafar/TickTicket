@@ -9,6 +9,8 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Filter from "./Filter";
 import axios from "axios";
 
@@ -22,10 +24,6 @@ const Filters = (props) => {
     setCostRange(newValue);
   };
 
-  const handleDateChange = (event) => {
-    setDate(event.target.value);
-  };
-
   const handleAreaChange = (event) => {
     setArea(event.target.value);
   };
@@ -37,9 +35,9 @@ const Filters = (props) => {
 
   const clearFilters = () => {
     setCostRange([0, 500]);
-    setDate("");
+    setDate(Date.now());
     setArea("");
-    setEventType("");
+    eventTypes.length !== 0 && setEventType(eventTypes[0].name);
     props.clearFilter();
   };
   const [eventTypes, setEventTypes] = React.useState([]);
@@ -47,18 +45,23 @@ const Filters = (props) => {
   React.useEffect(() => {
     axios.get("event-types").then((res) => {
       setEventTypes(res.data);
+      eventTypes.length !== 0 && setEventType(eventTypes[0].name);
     });
+    // eslint-disable-next-line
   }, []);
 
   return (
     <Box width="100%">
       <Stack direction="row" spacing={2} width="100%">
         <Filter>
-          <Typography>
+        <Typography>
+            Cost
+          </Typography>
+          <Typography marginTop={2}>
             ${costRange[0]} - ${costRange[1]}
           </Typography>
           <Slider
-            sx={{ width: "90%" }}
+            sx={{ width: "90%"}}
             min={0}
             max={500}
             value={costRange}
@@ -73,17 +76,17 @@ const Filters = (props) => {
           </Button>
         </Filter>
         <Filter>
-          Date
-          <TextField
-            id="date-filter"
-            label="Date"
-            margin="normal"
-            value={date}
-            onChange={handleDateChange}
-            height="100"
-            style={{ width: 240 }}
-          />
-          <Button variant="outlined" onClick={() => props.filterByDate(date)}>
+          <Typography paddingBottom={2}>Date</Typography>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              value={date}
+              onChange={(newValue) => {
+                setDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+          <Button sx={{ marginTop: 1}} variant="outlined" onClick={() => props.filterByDate(date)}>
             Find events
           </Button>
         </Filter>
@@ -103,18 +106,19 @@ const Filters = (props) => {
           </Button>
         </Filter>
         <Filter>
-        <Typography>Event Type</Typography>
+          <Typography>Event Type</Typography>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
+            id="event type select"
             style={{ width: 240, marginTop: 15, marginBottom: 5 }}
-            label="Age"
+            defaultValue={eventTypes.length !== 0 ? eventTypes[0].name: ""}
             value={eventType}
             onChange={handleDropdown}
           >
             {eventTypes.map((eventType) => {
               return (
-                <MenuItem key={eventType.id} value={eventType.name}>{eventType.name}</MenuItem>
+                <MenuItem key={eventType.id} value={eventType.name}>
+                  {eventType.name}
+                </MenuItem>
               );
             })}
           </Select>

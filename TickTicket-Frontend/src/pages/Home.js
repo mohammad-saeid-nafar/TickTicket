@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Container, Stack } from "@mui/material";
 import EventCard from "../components/EventCard";
 import Filters from "../components/Filters";
+const dayjs = require('dayjs')
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -24,7 +25,9 @@ const Home = () => {
   }
 
   const filterByDate = (date) => {
-    axios.get(`events/date?date=${date}`).then((res) => {
+    let formattedDate = dayjs(date).format("YYYY-MM-DD").toString();
+    console.log(formattedDate);
+    axios.get(`events/date?date=${formattedDate}`).then((res) => {
       setEvents(res.data)
     });
   }
