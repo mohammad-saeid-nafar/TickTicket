@@ -1,47 +1,22 @@
 Feature: Cancel ticket
-  As a user, I want to cancel one of my tickets
+  As a user, 
+  I want to cancel one of my tickets
+  As I will not be able to attend
 
   Background:
-    Given the following Users exist in the system:
-      | id          | username  | password   | createdDate   |
-      | 1           | aly1      | Aly1235!   | 2022-10-01    |
-      | 2           | aly2      | Aly1233!   | 2022-10-03    |
-      | 3           | aly3      | Aly1233!   | 2022-10-03    |
+    Given the following user is logged in:
+      | id | username  |   password   |  created   |
+      | 01 |  johnDoe  | myP@assword1 | 2022-07-12 |
+    Given the following Event Type exists in the system:
+      | id |    name   | description |   ageRequirement   |
+      | 01 | Pop Music |    Music    | No age requirement |
     Given the following events exist in the system:
-      | id          | name              | description                 | capacity    | cost   |  address            | email            | phoneNumber  | type     | organizerId | start             | end                 |
-      | 4           | Wine and Cheese   | Graduation Wine and Cheese  | 80          |  20    |  2620 rue Stanley   |  aly1@gmail.com  | 514-888-8888 | Food    | 1            | 2022-10-05 12:00  |  2022-10-05 21:00   |
-      | 5           | Pop               | Pop concert                 | 150         |  20    |  321 Ave            |  pop@mail.ca     | 514-888-8888 | Music   | 1            | 2022-12-05 12:00  |  2022-12-05 21:00   |
-    Given the following tickets exist in the system:
-      | id          | date           | time      | userID    | eventID  |
-      | 1           | 2022-10-10     | 15:00:00  | 1         |  4       | 
-      | 2           | 2022-10-10     | 15:00:00  | 3         |  4       |  
+      | id |         name       | description | capacity | cost |   address   |     email          | phoneNumber  |    type   |
+      | 01 | Justin Bieber Tour |  Music Tour |    600   |  250 | True Square | johndoe@gmail.comm | 438 566 3241 | Pop Music |
 
     Scenario: Successfully cancel ticket
-      When the user "<user>" attempts to cancel the ticket "<ticketID>" with "<userID>" and "<eventID>"
+      Given the following tickets exist in the system:
+        | user      | event              | date       | time       |
+        | johnDoe   | Justin Bieber Tour | 2022-10-10 | 15:00:00   |
+      When the user "<user>" attempts to cancel the ticket <ticketID> with <userID> and <eventID>
       Then the ticket will be cancel successfully
-      And the following tickets exist in the system:
-       | id          | date           | time      | userID    | eventID  |
-       | 2           | 2022-10-10     | 15:00:00  | 3         |  4       |  
-
-       Examples:
-       | user      |   ticketID  | userID             | eventID | 
-       | aly1      | 1           | 1                  | 4       |  
-       
-
-    Scenario: Error when attempting to cancel a nonexistent ticket
-      When the user "<user>" attempts to cancel the ticket "<ticketID>" with "<userID>" and "<eventID>"
-      Then the ticket will not cancel successfully
-      And the system should display the error message "This ticket does not exist"
-
-       Examples:
-       | user      |   ticketID  | userID             | eventID | 
-       | aly1      | 2           | 1                  | 4       |  
-
-    Scenario: Error when attempting to cancel the ticket of another user
-      When the user "<user>" attempts to cancel the ticket "<ticketID>" with "<userID>" and "<eventID>"
-      Then the ticket will not cancel successfully
-      And the system should display the error message "This is not your ticket"
-
-       Examples:
-       | user      |   ticketID  | userID             | eventID | 
-       | aly2      | 1           | 1                  | 4       | 
