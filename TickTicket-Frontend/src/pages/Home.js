@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Container, Stack } from "@mui/material";
 import EventCard from "../components/EventCard";
-import Filter from "../components/Filter";
+import Filters from "../components/Filters";
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -48,7 +48,7 @@ const Home = () => {
       }}
     >
       <Stack spacing={2}>
-      <Filter filterByCost={filterByCost} filterByDate={filterByDate} filterByArea={filterByArea} filterByEventType={filterByEventType} clearFilter={loadData}></Filter>
+      <Filters filterByCost={filterByCost} filterByDate={filterByDate} filterByArea={filterByArea} filterByEventType={filterByEventType} clearFilter={loadData}></Filters>
         {events.map((event) => {
           return <EventCard key={event.id} event={event} addReview={false} />;
         })}
