@@ -16,7 +16,10 @@ const Home = () => {
     setTab(newValue);
   };
 
-  useEffect(() => loadData, []);
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line
+  }, []);
 
   const loadData = async () => {
     await axios
